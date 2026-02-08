@@ -125,7 +125,7 @@ const languageData = {
             ],
             directive: {
                 label: "Diretiva Principal",
-                value: "Olá! Sou o Rev, gosto de todas as áreas da ciência, principalmente astronomia. Também curto tecnologia e jogos. Atualmente estou estudando, mas sempre arrumo tempo pra uma boa jogatina."
+                value: "Oi, eu sou o Rev, gosto de todas as áreas da ciência, principalmente Astronomia, também curto tecnologias e jogos. Atualmente estou estudando, mas sempre arrumo tempo pra jogar."
             },
             socialsTitle: "Canais de Comunicação",
             featuredTitle: "Foco Atual",
