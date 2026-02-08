@@ -81,6 +81,11 @@ const staticData = {
                 name: "Até Surdo Endoida", 
                 embed: '<iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/playlist/5of17wzqEZnwekVRgQyb8T?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>',
                 isEmbed: true
+            },
+            { 
+                name: "Pra ter uma crise existencial", 
+                embed: '<iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/playlist/2ipX5iPTfqwwi5qChm85RQ?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>',
+                isEmbed: true
             }
         ]}
     ],
