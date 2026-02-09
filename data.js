@@ -1,5 +1,6 @@
 // --- DADOS ESTÁTICOS (NÃO TRADUZÍVEIS) ---
 const staticData = {
+    birthDate: "2007-09-24",
     socials: [
         { name: "Twitch", user: "Reevbr", url: "https://www.twitch.tv/reevbr", icon: "fab fa-twitch" },
         { name: "Twitter/X", user: "MysticAleatorio", url: "https://x.com/MysticAleatorio", icon: "fab fa-x-twitter" },
