@@ -8,6 +8,41 @@ let state = {
     isMobileMenuOpen: false
 };
 
+// --- IDADE AUTOMÁTICA ---
+function calcularIdade(birthDateStr) {
+    const [y, m, d] = birthDateStr.split("-").map(Number);
+    const hoje = new Date();
+
+    let idade = hoje.getFullYear() - y;
+    const aniversario = new Date(hoje.getFullYear(), m - 1, d);
+
+    if (hoje < aniversario) idade--;
+    return idade;
+}
+
+function atualizarIdadeNasTraducoes(lang) {
+    if (!staticData?.birthDate) return;
+
+    const idade = calcularIdade(staticData.birthDate);
+
+    // IMPORTANTÍSSIMO: você renderiza state.translations, então é nele que tem que mexer.
+    const fields = state.translations?.profile?.fields;
+    if (!Array.isArray(fields)) return;
+
+    const map = {
+        pt: { label: "Idade", value: `${idade} Anos` },
+        en: { label: "Age", value: `${idade} Years` },
+        es: { label: "Edad", value: `${idade} Años` },
+        ja: { label: "年齢", value: `${idade}歳` }
+    };
+
+    const target = map[lang];
+    if (!target) return;
+
+    const field = fields.find(f => f.label === target.label);
+    if (field) field.value = target.value;
+}
+
 // --- FUNÇÃO PRINCIPAL DE RENDERIZAÇÃO ---
 function renderApp() {
     const t = state.translations;
@@ -29,6 +64,7 @@ function renderApp() {
         case 'records': contentHtml = renderRecords(t.records); break;
         case 'gallery': contentHtml = renderGallery(); break;
     }
+
     contentWindow.innerHTML = `<h2 class="text-xl sm:text-2xl text-red-500 mb-4 sm:mb-6 tracking-widest text-glow">${t[state.activeSection].title}</h2>${contentHtml}`;
     contentWindow.classList.add('fade-in');
     setTimeout(() => contentWindow.classList.remove('fade-in'), 500);
@@ -47,9 +83,9 @@ function renderApp() {
 function addEventListeners() {
     document.querySelectorAll('.menu-button').forEach(button => {
         button.addEventListener('click', () => {
-            soundManager.playClick();
+            soundManager?.playClick?.();
             state.activeSection = button.dataset.section;
-            soundManager.playLoad();
+            soundManager?.playLoad?.();
             renderApp();
             // Fechar menu mobile após clicar
             if (window.innerWidth < 1024) {
@@ -60,7 +96,7 @@ function addEventListeners() {
     
     document.querySelectorAll('.lang-button').forEach(button => {
         button.addEventListener('click', () => {
-            soundManager.playClick();
+            soundManager?.playClick?.();
             loadLanguage(button.dataset.lang);
         });
     });
@@ -102,6 +138,10 @@ function closeMobileMenu() {
 async function loadLanguage(lang) {
     state.language = lang;
     state.translations = languageData[lang];
+
+    // AQUI: aplica a idade no conteúdo traduzido antes de renderizar
+    atualizarIdadeNasTraducoes(lang);
+
     renderApp();
 }
 
@@ -151,6 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const startAudio = () => {
         if(state.hasInitializedAudio) return;
         Tone.start().then(() => {
+            state.hasInitializedAudio = true; // <-- antes você nunca marcava como true
             soundManager.initialize();
             state.isMuted = false;
             muteButton.innerHTML = '<i class="fas fa-volume-high fa-lg"></i>';
@@ -160,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     muteButton.addEventListener('click', () => {
         state.isMuted = !state.isMuted;
-        soundManager.toggleMute(state.isMuted);
+        soundManager?.toggleMute?.(state.isMuted);
         muteButton.innerHTML = state.isMuted ? '<i class="fas fa-volume-xmark fa-lg"></i>' : '<i class="fas fa-volume-high fa-lg"></i>';
     });
 
@@ -173,4 +214,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Inicializar sistema de partículas
     initParticles();
-}); 
+});
