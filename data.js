@@ -28,7 +28,8 @@ const staticData = {
             { name: "The Dark Knight", image: "imagens/movies/batman-dark-knight.jpg" },
             { name: "Django Livre", image: "imagens/movies/django.jpg" },
             { name: "Top Gun: Maverick", image: "imagens/movies/top-gun.jpg" },
-            { name: "Homem Aranha Através do AranhaVerso", image: "imagens/movies/aranhaverso.jpg" }
+            { name: "Homem Aranha Através do AranhaVerso", image: "imagens/movies/aranhaverso.jpg" },
+            { name: "Forrest Gump", image: "imagens/movies/FGump.jpg" }
         ]},
         { icon: "fas fa-shield-halved", items: [
             { name: "Shingeki no Kyojin", image: "imagens/animes/shingeki.jpg" },
