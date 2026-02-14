@@ -76,7 +76,8 @@ const staticData = {
             { name: "A Litte Death", image: "imagens/albums/ALitteDeath.jpg" },
             { name: "Lonely Day", image: "imagens/albums/LonelyDay.jpg" },
             { name: "Bodies", image: "imagens/albums/Bodies.jpg" },
-            { name: "Espresso", image: "imagens/albums/Espresso.jpg" }
+            { name: "Espresso", image: "imagens/albums/Espresso.jpg" },
+            { name: "One More Light", image: "imagens/albums/OML.jpg" }
         ]},
                 { icon: "fas fa-headphones", items: [
             { 
