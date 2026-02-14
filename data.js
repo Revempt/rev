@@ -20,7 +20,8 @@ const staticData = {
             { name: "Flash", image: "imagens/series/the-flash.jpg" },
             { name: "Reacher", image: "imagens/series/reacher.jpg" },
             { name: "Stranger Things", image: "imagens/series/stranger-things.jpg" },
-            { name: "Game of Thrones", image: "imagens/series/game-of-thrones.jpg" }
+            { name: "Game of Thrones", image: "imagens/series/game-of-thrones.jpg" },
+            { name: "Fallout", image: "imagens/series/Fallout.jpg" }
         ]},
         { icon: "fas fa-film", items: [
             { name: "Interstellar", image: "imagens/movies/interstellar.jpg" },
