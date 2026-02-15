@@ -28,6 +28,7 @@ function renderApp() {
         case 'affinities': contentHtml = renderAffinities(t.affinities); break;
         case 'records': contentHtml = renderRecords(t.records); break;
         case 'gallery': contentHtml = renderGallery(); break;
+        case 'wishlist': contentHtml = renderWishlist(t.wishlist); break;
     }
     contentWindow.innerHTML = `<h2 class="text-xl sm:text-2xl text-red-500 mb-4 sm:mb-6 tracking-widest text-glow">${t[state.activeSection].title}</h2>${contentHtml}`;
     contentWindow.classList.add('fade-in');
@@ -173,4 +174,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Inicializar sistema de partículas
     initParticles();
-}); 
+});
