@@ -129,33 +129,33 @@ const staticData = {
     wishlistItems: [
         {
             id: "monitor",
-            name: "Monitor 1440p 144Hz",
+            name: "Alienware 27” QHD AW2725DM",
             category: "Monitor",
-            model: "1440p / 144Hz (IPS/Fast IPS)",
-            price: 0,
-            image: "imagens/wishlist/monitor.jpg",
+            model: "2560x1440 / 180Hz / FIPS",
+            price: 2500,
+            image: "imagens/wishlist/monitor.png",
             status: "pendente",
-            note: "Boa qualidade de cores + garantia. Seu upgrade mais sensato."
+            note: "Pra enxergar até o último pixel de sua vida."
         },
         {
             id: "gpu",
-            name: "Placa de Vídeo (GPU)",
+            name: "RTX 5060 TI",
             category: "Placa de vídeo",
-            model: "Ex: RTX 4060 / RX 7600",
-            price: 0,
+            model: "NVIDIA RTX 5060 TI 16GB",
+            price: 4000,
             image: "imagens/wishlist/gpu.jpg",
             status: "pendente",
-            note: "Pra empurrar 1440p sem virar slideshow."
+            note: "Roda Doom"
         },
         {
             id: "mouse",
-            name: "Mouse (Reserva/Upgrade)",
+            name: "G703",
             category: "Periféricos",
-            model: "Opcional",
-            price: 0,
-            image: "imagens/wishlist/mouse.jpg",
+            model: "Logitech G703 Lightspeed",
+            price: 400,
+            image: "imagens/wishlist/mouse.png",
             status: "pendente",
-            note: "Você já tem o G403, então isso é luxo."
+            note: "Pra subir capa"
         },
         {
             id: "teclado",
