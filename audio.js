@@ -50,4 +50,4 @@ const soundManager = {
         if (!state.hasInitializedAudio) return; 
         Tone.getDestination().mute = isMuted; 
     }
-}; 
+};
