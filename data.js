@@ -79,7 +79,7 @@ const staticData = {
             { name: "Espresso", image: "imagens/albums/Espresso.jpg" },
             { name: "One More Light", image: "imagens/albums/OML.jpg" }
         ]},
-                { icon: "fas fa-headphones", items: [
+        { icon: "fas fa-headphones", items: [
             { 
                 name: "Até Surdo Endoida", 
                 embed: '<iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/playlist/5of17wzqEZnwekVRgQyb8T?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>',
@@ -99,7 +99,13 @@ const staticData = {
         "imagens/gallery/gallery4.jpg",
         "imagens/gallery/gallery5.jpg",
     ],
-    menuIcons: { profile: "fas fa-user", affinities: "fas fa-heart", records: "fas fa-book-open", gallery: "fas fa-image" },
+    menuIcons: { 
+        profile: "fas fa-user", 
+        affinities: "fas fa-heart", 
+        records: "fas fa-book-open", 
+        gallery: "fas fa-image",
+        wishlist: "fas fa-list-check"
+    },
     languageLevels: [ "100%", "60%", "30%" ],
     featuredImage: "imagens/teste3.png",
     setup: [
@@ -112,6 +118,37 @@ const staticData = {
         { value: "SONHO", icon: "fas fa-microphone" },
         { value: "LG 22MP58VQ 75HZ", icon: "fas fa-desktop" },
         { value: "FORTREK SPEED LARGE", icon: "fas fa-mouse-pointer" },
+    ],
+    // Imagens esperadas em: imagens/wishlist/
+    // Nomes .jpg equivalentes aos produtos: monitor.jpg, gpu.jpg, mic.jpg, etc.
+    wishlistItems: [
+        {
+            id: "gpu",
+            category: "GPU",
+            name: "Placa de Vídeo",
+            model: "RTX 4060 (exemplo)",
+            price: 1800,
+            image: "imagens/wishlist/gpu.jpg",
+            status: "pendente"
+        },
+        {
+            id: "monitor",
+            category: "Monitor",
+            name: "Monitor",
+            model: "1440p 144Hz",
+            price: 2300,
+            image: "imagens/wishlist/monitor.jpg",
+            status: "pendente"
+        },
+        {
+            id: "mic",
+            category: "Microfone",
+            name: "Microfone",
+            model: "Qualquer um decente",
+            price: 250,
+            image: "imagens/wishlist/mic.jpg",
+            status: "pendente"
+        }
     ]
 };
 
@@ -189,11 +226,21 @@ const languageData = {
         gallery: {
             title: "Banco de Memória Visual"
         },
+        wishlist: {
+            title: "Wishlist de Upgrades",
+            pending: "Pendente",
+            achieved: "Conquistado",
+            markAchieved: "Marcar como conquistado",
+            markPending: "Marcar como pendente",
+            total: "Total",
+            progress: "Progresso"
+        },
         menu: {
             profile: "Painel",
             affinities: "Afinidades",
             records: "Registros",
-            gallery: "Galeria"
+            gallery: "Galeria",
+            wishlist: "Wishlist"
         },
         status: {
             title: "Status do Sistema",
@@ -280,11 +327,21 @@ const languageData = {
         gallery: {
             title: "Visual Memory Bank"
         },
+        wishlist: {
+            title: "Upgrade Wishlist",
+            pending: "Pending",
+            achieved: "Achieved",
+            markAchieved: "Mark as achieved",
+            markPending: "Mark as pending",
+            total: "Total",
+            progress: "Progress"
+        },
         menu: {
             profile: "Dashboard",
             affinities: "Affinities",
             records: "Records",
-            gallery: "Gallery"
+            gallery: "Gallery",
+            wishlist: "Wishlist"
         },
         status: {
             title: "System Status",
@@ -371,11 +428,21 @@ const languageData = {
         gallery: {
             title: "Banco de Memoria Visual"
         },
+        wishlist: {
+            title: "Lista de Deseos (Upgrades)",
+            pending: "Pendiente",
+            achieved: "Conseguido",
+            markAchieved: "Marcar como conseguido",
+            markPending: "Marcar como pendiente",
+            total: "Total",
+            progress: "Progreso"
+        },
         menu: {
             profile: "Panel",
             affinities: "Afinidades",
             records: "Registros",
-            gallery: "Galería"
+            gallery: "Galería",
+            wishlist: "Lista de deseos"
         },
         status: {
             title: "Estado del Sistema",
@@ -462,11 +529,21 @@ const languageData = {
         gallery: {
             title: "視覚的記憶バンク"
         },
+        wishlist: {
+            title: "ウィッシュリスト（アップグレード）",
+            pending: "保留",
+            achieved: "達成",
+            markAchieved: "達成にする",
+            markPending: "保留に戻す",
+            total: "合計",
+            progress: "進捗"
+        },
         menu: {
             profile: "ダッシュボード",
             affinities: "親和性",
             records: "記録",
-            gallery: "ギャラリー"
+            gallery: "ギャラリー",
+            wishlist: "ウィッシュリスト"
         },
         status: {
             title: "システムステータス",
@@ -481,4 +558,4 @@ const languageData = {
             ]
         }
     }
-}; 
+};
