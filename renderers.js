@@ -347,4 +347,118 @@ function renderSystemStatus(t) {
             i = (i + 1) % widths.length;
         }
     }, 2000);
-} 
+}
+
+// -------------------- WISHLIST --------------------
+function getWishlistStorage() {
+    try {
+        return JSON.parse(localStorage.getItem('rev_wishlist_status') || '{}');
+    } catch {
+        return {};
+    }
+}
+
+function setWishlistStorage(map) {
+    localStorage.setItem('rev_wishlist_status', JSON.stringify(map));
+}
+
+function formatMoney(value, lang) {
+    const v = Number(value) || 0;
+    try {
+        if (lang === 'pt') return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        return v.toLocaleString(undefined, { style: 'currency', currency: 'USD' });
+    } catch {
+        return `${v}`;
+    }
+}
+
+window.toggleWishlistItem = function(id) {
+    soundManager.playClick();
+    const map = getWishlistStorage();
+    map[id] = (map[id] === 'conquistado') ? 'pendente' : 'conquistado';
+    setWishlistStorage(map);
+    soundManager.playLoad();
+    renderApp();
+};
+
+function renderWishlist(t) {
+    const stored = getWishlistStorage();
+
+    const items = (staticData.wishlistItems || []).map(it => ({
+        ...it,
+        status: stored[it.id] || it.status || 'pendente'
+    }));
+
+    const total = items.reduce((acc, it) => acc + (Number(it.price) || 0), 0);
+    const achievedTotal = items
+        .filter(it => it.status === 'conquistado')
+        .reduce((acc, it) => acc + (Number(it.price) || 0), 0);
+
+    const achievedCount = items.filter(it => it.status === 'conquistado').length;
+    const progressPct = items.length ? Math.round((achievedCount / items.length) * 100) : 0;
+
+    const summaryHtml = `
+        <div class="bg-gray-900/50 p-3 sm:p-4 border border-red-800/50 mb-4">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <p class="text-gray-300 text-sm sm:text-base">
+                    <span class="text-red-400 font-bold">${t.progress}:</span>
+                    ${achievedCount}/${items.length} (${progressPct}%)
+                </p>
+                <p class="text-gray-300 text-sm sm:text-base">
+                    <span class="text-red-400 font-bold">${t.total}:</span>
+                    ${formatMoney(achievedTotal, state.language)} / ${formatMoney(total, state.language)}
+                </p>
+            </div>
+            <div class="w-full bg-gray-800 border border-gray-700 h-3 sm:h-4 mt-3">
+                <div class="bg-red-600 h-full wishlist-bar" style="width:${progressPct}%;"></div>
+            </div>
+        </div>
+    `;
+
+    const cardsHtml = items.map(it => {
+        const isAchieved = it.status === 'conquistado';
+        const badge = isAchieved ? t.achieved : t.pending;
+        const btnLabel = isAchieved ? t.markPending : t.markAchieved;
+
+        return `
+            <div class="bg-gray-900/50 border border-red-800/50 p-3 sm:p-4 flex gap-3 sm:gap-4 ${isAchieved ? 'wishlist-achieved' : 'wishlist-pending'}">
+                <div class="w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 border border-gray-800 overflow-hidden bg-black/40">
+                    <img src="${it.image}" alt="${it.name}" class="w-full h-full object-cover" />
+                </div>
+
+                <div class="min-w-0 flex-1">
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="min-w-0">
+                            <p class="text-white font-bold text-sm sm:text-base truncate">
+                                ${it.name}
+                                <span class="text-gray-400 font-normal">(${it.category})</span>
+                            </p>
+                            <p class="text-gray-400 text-xs sm:text-sm truncate">${it.model || ''}</p>
+                        </div>
+                        <span class="text-xs sm:text-sm px-2 py-1 border ${isAchieved ? 'wishlist-badge-achieved' : 'wishlist-badge-pending'}">
+                            ${badge}
+                        </span>
+                    </div>
+
+                    <div class="mt-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <p class="text-gray-300 text-xs sm:text-sm">
+                            <span class="text-red-400 font-bold">${formatMoney(it.price, state.language)}</span>
+                        </p>
+                        <button onclick="toggleWishlistItem('${it.id}')" class="px-3 py-1.5 text-xs sm:text-sm border border-red-700 text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors">
+                            ${btnLabel}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    return `
+        <div>
+            ${summaryHtml}
+            <div class="grid grid-cols-1 gap-3 sm:gap-4">
+                ${cardsHtml}
+            </div>
+        </div>
+    `;
+}
