@@ -2,7 +2,7 @@
 function typeOutText(element, text, speed = 30) {
     if (!element) return;
     let i = 0;
-    element.innerHTML = ''; 
+    element.innerHTML = '';
     const intervalId = setInterval(() => {
         if (i >= text.length) {
             clearInterval(intervalId);
@@ -48,7 +48,7 @@ function renderProfile(t) {
                 `).join('')}
             </div>
         </div>`;
-    
+
     const setupHtml = `
         <div class="mt-4 lg:col-span-2 bg-gray-900/50 p-3 sm:p-4 border border-red-800/50">
             <p class="text-red-500 font-bold text-xs sm:text-sm uppercase tracking-widest mb-3 sm:mb-4">${t.setupTitle}</p>
@@ -82,7 +82,7 @@ function renderProfile(t) {
             </div>
         </div>
     `;
-    
+
     setTimeout(() => {
         t.fields.forEach((field, index) => {
             const el = document.getElementById(`profile-field-${index}`);
@@ -187,14 +187,14 @@ function renderAffinities(t) {
             }
         }).join('');
     };
-    
+
     const buttonsHtml = t.categories.map((cat, index) => `
         <button data-index="${index}" class="affinity-cat-button flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 text-xs sm:text-sm border-b-2 transition-colors duration-200 ${index === 0 ? 'border-red-500 text-white' : 'border-gray-700 text-gray-400 hover:text-white'}">
             <i class="${staticData.affinities[index].icon}"></i>
             <span>${cat.name}</span>
         </button>
     `).join('');
-    
+
     const html = `
         <div>
             <div class="flex flex-wrap gap-x-2 sm:gap-x-4 gap-y-2 mb-4 sm:mb-6">${buttonsHtml}</div>
@@ -210,7 +210,7 @@ function renderAffinities(t) {
                 });
                 button.classList.add('border-red-500', 'text-white');
                 button.classList.remove('border-gray-700', 'text-gray-400', 'hover:text-white');
-                
+
                 activeCategoryIndex = parseInt(button.dataset.index);
                 document.getElementById('affinities-content').innerHTML = renderContent();
             });
@@ -336,7 +336,7 @@ function renderSystemStatus(t) {
                 </div>
             </div>
         </div>`;
-    
+
     const chaosBar = document.getElementById('chaos-bar');
     let widths = ['60%', '75%', '65%'];
     let i = 0;
@@ -349,45 +349,13 @@ function renderSystemStatus(t) {
     }, 2000);
 }
 
-// -------------------- WISHLIST --------------------
-function getWishlistStorage() {
-    try {
-        return JSON.parse(localStorage.getItem('rev_wishlist_status') || '{}');
-    } catch {
-        return {};
-    }
-}
-
-function setWishlistStorage(map) {
-    localStorage.setItem('rev_wishlist_status', JSON.stringify(map));
-}
-
-function formatMoney(value, lang) {
-    const v = Number(value) || 0;
-    try {
-        if (lang === 'pt') return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        return v.toLocaleString(undefined, { style: 'currency', currency: 'USD' });
-    } catch {
-        return `${v}`;
-    }
-}
-
-window.toggleWishlistItem = function(id) {
-    soundManager.playClick();
-    const map = getWishlistStorage();
-    map[id] = (map[id] === 'conquistado') ? 'pendente' : 'conquistado';
-    setWishlistStorage(map);
-    soundManager.playLoad();
-    renderApp();
-};
-
+/* ===========================
+   ✅ NOVA SEÇÃO: WISHLIST
+   - ESTÁTICA (sem botão, sem localStorage)
+   - status definido só no code (data.js)
+   =========================== */
 function renderWishlist(t) {
-    const stored = getWishlistStorage();
-
-    const items = (staticData.wishlistItems || []).map(it => ({
-        ...it,
-        status: stored[it.id] || it.status || 'pendente'
-    }));
+    const items = staticData.wishlistItems || [];
 
     const total = items.reduce((acc, it) => acc + (Number(it.price) || 0), 0);
     const achievedTotal = items
@@ -406,7 +374,7 @@ function renderWishlist(t) {
                 </p>
                 <p class="text-gray-300 text-sm sm:text-base">
                     <span class="text-red-400 font-bold">${t.total}:</span>
-                    ${formatMoney(achievedTotal, state.language)} / ${formatMoney(total, state.language)}
+                    R$ ${achievedTotal} / R$ ${total}
                 </p>
             </div>
             <div class="w-full bg-gray-800 border border-gray-700 h-3 sm:h-4 mt-3">
@@ -416,12 +384,18 @@ function renderWishlist(t) {
     `;
 
     const cardsHtml = items.map(it => {
-        const isAchieved = it.status === 'conquistado';
-        const badge = isAchieved ? t.achieved : t.pending;
-        const btnLabel = isAchieved ? t.markPending : t.markAchieved;
+        const isAchieved = it.status === "conquistado";
+
+        const badgeClass = isAchieved
+            ? "text-green-400 border-green-500/50"
+            : "text-yellow-400 border-yellow-500/50";
+
+        const cardClass = isAchieved ? "wishlist-achieved" : "";
+
+        const badgeLabel = isAchieved ? t.achieved : t.pending;
 
         return `
-            <div class="bg-gray-900/50 border border-red-800/50 p-3 sm:p-4 flex gap-3 sm:gap-4 ${isAchieved ? 'wishlist-achieved' : 'wishlist-pending'}">
+            <div class="bg-gray-900/50 border border-red-800/50 p-3 sm:p-4 flex gap-3 sm:gap-4 ${cardClass}">
                 <div class="w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 border border-gray-800 overflow-hidden bg-black/40">
                     <img src="${it.image}" alt="${it.name}" class="w-full h-full object-cover" />
                 </div>
@@ -435,18 +409,17 @@ function renderWishlist(t) {
                             </p>
                             <p class="text-gray-400 text-xs sm:text-sm truncate">${it.model || ''}</p>
                         </div>
-                        <span class="text-xs sm:text-sm px-2 py-1 border ${isAchieved ? 'wishlist-badge-achieved' : 'wishlist-badge-pending'}">
-                            ${badge}
+
+                        <span class="text-xs sm:text-sm px-2 py-1 border ${badgeClass}">
+                            ${badgeLabel}
                         </span>
                     </div>
 
-                    <div class="mt-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <div class="mt-2">
                         <p class="text-gray-300 text-xs sm:text-sm">
-                            <span class="text-red-400 font-bold">${formatMoney(it.price, state.language)}</span>
+                            <span class="text-red-400 font-bold">R$ ${it.price}</span>
                         </p>
-                        <button onclick="toggleWishlistItem('${it.id}')" class="px-3 py-1.5 text-xs sm:text-sm border border-red-700 text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors">
-                            ${btnLabel}
-                        </button>
+                        ${it.note ? `<p class="text-gray-500 text-xs mt-1">${it.note}</p>` : ''}
                     </div>
                 </div>
             </div>
