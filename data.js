@@ -80,13 +80,13 @@ const staticData = {
             { name: "One More Light", image: "imagens/albums/OML.jpg" }
         ]},
         { icon: "fas fa-headphones", items: [
-            { 
-                name: "Até Surdo Endoida", 
+            {
+                name: "Até Surdo Endoida",
                 embed: '<iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/playlist/5of17wzqEZnwekVRgQyb8T?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>',
                 isEmbed: true
             },
-            { 
-                name: "Pra ter uma crise existencial", 
+            {
+                name: "Pra ter uma crise existencial",
                 embed: '<iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/playlist/2ipX5iPTfqwwi5qChm85RQ?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>',
                 isEmbed: true
             }
@@ -99,15 +99,19 @@ const staticData = {
         "imagens/gallery/gallery4.jpg",
         "imagens/gallery/gallery5.jpg",
     ],
-    menuIcons: { 
-        profile: "fas fa-user", 
-        affinities: "fas fa-heart", 
-        records: "fas fa-book-open", 
+
+    // ✅ ÍCONES DO MENU (AGORA COM WISHLIST)
+    menuIcons: {
+        profile: "fas fa-user",
+        affinities: "fas fa-heart",
+        records: "fas fa-book-open",
         gallery: "fas fa-image",
-        wishlist: "fas fa-list-check"
+        wishlist: "fas fa-star"
     },
+
     languageLevels: [ "100%", "60%", "30%" ],
     featuredImage: "imagens/teste3.png",
+
     setup: [
         { value: "AMD Ryzen 5 5600G", icon: "fas fa-microchip" },
         { value: "SONHO", icon: "fas fa-gamepad" },
@@ -119,40 +123,74 @@ const staticData = {
         { value: "LG 22MP58VQ 75HZ", icon: "fas fa-desktop" },
         { value: "FORTREK SPEED LARGE", icon: "fas fa-mouse-pointer" },
     ],
-    // Imagens esperadas em: imagens/wishlist/
-    // Nomes .jpg equivalentes aos produtos: monitor.jpg, gpu.jpg, mic.jpg, etc.
+
+    // ✅ WISHLIST (ESTÁTICO)
+    // status: "pendente" | "conquistado"
     wishlistItems: [
         {
-            id: "gpu",
-            category: "GPU",
-            name: "Placa de Vídeo",
-            model: "RTX 4060 (exemplo)",
-            price: 1800,
-            image: "imagens/wishlist/gpu.jpg",
-            status: "pendente"
-        },
-        {
             id: "monitor",
+            name: "Monitor 1440p 144Hz",
             category: "Monitor",
-            name: "Monitor",
-            model: "1440p 144Hz",
-            price: 2300,
+            model: "1440p / 144Hz (IPS/Fast IPS)",
+            price: 0,
             image: "imagens/wishlist/monitor.jpg",
-            status: "pendente"
+            status: "pendente",
+            note: "Boa qualidade de cores + garantia. Seu upgrade mais sensato."
         },
         {
-            id: "mic",
-            category: "Microfone",
+            id: "gpu",
+            name: "Placa de Vídeo (GPU)",
+            category: "Placa de vídeo",
+            model: "Ex: RTX 4060 / RX 7600",
+            price: 0,
+            image: "imagens/wishlist/gpu.jpg",
+            status: "pendente",
+            note: "Pra empurrar 1440p sem virar slideshow."
+        },
+        {
+            id: "mouse",
+            name: "Mouse (Reserva/Upgrade)",
+            category: "Periféricos",
+            model: "Opcional",
+            price: 0,
+            image: "imagens/wishlist/mouse.jpg",
+            status: "pendente",
+            note: "Você já tem o G403, então isso é luxo."
+        },
+        {
+            id: "teclado",
+            name: "Teclado (Upgrade)",
+            category: "Periféricos",
+            model: "Opcional",
+            price: 0,
+            image: "imagens/wishlist/teclado.jpg",
+            status: "pendente",
+            note: "Só se quiser algo melhor de construção/teclas."
+        },
+        {
+            id: "microfone",
             name: "Microfone",
-            model: "Qualquer um decente",
-            price: 250,
-            image: "imagens/wishlist/mic.jpg",
-            status: "pendente"
+            category: "Áudio",
+            model: "USB (pra EAD/stream)",
+            price: 0,
+            image: "imagens/wishlist/microfone.jpg",
+            status: "pendente",
+            note: "Pra sua voz não sair parecendo rádio de caminhão."
+        },
+        {
+            id: "headset",
+            name: "Headset (Upgrade futuro)",
+            category: "Áudio",
+            model: "Opcional",
+            price: 0,
+            image: "imagens/wishlist/headset.jpg",
+            status: "pendente",
+            note: "Você já tem o Zeus X, então calma."
         }
     ]
 };
 
-// Dados de tradução
+// --- DADOS DE TRADUÇÃO ---
 const languageData = {
     pt: {
         profile: {
@@ -223,18 +261,17 @@ const languageData = {
                 "O poder absoluto é um fardo."
             ]
         },
-        gallery: {
-            title: "Banco de Memória Visual"
-        },
+        gallery: { title: "Banco de Memória Visual" },
+
+        // ✅ WISHLIST TRADUZIDA
         wishlist: {
-            title: "Wishlist de Upgrades",
-            pending: "Pendente",
-            achieved: "Conquistado",
-            markAchieved: "Marcar como conquistado",
-            markPending: "Marcar como pendente",
+            title: "Wishlist de Upgrade",
+            progress: "Progresso",
             total: "Total",
-            progress: "Progresso"
+            achieved: "Conquistado",
+            pending: "Pendente"
         },
+
         menu: {
             profile: "Painel",
             affinities: "Afinidades",
@@ -255,6 +292,7 @@ const languageData = {
             ]
         }
     },
+
     en: {
         profile: {
             title: "Data Dashboard: Rev",
@@ -324,18 +362,16 @@ const languageData = {
                 "Ultimate power is a burden"
             ]
         },
-        gallery: {
-            title: "Visual Memory Bank"
-        },
+        gallery: { title: "Visual Memory Bank" },
+
         wishlist: {
             title: "Upgrade Wishlist",
-            pending: "Pending",
-            achieved: "Achieved",
-            markAchieved: "Mark as achieved",
-            markPending: "Mark as pending",
+            progress: "Progress",
             total: "Total",
-            progress: "Progress"
+            achieved: "Achieved",
+            pending: "Pending"
         },
+
         menu: {
             profile: "Dashboard",
             affinities: "Affinities",
@@ -356,6 +392,7 @@ const languageData = {
             ]
         }
     },
+
     es: {
         profile: {
             title: "Panel de Datos: Rev",
@@ -425,24 +462,22 @@ const languageData = {
                 "El poder supremo es una carga."
             ]
         },
-        gallery: {
-            title: "Banco de Memoria Visual"
-        },
+        gallery: { title: "Banco de Memoria Visual" },
+
         wishlist: {
-            title: "Lista de Deseos (Upgrades)",
-            pending: "Pendiente",
-            achieved: "Conseguido",
-            markAchieved: "Marcar como conseguido",
-            markPending: "Marcar como pendiente",
+            title: "Lista de Deseos (Upgrade)",
+            progress: "Progreso",
             total: "Total",
-            progress: "Progreso"
+            achieved: "Conseguido",
+            pending: "Pendiente"
         },
+
         menu: {
             profile: "Panel",
             affinities: "Afinidades",
             records: "Registros",
             gallery: "Galería",
-            wishlist: "Lista de deseos"
+            wishlist: "Wishlist"
         },
         status: {
             title: "Estado del Sistema",
@@ -457,6 +492,7 @@ const languageData = {
             ]
         }
     },
+
     ja: {
         profile: {
             title: "データダッシュボード: Rev",
@@ -526,24 +562,22 @@ const languageData = {
                 "究極の力は負担だ。"
             ]
         },
-        gallery: {
-            title: "視覚的記憶バンク"
-        },
+        gallery: { title: "視覚的記憶バンク" },
+
         wishlist: {
-            title: "ウィッシュリスト（アップグレード）",
-            pending: "保留",
-            achieved: "達成",
-            markAchieved: "達成にする",
-            markPending: "保留に戻す",
+            title: "アップグレード・ウィッシュリスト",
+            progress: "進捗",
             total: "合計",
-            progress: "進捗"
+            achieved: "達成",
+            pending: "保留"
         },
+
         menu: {
             profile: "ダッシュボード",
             affinities: "親和性",
             records: "記録",
             gallery: "ギャラリー",
-            wishlist: "ウィッシュリスト"
+            wishlist: "Wishlist"
         },
         status: {
             title: "システムステータス",
