@@ -14,7 +14,7 @@ function renderApp() {
     if (!t.menu) return; // Aguarda o carregamento das traduções
 
     const contentWindow = document.getElementById('content-window');
-    
+
     const menuContainer = document.getElementById('main-menu');
     menuContainer.innerHTML = Object.keys(t.menu).map(key => `
         <button data-section="${key}" class="menu-button flex items-center gap-3 p-2.5 text-left text-lg transition-all duration-200 ${state.activeSection === key ? 'bg-red-500/20 text-red-400' : 'text-gray-500 hover:bg-red-500/10 hover:text-red-400'}">
@@ -28,8 +28,11 @@ function renderApp() {
         case 'affinities': contentHtml = renderAffinities(t.affinities); break;
         case 'records': contentHtml = renderRecords(t.records); break;
         case 'gallery': contentHtml = renderGallery(); break;
+
+        // ✅ NOVA SEÇÃO: WISHLIST
         case 'wishlist': contentHtml = renderWishlist(t.wishlist); break;
     }
+
     contentWindow.innerHTML = `<h2 class="text-xl sm:text-2xl text-red-500 mb-4 sm:mb-6 tracking-widest text-glow">${t[state.activeSection].title}</h2>${contentHtml}`;
     contentWindow.classList.add('fade-in');
     setTimeout(() => contentWindow.classList.remove('fade-in'), 500);
@@ -58,7 +61,7 @@ function addEventListeners() {
             }
         });
     });
-    
+
     document.querySelectorAll('.lang-button').forEach(button => {
         button.addEventListener('click', () => {
             soundManager.playClick();
@@ -72,7 +75,7 @@ function toggleMobileMenu() {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('mobile-overlay');
     const toggle = document.getElementById('mobile-menu-toggle');
-    
+
     if (state.isMobileMenuOpen) {
         closeMobileMenu();
     } else {
@@ -83,7 +86,7 @@ function toggleMobileMenu() {
 function openMobileMenu() {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('mobile-overlay');
-    
+
     sidebar.classList.remove('-translate-x-full');
     sidebar.classList.add('translate-x-0');
     overlay.classList.remove('hidden');
@@ -93,7 +96,7 @@ function openMobileMenu() {
 function closeMobileMenu() {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('mobile-overlay');
-    
+
     sidebar.classList.remove('translate-x-0');
     sidebar.classList.add('-translate-x-full');
     overlay.classList.add('hidden');
@@ -112,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const bootScreen = document.getElementById('boot-screen');
     const bootText = document.getElementById('boot-text');
     const muteButton = document.getElementById('mute-button');
-    
+
     // Mobile menu elements
     function getMobileMenuElements() {
         return {
@@ -121,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
             mobileOverlay: document.getElementById('mobile-overlay'),
         };
     }
-    
+
     const bootTextContent = "INITIALIZING... PROJECT REV TERMINAL...";
     let boot_i = 0;
     const bootInterval = setInterval(() => {
@@ -158,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
     document.body.addEventListener('click', startAudio, { once: true });
-    
+
     muteButton.addEventListener('click', () => {
         state.isMuted = !state.isMuted;
         soundManager.toggleMute(state.isMuted);
