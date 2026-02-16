@@ -135,13 +135,13 @@ const staticData = {
             price: 2500,
             image: "imagens/wishlist/monitor.png",
             status: "pendente",
-            note: "Pra enxergar até o último pixel de sua vida."
+            note: "Pra enxergar até o último pixel de sua vida"
         },
         {
             id: "gpu",
             name: "RTX 5060 TI",
             category: "Placa de vídeo",
-            model: "NVIDIA RTX 5060 TI 16GB",
+            model: "ASUS PRIME RTX 5060 TI 16GB",
             price: 4000,
             image: "imagens/wishlist/gpu.jpg",
             status: "pendente",
@@ -159,33 +159,33 @@ const staticData = {
         },
         {
             id: "teclado",
-            name: "Teclado (Upgrade)",
+            name: "Aula F75",
             category: "Periféricos",
-            model: "Opcional",
-            price: 0,
-            image: "imagens/wishlist/teclado.jpg",
+            model: "Aula F75 Wireless",
+            price: 400,
+            image: "imagens/wishlist/teclado.png",
             status: "pendente",
-            note: "Só se quiser algo melhor de construção/teclas."
+            note: "Pra codar liso liso filho"
         },
         {
             id: "microfone",
-            name: "Microfone",
+            name: "A6V",
             category: "Áudio",
-            model: "USB (pra EAD/stream)",
-            price: 0,
-            image: "imagens/wishlist/microfone.jpg",
+            model: "Fifine A6V Ampligame",
+            price: 200,
+            image: "imagens/wishlist/microfone.png",
             status: "pendente",
-            note: "Pra sua voz não sair parecendo rádio de caminhão."
+            note: "Fala baixo nengue"
         },
         {
             id: "headset",
-            name: "Headset (Upgrade futuro)",
+            name: "Zeus X Pro",
             category: "Áudio",
-            model: "Opcional",
-            price: 0,
-            image: "imagens/wishlist/headset.jpg",
+            model: "Redragon H510-Pro Zeus",
+            price: 400,
+            image: "imagens/wishlist/headset.png",
             status: "pendente",
-            note: "Você já tem o Zeus X, então calma."
+            note: "Pra ouvir rock no talo"
         }
     ]
 };
