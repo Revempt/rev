@@ -17,6 +17,36 @@ function typeOutText(element, text, speed = 30) {
 
 const imageViewerStates = {};
 
+
+function triggerParticlesAtElement(element, action) {
+    if (!element || !window.ParticlesAPI) return;
+    const rect = element.getBoundingClientRect();
+    const x = rect.left + (rect.width / 2);
+    const y = rect.top + (rect.height / 2);
+
+    if (action === 'attract') {
+        window.ParticlesAPI.attractTo(x, y, 1, 360);
+    } else if (action === 'burst') {
+        window.ParticlesAPI.burst(x, y, 1);
+    }
+}
+
+function bindReactiveParticleEvents(selector) {
+    document.querySelectorAll(selector).forEach((element) => {
+        if (element.dataset.particlesBound === '1') return;
+        element.dataset.particlesBound = '1';
+
+        element.addEventListener('mouseenter', () => {
+            triggerParticlesAtElement(element, 'attract');
+        });
+
+        element.addEventListener('click', () => {
+            triggerParticlesAtElement(element, 'burst');
+        });
+    });
+}
+
+
 function ensureImageViewerModal(prefix) {
     const modalId = `${prefix}-modal`;
     if (document.getElementById(modalId)) return;
@@ -436,7 +466,8 @@ function renderGallery() {
     }, 0);
 
     // Renderizar galeria normalmente, mas com onclick para abrir o lightbox
-    return `<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">${staticData.gallery.map((src,idx) => `<div class="border-2 border-gray-800 hover:border-red-500 transition-colors cursor-pointer" onclick="openLightbox(${idx})"><img src="${src}" class="w-full h-auto object-cover" /></div>`).join('')}</div>`;
+    setTimeout(() => bindReactiveParticleEvents('.gallery-reactive-item'), 0);
+    return `<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">${staticData.gallery.map((src,idx) => `<div class="gallery-reactive-item border-2 border-gray-800 hover:border-red-500 transition-colors cursor-pointer" onclick="openLightbox(${idx})"><img src="${src}" class="w-full h-auto object-cover" /></div>`).join('')}</div>`;
 }
 
 function renderSystemStatus(t) {
@@ -605,7 +636,7 @@ function renderWishlist(t) {
         const badgeLabel = isAchieved ? t.achieved : t.pending;
 
         return `
-            <div class="bg-gray-900/50 border border-red-800/50 p-3 sm:p-4 flex flex-col sm:flex-row gap-3 sm:gap-4 ${cardClass}">
+            <div class="wishlist-reactive-card bg-gray-900/50 border border-red-800/50 p-3 sm:p-4 flex flex-col sm:flex-row gap-3 sm:gap-4 ${cardClass}">
                 <div class="wishlist-thumb flex-shrink-0 border border-gray-800 overflow-hidden bg-black/40">
                     <img src="${it.image}" alt="${it.name}" class="w-full h-full object-cover cursor-pointer" onclick="openWishlistLightbox(${idx})" />
                 </div>
@@ -634,6 +665,8 @@ function renderWishlist(t) {
             </div>
         `;
     }).join('');
+
+    setTimeout(() => bindReactiveParticleEvents('.wishlist-reactive-card, .gallery-reactive-item'), 0);
 
     return `
         <div>
