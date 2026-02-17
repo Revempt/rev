@@ -223,20 +223,20 @@ h1, h2, h3, button, h4, h5 {
 /* Mobile Lightbox Improvements */
 @media (max-width: 768px) {
     #affinity-lightbox-modal img,
-    #gallery-lightbox-modal img {
+    #lightbox-modal img {
         max-width: 95vw !important;
         max-height: 70vh !important;
     }
     #affinity-lightbox-close,
-    #gallery-lightbox-close {
+    #lightbox-close {
         top: 16px !important;
         right: 16px !important;
         font-size: 1.5rem !important;
     }
     #affinity-lightbox-prev,
     #affinity-lightbox-next,
-    #gallery-lightbox-prev,
-    #gallery-lightbox-next {
+    #lightbox-prev,
+    #lightbox-next {
         font-size: 2rem !important;
         left: 16px !important;
         right: 16px !important;
@@ -254,7 +254,7 @@ h1, h2, h3, button, h4, h5 {
 
 .wishlist-achieved {
     border-color: rgba(34, 197, 94, 0.35) !important;
-    box-shadow: 0 0 14px rgba(34, 197, 94, 0.14);
+    box-shadow: 0 0 14px rgba(34, 197, 94, 0.15);
 }
 
 .wishlist-pending {
@@ -270,35 +270,3 @@ h1, h2, h3, button, h4, h5 {
     border-color: rgba(250, 204, 21, 0.5);
     color: rgba(250, 204, 21, 1);
 }
-
-/* ===========================
-   WISHLIST STYLES
-   =========================== */
-
-.wishlist-bar {
-    transition: width 400ms ease;
-}
-
-/* Card quando conquistado */
-.wishlist-achieved {
-    border-color: rgba(34, 197, 94, 0.35) !important;
-    box-shadow: 0 0 14px rgba(34, 197, 94, 0.15);
-}
-
-/* Badge base */
-.wishlist-status-badge {
-    border-radius: 4px;
-    font-weight: bold;
-    letter-spacing: 0.5px;
-}
-
-/* Hover leve nos cards */
-.wishlist-card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.wishlist-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 0 18px rgba(255, 50, 50, 0.15);
-}
-
