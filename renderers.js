@@ -49,20 +49,44 @@ function renderProfile(t) {
             </div>
         </div>`;
 
+    const setupListHtml = `
+        <div class="setup-list-view grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            ${staticData.setup.map((item, index) => `
+                <div class="flex items-center gap-2 sm:gap-3 bg-gray-800/70 p-2 sm:p-3 border border-transparent">
+                    <i class="fas ${item.icon} text-red-500 w-4 sm:w-5 text-center"></i>
+                    <div class="min-w-0 flex-1">
+                        <p class="font-bold text-white text-xs truncate">${t.setup[index].label}</p>
+                        <p class="text-xs text-gray-400 truncate">${item.value}</p>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+
+    const blueprintSections = (staticData.setupBlueprint && staticData.setupBlueprint.sections) || [];
+    const setupBlueprintHtml = `
+        <div class="setup-blueprint-view" aria-label="Setup blueprint">
+            ${blueprintSections.map(section => `
+                <div class="setup-blueprint-section">
+                    <p class="setup-blueprint-title">${section.name}</p>
+                    <div class="setup-blueprint-slots">
+                        ${(section.slots || []).map(slot => `
+                            <div class="setup-blueprint-slot">
+                                <span class="setup-blueprint-label">${slot.label}</span>
+                                <span class="setup-blueprint-value">${slot.value}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+
     const setupHtml = `
         <div class="mt-4 lg:col-span-2 bg-gray-900/50 p-3 sm:p-4 border border-red-800/50">
             <p class="text-red-500 font-bold text-xs sm:text-sm uppercase tracking-widest mb-3 sm:mb-4">${t.setupTitle}</p>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                ${staticData.setup.map((item, index) => `
-                    <div class="flex items-center gap-2 sm:gap-3 bg-gray-800/70 p-2 sm:p-3 border border-transparent">
-                        <i class="fas ${item.icon} text-red-500 w-4 sm:w-5 text-center"></i>
-                        <div class="min-w-0 flex-1">
-                            <p class="font-bold text-white text-xs truncate">${t.setup[index].label}</p>
-                            <p class="text-xs text-gray-400 truncate">${item.value}</p>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
+            ${setupBlueprintHtml}
+            ${setupListHtml}
         </div>
     `;
 
@@ -361,6 +385,17 @@ function renderSystemStatus(t) {
    =========================== */
 function renderWishlist(t) {
     const items = staticData.wishlistItems || [];
+    const sortedItems = [...items].sort((a, b) => {
+        const aPending = a.status === 'pendente' ? 0 : 1;
+        const bPending = b.status === 'pendente' ? 0 : 1;
+        if (aPending !== bPending) return aPending - bPending;
+        const aPriority = Number(a.priority) || 5;
+        const bPriority = Number(b.priority) || 5;
+        if (aPriority !== bPriority) return aPriority - bPriority;
+        return (a.name || '').localeCompare(b.name || '');
+    });
+
+    const nextTarget = sortedItems.find(it => it.status === 'pendente');
 
     const total = items.reduce((acc, it) => acc + (Number(it.price) || 0), 0);
     const achievedTotal = items
@@ -385,17 +420,21 @@ function renderWishlist(t) {
             <div class="w-full bg-gray-800 border border-gray-700 h-3 sm:h-4 mt-3">
                 <div class="bg-red-600 h-full wishlist-bar" style="width:${progressPct}%;"></div>
             </div>
+            <div class="mt-3 border border-red-900/50 bg-black/30 p-2.5">
+                <p class="text-red-400 text-xs sm:text-sm uppercase tracking-wider">${t.nextTarget}</p>
+                <p class="text-gray-200 text-sm sm:text-base mt-1">${nextTarget ? `${nextTarget.name} (P${nextTarget.priority || 5})` : 'N/A'}</p>
+            </div>
         </div>
     `;
 
-    const cardsHtml = items.map(it => {
+    const cardsHtml = sortedItems.map(it => {
         const isAchieved = it.status === "conquistado";
 
         const badgeClass = isAchieved
             ? "text-green-400 border-green-500/50"
             : "text-yellow-400 border-yellow-500/50";
 
-        const cardClass = isAchieved ? "wishlist-achieved" : "";
+        const cardClass = isAchieved ? "wishlist-achieved" : "wishlist-pending";
 
         const badgeLabel = isAchieved ? t.achieved : t.pending;
 
@@ -418,12 +457,13 @@ function renderWishlist(t) {
                         </span>
                     </div>
 
-                    <div class="mt-2">
+                    <div class="mt-2 flex items-center justify-between gap-2">
                         <p class="text-gray-300 text-xs sm:text-sm">
                             <span class="text-red-400 font-bold">R$ ${it.price}</span>
                         </p>
-                        ${it.note ? `<p class="text-gray-500 text-xs mt-1">${it.note}</p>` : ''}
+                        <span class="text-[11px] sm:text-xs px-2 py-1 border border-red-800/60 text-red-300">${t.priority}: ${it.priority || 5}</span>
                     </div>
+                    ${it.note ? `<p class="text-gray-500 text-xs mt-1">${it.note}</p>` : ''}
                 </div>
             </div>
         `;
@@ -435,6 +475,21 @@ function renderWishlist(t) {
             <div class="grid grid-cols-1 gap-3 sm:gap-4">
                 ${cardsHtml}
             </div>
+        </div>
+    `;
+}
+
+
+function renderDiagnostics() {
+    return `
+        <div class="bg-gray-900/50 p-3 sm:p-4 border border-red-800/50">
+            <p class="text-gray-400 text-sm">Carregando diagnóstico...</p>
+            <div id="diagnostics-container" class="mt-3 space-y-3"></div>
+            <div class="mt-4 flex flex-wrap gap-2">
+                <button id="diag-clear-cache" class="px-3 py-2 border border-red-800/70 text-red-300 hover:bg-red-500/10">Limpar cache</button>
+                <button id="diag-reload" class="px-3 py-2 border border-red-800/70 text-red-300 hover:bg-red-500/10">Recarregar/Atualizar</button>
+            </div>
+            <p class="text-xs text-gray-500 mt-2">Se atualização não aplicar, tente hard reload (Ctrl/Cmd + Shift + R).</p>
         </div>
     `;
 }
