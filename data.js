@@ -245,7 +245,7 @@ const languageData = {
                 "Eu tenho 3k+ de horas jogadas de Fortnite.",
                 "Meu primeiro console foi um Xbox One",
                 "Prefiro jogos com narrativas profundas e que me toquem emocionalmente",
-                "Curto Rock alternaltivo, Metal e vários outros estilos que eu chamo de 'quebrar tudo'",
+                "Curto Rock alternativo, Metal e vários outros estilos que eu chamo de 'quebrar tudo'",
                 "Às vezes escuto a mesma música por dias sem parar",
                 "Tenho vontade de aprender a tocar algum instrumento musical",
                 "Tenho perda auditiva grave, resumindo, quase surdo",
