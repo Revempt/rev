@@ -15,6 +15,138 @@ function typeOutText(element, text, speed = 30) {
     }, speed);
 }
 
+const imageViewerStates = {};
+
+function ensureImageViewerModal(prefix) {
+    const modalId = `${prefix}-modal`;
+    if (document.getElementById(modalId)) return;
+
+    const modal = document.createElement('div');
+    modal.id = modalId;
+    modal.style.display = 'none';
+    modal.innerHTML = `
+        <div id="${prefix}-backdrop" class="lightbox-backdrop">
+            <div class="lightbox-toolbar">
+                <button id="${prefix}-reset" class="lightbox-tool-btn" type="button">Reset</button>
+                <button id="${prefix}-fit" class="lightbox-tool-btn" type="button">Ajustar</button>
+                <button id="${prefix}-full" class="lightbox-tool-btn" type="button">100%</button>
+            </div>
+            <button id="${prefix}-close" class="lightbox-close" type="button">&times;</button>
+            <button id="${prefix}-prev" class="lightbox-nav-btn lightbox-nav-prev" type="button">&#8592;</button>
+            <div id="${prefix}-viewport" class="lightbox-viewport">
+                <img id="${prefix}-img" src="" class="lightbox-image" alt="" draggable="false" />
+            </div>
+            <button id="${prefix}-next" class="lightbox-nav-btn lightbox-nav-next" type="button">&#8594;</button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
+function setupImageViewerControls(prefix) {
+    const modal = document.getElementById(`${prefix}-modal`);
+    if (!modal || modal.viewerReady) return;
+    modal.viewerReady = true;
+
+    const img = document.getElementById(`${prefix}-img`);
+    const viewport = document.getElementById(`${prefix}-viewport`);
+    const resetBtn = document.getElementById(`${prefix}-reset`);
+    const fitBtn = document.getElementById(`${prefix}-fit`);
+    const fullBtn = document.getElementById(`${prefix}-full`);
+
+    const state = imageViewerStates[prefix] = {
+        scale: 1,
+        tx: 0,
+        ty: 0,
+        dragging: false,
+        pointerId: null,
+        startX: 0,
+        startY: 0,
+        startTx: 0,
+        startTy: 0
+    };
+
+    const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+
+    const applyTransform = () => {
+        img.style.transform = `translate(${state.tx}px, ${state.ty}px) scale(${state.scale})`;
+        viewport.classList.toggle('is-dragging', state.dragging);
+        viewport.classList.toggle('is-zoomed', state.scale > 1.001);
+    };
+
+    const centerImage = () => {
+        state.tx = 0;
+        state.ty = 0;
+        applyTransform();
+    };
+
+    const fitImage = () => {
+        if (!img.naturalWidth || !img.naturalHeight) return;
+        const pad = 24;
+        const maxW = Math.max(1, viewport.clientWidth - pad);
+        const maxH = Math.max(1, viewport.clientHeight - pad);
+        const fitScale = Math.min(maxW / img.naturalWidth, maxH / img.naturalHeight);
+        state.scale = clamp(fitScale || 1, 1, 4);
+        centerImage();
+    };
+
+    const resetImage = () => {
+        state.scale = 1;
+        centerImage();
+    };
+
+    img.addEventListener('load', fitImage);
+    resetBtn.addEventListener('click', resetImage);
+    fitBtn.addEventListener('click', fitImage);
+    fullBtn.addEventListener('click', () => {
+        state.scale = 1;
+        centerImage();
+    });
+
+    viewport.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const step = e.deltaY > 0 ? -0.12 : 0.12;
+        state.scale = clamp(state.scale + step, 1, 4);
+        applyTransform();
+    }, { passive: false });
+
+    viewport.addEventListener('pointerdown', (e) => {
+        if (e.button !== 0 && e.pointerType === 'mouse') return;
+        state.dragging = true;
+        state.pointerId = e.pointerId;
+        state.startX = e.clientX;
+        state.startY = e.clientY;
+        state.startTx = state.tx;
+        state.startTy = state.ty;
+        viewport.setPointerCapture(e.pointerId);
+        applyTransform();
+    });
+
+    viewport.addEventListener('pointermove', (e) => {
+        if (!state.dragging || e.pointerId !== state.pointerId) return;
+        state.tx = state.startTx + (e.clientX - state.startX);
+        state.ty = state.startTy + (e.clientY - state.startY);
+        applyTransform();
+    });
+
+    const endDrag = (e) => {
+        if (!state.dragging || e.pointerId !== state.pointerId) return;
+        state.dragging = false;
+        if (viewport.hasPointerCapture(e.pointerId)) {
+            viewport.releasePointerCapture(e.pointerId);
+        }
+        applyTransform();
+    };
+
+    viewport.addEventListener('pointerup', endDrag);
+    viewport.addEventListener('pointercancel', endDrag);
+    window.addEventListener('resize', () => {
+        if (modal.style.display === 'block') fitImage();
+    });
+
+    modal.fitViewerImage = fitImage;
+    modal.resetViewerImage = resetImage;
+}
+
 function renderProfile(t) {
     const gridFieldsHtml = t.fields.map((field, index) => `
         <div class="bg-gray-900/50 p-3 sm:p-4 border border-red-800/50 flex items-center gap-3 sm:gap-4">
@@ -134,29 +266,19 @@ function renderProfile(t) {
 function renderAffinities(t) {
     let activeCategoryIndex = 0;
     // Lightbox para afinidades (compartilhado com galeria)
-    if (!document.getElementById('affinity-lightbox-modal')) {
-        const modal = document.createElement('div');
-        modal.id = 'affinity-lightbox-modal';
-        modal.style.display = 'none';
-        modal.innerHTML = `
-            <div id="affinity-lightbox-backdrop" style="position:fixed;z-index:50;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;">
-                <button id="affinity-lightbox-close" style="position:absolute;top:16px;right:16px;font-size:1.5rem;color:#fff;background:none;border:none;cursor:pointer;z-index:60;">&times;</button>
-                <button id="affinity-lightbox-prev" style="position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:2rem;color:#fff;background:none;border:none;cursor:pointer;z-index:60;">&#8592;</button>
-                <img id="affinity-lightbox-img" src="" style="max-width:95vw;max-height:70vh;border:4px solid #a00;box-shadow:0 0 32px #a00;object-fit:contain;background:#111;" />
-                <button id="affinity-lightbox-next" style="position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:2rem;color:#fff;background:none;border:none;cursor:pointer;z-index:60;">&#8594;</button>
-            </div>
-        `;
-        document.body.appendChild(modal);
-    }
+    ensureImageViewerModal('affinity-lightbox');
+    setupImageViewerControls('affinity-lightbox');
     // Função para abrir o lightbox de afinidades
     window.openAffinityLightbox = function(idx) {
         const modal = document.getElementById('affinity-lightbox-modal');
         const img = document.getElementById('affinity-lightbox-img');
         const items = staticData.affinities[activeCategoryIndex].items.filter(item => item.image);
         img.src = items[idx].image;
+        img.alt = items[idx].name || 'Imagem de afinidade';
         modal.style.display = 'block';
         modal.setAttribute('data-idx', idx);
         modal.setAttribute('data-cat', activeCategoryIndex);
+        modal.fitViewerImage();
     };
     // Função para fechar
     window.closeAffinityLightbox = function() {
@@ -169,8 +291,11 @@ function renderAffinities(t) {
         const cat = parseInt(modal.getAttribute('data-cat'));
         const items = staticData.affinities[cat].items.filter(item => item.image);
         idx = (idx + dir + items.length) % items.length;
-        document.getElementById('affinity-lightbox-img').src = items[idx].image;
+        const img = document.getElementById('affinity-lightbox-img');
+        img.src = items[idx].image;
+        img.alt = items[idx].name || 'Imagem de afinidade';
         modal.setAttribute('data-idx', idx);
+        modal.fitViewerImage();
     };
     // Adicionar listeners (uma vez só)
     setTimeout(() => {
@@ -265,28 +390,18 @@ function renderRecords(t) {
 
 function renderGallery() {
     // Lightbox container (inserido apenas uma vez)
-    if (!document.getElementById('lightbox-modal')) {
-        const modal = document.createElement('div');
-        modal.id = 'lightbox-modal';
-        modal.style.display = 'none';
-        modal.innerHTML = `
-            <div id="lightbox-backdrop" style="position:fixed;z-index:50;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;">
-                <button id="lightbox-close" style="position:absolute;top:16px;right:16px;font-size:1.5rem;color:#fff;background:none;border:none;cursor:pointer;z-index:60;">&times;</button>
-                <button id="lightbox-prev" style="position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:2rem;color:#fff;background:none;border:none;cursor:pointer;z-index:60;">&#8592;</button>
-                <img id="lightbox-img" src="" style="max-width:95vw;max-height:70vh;border:4px solid #a00;box-shadow:0 0 32px #a00;object-fit:contain;background:#111;" />
-                <button id="lightbox-next" style="position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:2rem;color:#fff;background:none;border:none;cursor:pointer;z-index:60;">&#8594;</button>
-            </div>
-        `;
-        document.body.appendChild(modal);
-    }
+    ensureImageViewerModal('lightbox');
+    setupImageViewerControls('lightbox');
 
     // Função para abrir o lightbox
     window.openLightbox = function(idx) {
         const modal = document.getElementById('lightbox-modal');
         const img = document.getElementById('lightbox-img');
         img.src = staticData.gallery[idx];
+        img.alt = 'Imagem da galeria';
         modal.style.display = 'block';
         modal.setAttribute('data-idx', idx);
+        modal.fitViewerImage();
     };
     // Função para fechar
     window.closeLightbox = function() {
@@ -299,6 +414,7 @@ function renderGallery() {
         idx = (idx + dir + staticData.gallery.length) % staticData.gallery.length;
         document.getElementById('lightbox-img').src = staticData.gallery[idx];
         modal.setAttribute('data-idx', idx);
+        modal.fitViewerImage();
     };
     // Adicionar listeners (uma vez só)
     setTimeout(() => {
@@ -409,6 +525,52 @@ function renderWishlist(t) {
     const achievedCount = items.filter(it => it.status === 'conquistado').length;
     const progressPct = items.length ? Math.round((achievedCount / items.length) * 100) : 0;
 
+    ensureImageViewerModal('wishlist-lightbox');
+    setupImageViewerControls('wishlist-lightbox');
+
+    window.openWishlistLightbox = function(idx) {
+        const modal = document.getElementById('wishlist-lightbox-modal');
+        const img = document.getElementById('wishlist-lightbox-img');
+        img.src = sortedItems[idx].image;
+        img.alt = sortedItems[idx].name || 'Imagem da wishlist';
+        modal.style.display = 'block';
+        modal.setAttribute('data-idx', idx);
+        modal.fitViewerImage();
+    };
+
+    window.closeWishlistLightbox = function() {
+        document.getElementById('wishlist-lightbox-modal').style.display = 'none';
+    };
+
+    window.wishlistLightboxNav = function(dir) {
+        const modal = document.getElementById('wishlist-lightbox-modal');
+        let idx = parseInt(modal.getAttribute('data-idx'));
+        idx = (idx + dir + sortedItems.length) % sortedItems.length;
+        const img = document.getElementById('wishlist-lightbox-img');
+        img.src = sortedItems[idx].image;
+        img.alt = sortedItems[idx].name || 'Imagem da wishlist';
+        modal.setAttribute('data-idx', idx);
+        modal.fitViewerImage();
+    };
+
+    setTimeout(() => {
+        const modal = document.getElementById('wishlist-lightbox-modal');
+        if (modal && !modal.hasListeners) {
+            modal.hasListeners = true;
+            document.getElementById('wishlist-lightbox-close').onclick = window.closeWishlistLightbox;
+            document.getElementById('wishlist-lightbox-backdrop').onclick = (e) => { if (e.target.id === 'wishlist-lightbox-backdrop') window.closeWishlistLightbox(); };
+            document.getElementById('wishlist-lightbox-prev').onclick = (e) => { e.stopPropagation(); window.wishlistLightboxNav(-1); };
+            document.getElementById('wishlist-lightbox-next').onclick = (e) => { e.stopPropagation(); window.wishlistLightboxNav(1); };
+            document.addEventListener('keydown', (e) => {
+                if (modal.style.display === 'block') {
+                    if (e.key === 'Escape') window.closeWishlistLightbox();
+                    if (e.key === 'ArrowLeft') window.wishlistLightboxNav(-1);
+                    if (e.key === 'ArrowRight') window.wishlistLightboxNav(1);
+                }
+            });
+        }
+    }, 0);
+
     const summaryHtml = `
         <div class="bg-gray-900/50 p-3 sm:p-4 border border-red-800/50 mb-4">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
@@ -431,7 +593,7 @@ function renderWishlist(t) {
         </div>
     `;
 
-    const cardsHtml = sortedItems.map(it => {
+    const cardsHtml = sortedItems.map((it, idx) => {
         const isAchieved = it.status === "conquistado";
 
         const badgeClass = isAchieved
@@ -445,7 +607,7 @@ function renderWishlist(t) {
         return `
             <div class="bg-gray-900/50 border border-red-800/50 p-3 sm:p-4 flex flex-col sm:flex-row gap-3 sm:gap-4 ${cardClass}">
                 <div class="wishlist-thumb flex-shrink-0 border border-gray-800 overflow-hidden bg-black/40">
-                    <img src="${it.image}" alt="${it.name}" class="w-full h-full object-cover" />
+                    <img src="${it.image}" alt="${it.name}" class="w-full h-full object-cover cursor-pointer" onclick="openWishlistLightbox(${idx})" />
                 </div>
 
                 <div class="min-w-0 flex-1">
