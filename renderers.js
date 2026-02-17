@@ -400,19 +400,18 @@ function renderWishlist(t) {
         const badgeLabel = isAchieved ? t.achieved : t.pending;
 
         return `
-            <div class="bg-gray-900/50 border border-red-800/50 p-3 sm:p-4 flex gap-3 sm:gap-4 ${cardClass}">
-                <div class="w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 border border-gray-800 overflow-hidden bg-black/40">
+            <div class="bg-gray-900/50 border border-red-800/50 p-3 sm:p-4 flex flex-col sm:flex-row gap-3 sm:gap-4 ${cardClass}">
+                <div class="wishlist-thumb flex-shrink-0 border border-gray-800 overflow-hidden bg-black/40">
                     <img src="${it.image}" alt="${it.name}" class="w-full h-full object-cover" />
+                    <div class="wishlist-thumb-title">${it.name}</div>
                 </div>
 
                 <div class="min-w-0 flex-1">
                     <div class="flex items-start justify-between gap-3">
                         <div class="min-w-0">
-                            <p class="text-white font-bold text-sm sm:text-base truncate">
-                                ${it.name}
-                                <span class="text-gray-400 font-normal">(${it.category})</span>
-                            </p>
-                            <p class="text-gray-400 text-xs sm:text-sm truncate">${it.model || ''}</p>
+                            <p class="text-white font-bold text-sm sm:text-base truncate">${it.name}</p>
+                            <p class="text-gray-400 text-xs sm:text-sm truncate">${it.category}</p>
+                            <p class="text-gray-500 text-xs sm:text-sm truncate">${it.model || ''}</p>
                         </div>
 
                         <span class="text-xs sm:text-sm px-2 py-1 border ${badgeClass}">
