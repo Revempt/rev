@@ -32,6 +32,7 @@ function renderApp() {
 
         // ✅ NOVA SEÇÃO: WISHLIST
         case 'wishlist': contentHtml = renderWishlist(t.wishlist); break;
+        case 'diagnostics': contentHtml = renderDiagnostics(); break;
     }
 
     contentWindow.innerHTML = `<h2 class="text-xl sm:text-2xl text-red-500 mb-4 sm:mb-6 tracking-widest text-glow">${t[state.activeSection].title}</h2>${contentHtml}`;
@@ -46,6 +47,101 @@ function renderApp() {
     `).join('');
 
     addEventListeners();
+    if (state.activeSection === 'diagnostics') {
+        updateDiagnosticsPanel();
+    }
+}
+
+
+function formatBytes(value) {
+    if (!Number.isFinite(value)) return 'N/A';
+    const units = ['B', 'KB', 'MB', 'GB'];
+    let size = value;
+    let unit = 0;
+    while (size >= 1024 && unit < units.length - 1) {
+        size /= 1024;
+        unit += 1;
+    }
+    return `${size.toFixed(size >= 10 || unit === 0 ? 0 : 1)} ${units[unit]}`;
+}
+
+async function updateDiagnosticsPanel() {
+    if (state.activeSection !== 'diagnostics') return;
+    const container = document.getElementById('diagnostics-container');
+    if (!container) return;
+
+    const rows = [];
+    const swSupported = 'serviceWorker' in navigator;
+    let swRegistered = 'N/A';
+    if (swSupported) {
+        try {
+            const reg = await navigator.serviceWorker.getRegistration();
+            swRegistered = reg ? 'Registrado' : 'Não registrado';
+        } catch {
+            swRegistered = 'Erro ao consultar';
+        }
+    }
+    rows.push({ label: 'Service Worker - suporte', value: swSupported ? 'Suportado' : 'Não suportado' });
+    rows.push({ label: 'Service Worker - registro', value: swRegistered });
+    rows.push({ label: 'Service Worker - controle da página', value: navigator.serviceWorker && navigator.serviceWorker.controller ? 'Controlando' : 'Sem controle' });
+    rows.push({ label: 'Conectividade', value: navigator.onLine ? 'Online' : 'Offline' });
+
+    if (navigator.storage && navigator.storage.estimate) {
+        try {
+            const estimate = await navigator.storage.estimate();
+            rows.push({ label: 'Storage usado', value: formatBytes(estimate.usage) });
+            rows.push({ label: 'Storage quota', value: formatBytes(estimate.quota) });
+        } catch {
+            rows.push({ label: 'Storage estimate', value: 'Erro ao consultar' });
+        }
+    } else {
+        rows.push({ label: 'Storage estimate', value: 'API indisponível neste navegador' });
+    }
+
+    if ('caches' in window) {
+        try {
+            const keys = await caches.keys();
+            const details = await Promise.all(keys.map(async key => {
+                try {
+                    const cache = await caches.open(key);
+                    const entries = await cache.keys();
+                    return `${key} (${entries.length} itens)`;
+                } catch {
+                    return `${key} (itens: N/A)`;
+                }
+            }));
+            rows.push({ label: 'Caches', value: details.length ? details.join(', ') : 'Nenhum cache encontrado' });
+        } catch {
+            rows.push({ label: 'Caches', value: 'Erro ao consultar caches' });
+        }
+    } else {
+        rows.push({ label: 'Caches', value: 'Cache API não suportada' });
+    }
+
+    try {
+        const response = await fetch('./build-info.json', { cache: 'no-store' });
+        if (response.ok) {
+            const info = await response.json();
+            rows.push({ label: 'Build/versão', value: info.version || info.build || JSON.stringify(info) });
+        } else {
+            rows.push({ label: 'Build/versão', value: 'N/A' });
+        }
+    } catch {
+        rows.push({ label: 'Build/versão', value: 'N/A' });
+    }
+
+    container.innerHTML = rows.map(row => `
+        <div class="border border-red-900/40 bg-black/30 px-3 py-2">
+            <p class="text-red-400 text-xs uppercase tracking-wider">${row.label}</p>
+            <p class="text-gray-200 text-sm break-words">${row.value}</p>
+        </div>
+    `).join('');
+}
+
+async function clearAllCaches() {
+    if (!('caches' in window)) return;
+    const keys = await caches.keys();
+    await Promise.all(keys.map(key => caches.delete(key)));
 }
 
 // --- GESTORES DE EVENTOS ---
@@ -69,6 +165,21 @@ function addEventListeners() {
             loadLanguage(button.dataset.lang);
         });
     });
+
+    const clearCacheBtn = document.getElementById('diag-clear-cache');
+    if (clearCacheBtn) {
+        clearCacheBtn.addEventListener('click', async () => {
+            await clearAllCaches();
+            updateDiagnosticsPanel();
+        });
+    }
+
+    const reloadBtn = document.getElementById('diag-reload');
+    if (reloadBtn) {
+        reloadBtn.addEventListener('click', () => {
+            location.reload();
+        });
+    }
 }
 
 // --- FUNÇÕES DO MENU MOBILE ---
@@ -174,6 +285,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Inicializar sistema de partículas
     initParticles();
+
+    window.addEventListener('online', updateDiagnosticsPanel);
+    window.addEventListener('offline', updateDiagnosticsPanel);
 
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
