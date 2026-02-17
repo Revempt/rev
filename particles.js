@@ -43,13 +43,136 @@ class Particle {
             }
         }
         
-        this.x += this.directionX;
-        this.y += this.directionY;
+        applyAttractorForce(this);
+
+        const maxSpeed = currentSettings.maxSpeed;
+        const speedMagnitude = Math.hypot(this.directionX, this.directionY);
+        if (speedMagnitude > maxSpeed && speedMagnitude > 0) {
+            const clampRatio = maxSpeed / speedMagnitude;
+            this.directionX *= clampRatio;
+            this.directionY *= clampRatio;
+        }
+
+        this.x += this.directionX * currentSettings.speed;
+        this.y += this.directionY * currentSettings.speed;
         this.draw();
     }
 }
 
 let canvas, ctx, particlesArray, mouse;
+let currentSettings, targetSettings;
+let activeAttractor = null;
+let lastAttractCall = 0;
+
+const baseSettings = {
+    densityDivisor: 9000,
+    speed: 1,
+    connectDistance: 170,
+    maxSpeed: 0.7
+};
+
+const modeSettings = {
+    default: { speed: 1, connectDistance: 170, densityDivisor: 9000, maxSpeed: 0.7 },
+    profile: { speed: 0.92, connectDistance: 180, densityDivisor: 9400, maxSpeed: 0.66 },
+    wishlist: { speed: 1.02, connectDistance: 165, densityDivisor: 9000, maxSpeed: 0.72 },
+    gallery: { speed: 1.08, connectDistance: 155, densityDivisor: 8600, maxSpeed: 0.78 },
+    records: { speed: 0.88, connectDistance: 185, densityDivisor: 9800, maxSpeed: 0.64 }
+};
+
+function cloneSettings(settings) {
+    return { ...settings };
+}
+
+function setMode(sectionName) {
+    const mode = modeSettings[sectionName] || modeSettings.default;
+    targetSettings = cloneSettings(mode);
+}
+
+function attractTo(x, y, strength = 1, duration = 400) {
+    const now = performance.now();
+    if (now - lastAttractCall < 80) return;
+    lastAttractCall = now;
+
+    activeAttractor = {
+        x,
+        y,
+        strength,
+        expiresAt: now + Math.max(120, duration)
+    };
+}
+
+function burst(x, y, intensity = 1) {
+    if (!particlesArray || !particlesArray.length) return;
+    const radius = 150;
+    const maxBoost = 0.9 * Math.max(0.5, intensity);
+
+    for (let i = 0; i < particlesArray.length; i++) {
+        const particle = particlesArray[i];
+        const dx = particle.x - x;
+        const dy = particle.y - y;
+        const distance = Math.hypot(dx, dy);
+
+        if (distance > radius) continue;
+
+        const distanceRatio = 1 - (distance / radius);
+        const baseAngle = distance > 0 ? Math.atan2(dy, dx) : Math.random() * Math.PI * 2;
+        const boost = maxBoost * distanceRatio;
+
+        particle.directionX += Math.cos(baseAngle) * boost;
+        particle.directionY += Math.sin(baseAngle) * boost;
+    }
+}
+
+function applyAttractorForce(particle) {
+    if (!activeAttractor) return;
+
+    const now = performance.now();
+    if (now > activeAttractor.expiresAt) {
+        activeAttractor = null;
+        return;
+    }
+
+    const dx = activeAttractor.x - particle.x;
+    const dy = activeAttractor.y - particle.y;
+    const distance = Math.hypot(dx, dy);
+    const range = 180;
+    if (distance === 0 || distance > range) return;
+
+    const force = 0.018 * activeAttractor.strength * (1 - (distance / range));
+    particle.directionX += (dx / distance) * force;
+    particle.directionY += (dy / distance) * force;
+}
+
+function updateSettingsSmoothly() {
+    if (!currentSettings || !targetSettings) return;
+    const easing = 0.06;
+    Object.keys(targetSettings).forEach((key) => {
+        currentSettings[key] += (targetSettings[key] - currentSettings[key]) * easing;
+    });
+}
+
+function getTargetParticleCount() {
+    return Math.max(24, Math.floor((canvas.height * canvas.width) / currentSettings.densityDivisor));
+}
+
+function reconcileParticleCount() {
+    const targetCount = getTargetParticleCount();
+    if (particlesArray.length < targetCount) {
+        particlesArray.push(createParticle());
+    } else if (particlesArray.length > targetCount) {
+        particlesArray.pop();
+    }
+}
+
+function createParticle() {
+    let size = (Math.random() * 2) + 1;
+    let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
+    let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
+    let directionX = (Math.random() * .4) - .2;
+    let directionY = (Math.random() * .4) - .2;
+    let color = 'rgba(255, 0, 0, 0.5)';
+    return new Particle(x, y, directionX, directionY, size, color);
+}
 
 function initParticles() {
     canvas = document.getElementById('particle-canvas');
@@ -63,6 +186,16 @@ function initParticles() {
         y: null,
         radius: (canvas.height/100) * (canvas.width/100)
     };
+
+    currentSettings = cloneSettings(baseSettings);
+    targetSettings = cloneSettings(baseSettings);
+
+    window.ParticlesAPI = {
+        setMode,
+        attractTo,
+        burst
+    };
+
 
     window.addEventListener('mousemove', (event) => {
         mouse.x = event.x;
@@ -87,17 +220,10 @@ function initParticles() {
 
 function init() {
     particlesArray = [];
-    let numberOfParticles = (canvas.height * canvas.width) / 9000;
+    let numberOfParticles = getTargetParticleCount();
     
     for (let i = 0; i < numberOfParticles; i++) {
-        let size = (Math.random() * 2) + 1;
-        let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
-        let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
-        let directionX = (Math.random() * .4) - .2;
-        let directionY = (Math.random() * .4) - .2;
-        let color = 'rgba(255, 0, 0, 0.5)';
-        
-        particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
+        particlesArray.push(createParticle());
     }
 }
 
@@ -109,7 +235,7 @@ function connect() {
             let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x))
             + ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
             
-            if (distance < (canvas.width/7) * (canvas.height/7)) {
+            if (distance < currentSettings.connectDistance * currentSettings.connectDistance) {
                 opacityValue = 1 - (distance/20000);
                 ctx.strokeStyle = `rgba(255, 0, 0, ${opacityValue})`;
                 ctx.lineWidth = 1;
@@ -125,6 +251,9 @@ function connect() {
 function animate() {
     requestAnimationFrame(animate);
     ctx.clearRect(0, 0, innerWidth, innerHeight);
+
+    updateSettingsSmoothly();
+    reconcileParticleCount();
     
     for (let i = 0; i < particlesArray.length; i++) {
         particlesArray[i].update();
