@@ -47,6 +47,7 @@ function renderApp() {
     `).join('');
 
     addEventListeners();
+    window.ParticlesAPI?.setMode(state.activeSection);
     if (state.activeSection === 'diagnostics') {
         updateDiagnosticsPanel();
     }
@@ -150,6 +151,7 @@ function addEventListeners() {
         button.addEventListener('click', () => {
             soundManager.playClick();
             state.activeSection = button.dataset.section;
+            window.ParticlesAPI?.setMode(state.activeSection);
             soundManager.playLoad();
             renderApp();
             // Fechar menu mobile após clicar
