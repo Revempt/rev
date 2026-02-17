@@ -15,9 +15,6 @@ function typeOutText(element, text, speed = 30) {
     }, speed);
 }
 
-const imageViewerStates = {};
-
-
 function triggerParticlesAtElement(element, action) {
     if (!element || !window.ParticlesAPI) return;
     const rect = element.getBoundingClientRect();
@@ -56,14 +53,9 @@ function ensureImageViewerModal(prefix) {
     modal.style.display = 'none';
     modal.innerHTML = `
         <div id="${prefix}-backdrop" class="lightbox-backdrop">
-            <div class="lightbox-toolbar">
-                <button id="${prefix}-reset" class="lightbox-tool-btn" type="button">Reset</button>
-                <button id="${prefix}-fit" class="lightbox-tool-btn" type="button">Ajustar</button>
-                <button id="${prefix}-full" class="lightbox-tool-btn" type="button">100%</button>
-            </div>
             <button id="${prefix}-close" class="lightbox-close" type="button">&times;</button>
             <button id="${prefix}-prev" class="lightbox-nav-btn lightbox-nav-prev" type="button">&#8592;</button>
-            <div id="${prefix}-viewport" class="lightbox-viewport">
+            <div id="${prefix}-stage" class="lightbox-stage">
                 <img id="${prefix}-img" src="" class="lightbox-image" alt="" draggable="false" />
             </div>
             <button id="${prefix}-next" class="lightbox-nav-btn lightbox-nav-next" type="button">&#8594;</button>
@@ -76,105 +68,6 @@ function setupImageViewerControls(prefix) {
     const modal = document.getElementById(`${prefix}-modal`);
     if (!modal || modal.viewerReady) return;
     modal.viewerReady = true;
-
-    const img = document.getElementById(`${prefix}-img`);
-    const viewport = document.getElementById(`${prefix}-viewport`);
-    const resetBtn = document.getElementById(`${prefix}-reset`);
-    const fitBtn = document.getElementById(`${prefix}-fit`);
-    const fullBtn = document.getElementById(`${prefix}-full`);
-
-    const state = imageViewerStates[prefix] = {
-        scale: 1,
-        tx: 0,
-        ty: 0,
-        dragging: false,
-        pointerId: null,
-        startX: 0,
-        startY: 0,
-        startTx: 0,
-        startTy: 0
-    };
-
-    const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
-
-    const applyTransform = () => {
-        img.style.transform = `translate(${state.tx}px, ${state.ty}px) scale(${state.scale})`;
-        viewport.classList.toggle('is-dragging', state.dragging);
-        viewport.classList.toggle('is-zoomed', state.scale > 1.001);
-    };
-
-    const centerImage = () => {
-        state.tx = 0;
-        state.ty = 0;
-        applyTransform();
-    };
-
-    const fitImage = () => {
-        if (!img.naturalWidth || !img.naturalHeight) return;
-        const pad = 24;
-        const maxW = Math.max(1, viewport.clientWidth - pad);
-        const maxH = Math.max(1, viewport.clientHeight - pad);
-        const fitScale = Math.min(maxW / img.naturalWidth, maxH / img.naturalHeight);
-        state.scale = clamp(fitScale || 1, 1, 4);
-        centerImage();
-    };
-
-    const resetImage = () => {
-        state.scale = 1;
-        centerImage();
-    };
-
-    img.addEventListener('load', fitImage);
-    resetBtn.addEventListener('click', resetImage);
-    fitBtn.addEventListener('click', fitImage);
-    fullBtn.addEventListener('click', () => {
-        state.scale = 1;
-        centerImage();
-    });
-
-    viewport.addEventListener('wheel', (e) => {
-        e.preventDefault();
-        const step = e.deltaY > 0 ? -0.12 : 0.12;
-        state.scale = clamp(state.scale + step, 1, 4);
-        applyTransform();
-    }, { passive: false });
-
-    viewport.addEventListener('pointerdown', (e) => {
-        if (e.button !== 0 && e.pointerType === 'mouse') return;
-        state.dragging = true;
-        state.pointerId = e.pointerId;
-        state.startX = e.clientX;
-        state.startY = e.clientY;
-        state.startTx = state.tx;
-        state.startTy = state.ty;
-        viewport.setPointerCapture(e.pointerId);
-        applyTransform();
-    });
-
-    viewport.addEventListener('pointermove', (e) => {
-        if (!state.dragging || e.pointerId !== state.pointerId) return;
-        state.tx = state.startTx + (e.clientX - state.startX);
-        state.ty = state.startTy + (e.clientY - state.startY);
-        applyTransform();
-    });
-
-    const endDrag = (e) => {
-        if (!state.dragging || e.pointerId !== state.pointerId) return;
-        state.dragging = false;
-        if (viewport.hasPointerCapture(e.pointerId)) {
-            viewport.releasePointerCapture(e.pointerId);
-        }
-        applyTransform();
-    };
-
-    viewport.addEventListener('pointerup', endDrag);
-    viewport.addEventListener('pointercancel', endDrag);
-    window.addEventListener('resize', () => {
-        if (modal.style.display === 'block') fitImage();
-    });
-
-    modal.fitViewerImage = fitImage;
-    modal.resetViewerImage = resetImage;
 }
 
 function renderProfile(t) {
@@ -308,7 +201,6 @@ function renderAffinities(t) {
         modal.style.display = 'block';
         modal.setAttribute('data-idx', idx);
         modal.setAttribute('data-cat', activeCategoryIndex);
-        modal.fitViewerImage();
     };
     // Função para fechar
     window.closeAffinityLightbox = function() {
@@ -325,7 +217,6 @@ function renderAffinities(t) {
         img.src = items[idx].image;
         img.alt = items[idx].name || 'Imagem de afinidade';
         modal.setAttribute('data-idx', idx);
-        modal.fitViewerImage();
     };
     // Adicionar listeners (uma vez só)
     setTimeout(() => {
@@ -431,7 +322,6 @@ function renderGallery() {
         img.alt = 'Imagem da galeria';
         modal.style.display = 'block';
         modal.setAttribute('data-idx', idx);
-        modal.fitViewerImage();
     };
     // Função para fechar
     window.closeLightbox = function() {
@@ -444,7 +334,6 @@ function renderGallery() {
         idx = (idx + dir + staticData.gallery.length) % staticData.gallery.length;
         document.getElementById('lightbox-img').src = staticData.gallery[idx];
         modal.setAttribute('data-idx', idx);
-        modal.fitViewerImage();
     };
     // Adicionar listeners (uma vez só)
     setTimeout(() => {
@@ -566,7 +455,6 @@ function renderWishlist(t) {
         img.alt = sortedItems[idx].name || 'Imagem da wishlist';
         modal.style.display = 'block';
         modal.setAttribute('data-idx', idx);
-        modal.fitViewerImage();
     };
 
     window.closeWishlistLightbox = function() {
@@ -581,7 +469,6 @@ function renderWishlist(t) {
         img.src = sortedItems[idx].image;
         img.alt = sortedItems[idx].name || 'Imagem da wishlist';
         modal.setAttribute('data-idx', idx);
-        modal.fitViewerImage();
     };
 
     setTimeout(() => {
