@@ -403,7 +403,6 @@ function renderWishlist(t) {
             <div class="bg-gray-900/50 border border-red-800/50 p-3 sm:p-4 flex flex-col sm:flex-row gap-3 sm:gap-4 ${cardClass}">
                 <div class="wishlist-thumb flex-shrink-0 border border-gray-800 overflow-hidden bg-black/40">
                     <img src="${it.image}" alt="${it.name}" class="w-full h-full object-cover" />
-                    <div class="wishlist-thumb-title">${it.name}</div>
                 </div>
 
                 <div class="min-w-0 flex-1">
