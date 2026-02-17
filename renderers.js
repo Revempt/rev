@@ -85,8 +85,12 @@ function renderProfile(t) {
     const setupHtml = `
         <div class="mt-4 lg:col-span-2 bg-gray-900/50 p-3 sm:p-4 border border-red-800/50">
             <p class="text-red-500 font-bold text-xs sm:text-sm uppercase tracking-widest mb-3 sm:mb-4">${t.setupTitle}</p>
-            ${setupBlueprintHtml}
-            ${setupListHtml}
+            <div class="setup-blueprint">
+                ${setupBlueprintHtml}
+            </div>
+            <div class="setup-list">
+                ${setupListHtml}
+            </div>
         </div>
     `;
 
