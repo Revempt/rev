@@ -70,7 +70,7 @@ function renderProfile(t) {
         <div class="w-full lg:w-1/3 flex-shrink-0 mt-4 lg:mt-0">
             <div class="bg-gray-900/50 border border-red-800/50 h-full flex flex-col featured-card">
                 <h3 class="text-lg sm:text-xl text-red-500 text-glow p-3 sm:p-4">${t.featuredTitle}</h3>
-                <div class="relative overflow-hidden flex-grow" style="min-height: 300px; sm:min-height: 400px;">
+                <div class="relative overflow-hidden flex-grow" style="min-height: 300px;">
                    <img src="${staticData.featuredImage}" class="absolute inset-0 w-full h-full object-cover featured-image" alt="Featured Image"/>
                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                    <div class="absolute bottom-0 left-0 p-3 sm:p-4">
@@ -338,10 +338,15 @@ function renderSystemStatus(t) {
         </div>`;
 
     const chaosBar = document.getElementById('chaos-bar');
-    let widths = ['60%', '75%', '65%'];
+    const widths = ['60%', '75%', '65%'];
     let i = 0;
-    setInterval(() => {
-        if(chaosBar) {
+
+    if (state.chaosIntervalId) {
+        clearInterval(state.chaosIntervalId);
+    }
+
+    state.chaosIntervalId = setInterval(() => {
+        if (chaosBar) {
             chaosBar.style.transition = 'width 2s ease-in-out';
             chaosBar.style.width = widths[i];
             i = (i + 1) % widths.length;
