@@ -5,7 +5,8 @@ let state = {
     isMuted: true,
     hasInitializedAudio: false,
     translations: {}, // Será preenchido com o JSON do idioma
-    isMobileMenuOpen: false
+    isMobileMenuOpen: false,
+    chaosIntervalId: null
 };
 
 // --- FUNÇÃO PRINCIPAL DE RENDERIZAÇÃO ---
@@ -72,10 +73,6 @@ function addEventListeners() {
 
 // --- FUNÇÕES DO MENU MOBILE ---
 function toggleMobileMenu() {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('mobile-overlay');
-    const toggle = document.getElementById('mobile-menu-toggle');
-
     if (state.isMobileMenuOpen) {
         closeMobileMenu();
     } else {
