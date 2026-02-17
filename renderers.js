@@ -67,36 +67,7 @@ function setupImageViewerControls(prefix) {
 
     const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 
-    const clampPan = () => {
-        if (!img.naturalWidth || !img.naturalHeight) {
-            state.tx = 0;
-            state.ty = 0;
-            return;
-        }
-
-        const stageW = Math.max(1, viewport.clientWidth);
-        const stageH = Math.max(1, viewport.clientHeight);
-        const scaledW = img.naturalWidth * state.scale;
-        const scaledH = img.naturalHeight * state.scale;
-
-        const maxX = Math.max(0, (scaledW - stageW) / 2);
-        const maxY = Math.max(0, (scaledH - stageH) / 2);
-
-        if (scaledW <= stageW) {
-            state.tx = 0;
-        } else {
-            state.tx = clamp(state.tx, -maxX, maxX);
-        }
-
-        if (scaledH <= stageH) {
-            state.ty = 0;
-        } else {
-            state.ty = clamp(state.ty, -maxY, maxY);
-        }
-    };
-
     const applyTransform = () => {
-        clampPan();
         img.style.transform = `translate(${state.tx}px, ${state.ty}px) scale(${state.scale})`;
         viewport.classList.toggle('is-dragging', state.dragging);
         viewport.classList.toggle('is-zoomed', state.scale > 1.001);
@@ -115,16 +86,12 @@ function setupImageViewerControls(prefix) {
         const maxH = Math.max(1, viewport.clientHeight - pad);
         const fitScale = Math.min(maxW / img.naturalWidth, maxH / img.naturalHeight);
         state.scale = clamp(fitScale || 1, 1, 4);
-        state.tx = 0;
-        state.ty = 0;
-        applyTransform();
+        centerImage();
     };
 
     const resetImage = () => {
         state.scale = 1;
-        state.tx = 0;
-        state.ty = 0;
-        applyTransform();
+        centerImage();
     };
 
     img.addEventListener('load', fitImage);
@@ -132,9 +99,7 @@ function setupImageViewerControls(prefix) {
     fitBtn.addEventListener('click', fitImage);
     fullBtn.addEventListener('click', () => {
         state.scale = 1;
-        state.tx = 0;
-        state.ty = 0;
-        applyTransform();
+        centerImage();
     });
 
     viewport.addEventListener('wheel', (e) => {
