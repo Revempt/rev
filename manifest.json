@@ -1,0 +1,10 @@
+{
+  "name": "Project Rev Terminal",
+  "short_name": "P//REV",
+  "start_url": "/rev/",
+  "scope": "/rev/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "lang": "pt-BR"
+}
