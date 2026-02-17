@@ -106,7 +106,8 @@ const staticData = {
         affinities: "fas fa-heart",
         records: "fas fa-book-open",
         gallery: "fas fa-image",
-        wishlist: "fas fa-star"
+        wishlist: "fas fa-star",
+        diagnostics: "fas fa-stethoscope"
     },
 
     languageLevels: [ "100%", "60%", "30%" ],
@@ -124,6 +125,41 @@ const staticData = {
         { value: "FORTREK SPEED LARGE", icon: "fas fa-mouse-pointer" },
     ],
 
+    setupBlueprint: {
+        sections: [
+            {
+                name: "PC",
+                slots: [
+                    { label: "CPU", value: "AMD Ryzen 5 5600G" },
+                    { label: "GPU", value: "SONHO" },
+                    { label: "RAM", value: "2x8GB DDR4 3200MHz" }
+                ]
+            },
+            {
+                name: "Monitores",
+                slots: [
+                    { label: "Principal", value: "LG 22MP58VQ 75HZ" }
+                ]
+            },
+            {
+                name: "Periféricos",
+                slots: [
+                    { label: "Teclado", value: "MACHENIKE K500 B61" },
+                    { label: "Mouse", value: "LOGITECH G403 HERO" },
+                    { label: "Mousepad", value: "FORTREK SPEED LARGE" }
+                ]
+            },
+            {
+                name: "Áudio/Rede",
+                slots: [
+                    { label: "Headset", value: "REDRAGON ZEUS X" },
+                    { label: "Microfone", value: "SONHO" },
+                    { label: "Rede", value: "Ethernet + Wi-Fi" }
+                ]
+            }
+        ]
+    },
+
     // ✅ WISHLIST (ESTÁTICO)
     // status: "pendente" | "conquistado"
     wishlistItems: [
@@ -135,6 +171,7 @@ const staticData = {
             price: 2500,
             image: "imagens/wishlist/monitor.png",
             status: "pendente",
+            priority: 2,
             note: "Pra enxergar até o último pixel de sua vida"
         },
         {
@@ -145,6 +182,7 @@ const staticData = {
             price: 4000,
             image: "imagens/wishlist/gpu.jpg",
             status: "pendente",
+            priority: 1,
             note: "Roda Doom"
         },
         {
@@ -155,6 +193,7 @@ const staticData = {
             price: 400,
             image: "imagens/wishlist/mouse.png",
             status: "pendente",
+            priority: 4,
             note: "Pra subir capa"
         },
         {
@@ -165,6 +204,7 @@ const staticData = {
             price: 400,
             image: "imagens/wishlist/teclado.png",
             status: "pendente",
+            priority: 5,
             note: "Pra codar liso liso filho"
         },
         {
@@ -175,6 +215,7 @@ const staticData = {
             price: 200,
             image: "imagens/wishlist/microfone.png",
             status: "pendente",
+            priority: 3,
             note: "Fala baixo nengue"
         },
         {
@@ -185,6 +226,7 @@ const staticData = {
             price: 400,
             image: "imagens/wishlist/headset.png",
             status: "pendente",
+            priority: 3,
             note: "Pra ouvir rock no talo"
         }
     ]
@@ -269,7 +311,13 @@ const languageData = {
             progress: "Progresso",
             total: "Total",
             achieved: "Conquistado",
-            pending: "Pendente"
+            pending: "Pendente",
+            priority: "Prioridade",
+            nextTarget: "Próximo alvo"
+        },
+
+        diagnostics: {
+            title: "Diagnóstico"
         },
 
         menu: {
@@ -277,7 +325,8 @@ const languageData = {
             affinities: "Afinidades",
             records: "Registros",
             gallery: "Galeria",
-            wishlist: "Wishlist"
+            wishlist: "Wishlist",
+            diagnostics: "DIAGNÓSTICO"
         },
         status: {
             title: "Status do Sistema",
@@ -369,7 +418,13 @@ const languageData = {
             progress: "Progress",
             total: "Total",
             achieved: "Achieved",
-            pending: "Pending"
+            pending: "Pending",
+            priority: "Priority",
+            nextTarget: "Next target"
+        },
+
+        diagnostics: {
+            title: "Diagnostics"
         },
 
         menu: {
@@ -377,7 +432,8 @@ const languageData = {
             affinities: "Affinities",
             records: "Records",
             gallery: "Gallery",
-            wishlist: "Wishlist"
+            wishlist: "Wishlist",
+            diagnostics: "DIAGNÓSTICO"
         },
         status: {
             title: "System Status",
@@ -469,7 +525,13 @@ const languageData = {
             progress: "Progreso",
             total: "Total",
             achieved: "Conseguido",
-            pending: "Pendiente"
+            pending: "Pendiente",
+            priority: "Prioridad",
+            nextTarget: "Próximo objetivo"
+        },
+
+        diagnostics: {
+            title: "Diagnóstico"
         },
 
         menu: {
@@ -477,7 +539,8 @@ const languageData = {
             affinities: "Afinidades",
             records: "Registros",
             gallery: "Galería",
-            wishlist: "Wishlist"
+            wishlist: "Wishlist",
+            diagnostics: "DIAGNÓSTICO"
         },
         status: {
             title: "Estado del Sistema",
@@ -504,7 +567,7 @@ const languageData = {
             ],
             directive: {
                 label: "主な指令",
-                value: "はじめまして、Revです。科学全般が好きで、特に天文学に興味があり、テクノロジーやゲームも好きで、現在は勉強中ですが、いつもゲームをする時間は確保しています。"
+                value: "はじめまして、Revです。科学全般が好きで、特に天文学に興味があり、テクノロジーゲームも好きで、現在は勉強中ですが、いつもゲームをする時間は確保しています。"
             },
             socialsTitle: "通信チャネル",
             featuredTitle: "現在の焦点",
@@ -569,7 +632,13 @@ const languageData = {
             progress: "進捗",
             total: "合計",
             achieved: "達成",
-            pending: "保留"
+            pending: "保留",
+            priority: "優先度",
+            nextTarget: "次の目標"
+        },
+
+        diagnostics: {
+            title: "診断"
         },
 
         menu: {
@@ -577,7 +646,8 @@ const languageData = {
             affinities: "親和性",
             records: "記録",
             gallery: "ギャラリー",
-            wishlist: "Wishlist"
+            wishlist: "Wishlist",
+            diagnostics: "DIAGNÓSTICO"
         },
         status: {
             title: "システムステータス",
