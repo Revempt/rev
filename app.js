@@ -6,7 +6,9 @@ let state = {
     hasInitializedAudio: false,
     translations: {}, // Será preenchido com o JSON do idioma
     isMobileMenuOpen: false,
-    chaosIntervalId: null
+    chaosIntervalId: null,
+    isDiagnosticsMenuOpen: false,
+    isDiagnosticsModalOpen: false
 };
 
 // --- FUNÇÃO PRINCIPAL DE RENDERIZAÇÃO ---
@@ -17,7 +19,7 @@ function renderApp() {
     const contentWindow = document.getElementById('content-window');
 
     const menuContainer = document.getElementById('main-menu');
-    menuContainer.innerHTML = Object.keys(t.menu).map(key => `
+    menuContainer.innerHTML = Object.keys(t.menu).filter(key => key !== 'diagnostics').map(key => `
         <button data-section="${key}" class="menu-button flex items-center gap-3 p-2.5 text-left text-lg transition-all duration-200 ${state.activeSection === key ? 'bg-red-500/20 text-red-400' : 'text-gray-500 hover:bg-red-500/10 hover:text-red-400'}">
             <i class="${staticData.menuIcons[key]} text-xl"></i> <span>${t.menu[key]}</span>
         </button>
@@ -32,10 +34,10 @@ function renderApp() {
 
         // ✅ NOVA SEÇÃO: WISHLIST
         case 'wishlist': contentHtml = renderWishlist(t.wishlist); break;
-        case 'diagnostics': contentHtml = renderDiagnostics(); break;
     }
 
-    contentWindow.innerHTML = `<h2 class="text-xl sm:text-2xl text-red-500 mb-4 sm:mb-6 tracking-widest text-glow">${t[state.activeSection].title}</h2>${contentHtml}`;
+    const sectionTitle = t[state.activeSection]?.title || '';
+    contentWindow.innerHTML = `<h2 class="text-xl sm:text-2xl text-red-500 mb-4 sm:mb-6 tracking-widest text-glow">${sectionTitle}</h2>${contentHtml}`;
     contentWindow.classList.add('fade-in');
     setTimeout(() => contentWindow.classList.remove('fade-in'), 500);
 
@@ -48,9 +50,6 @@ function renderApp() {
 
     addEventListeners();
     window.ParticlesAPI?.setMode(state.activeSection);
-    if (state.activeSection === 'diagnostics') {
-        updateDiagnosticsPanel();
-    }
 }
 
 
@@ -67,7 +66,7 @@ function formatBytes(value) {
 }
 
 async function updateDiagnosticsPanel() {
-    if (state.activeSection !== 'diagnostics') return;
+    if (!state.isDiagnosticsModalOpen) return;
     const container = document.getElementById('diagnostics-container');
     if (!container) return;
 
@@ -140,9 +139,123 @@ async function updateDiagnosticsPanel() {
 }
 
 async function clearAllCaches() {
-    if (!('caches' in window)) return;
+    if (!('caches' in window)) return 0;
     const keys = await caches.keys();
     await Promise.all(keys.map(key => caches.delete(key)));
+    return keys.length;
+}
+
+function setDiagnosticsStatus(message, level = 'info') {
+    const statusEl = document.getElementById('diagnostics-status');
+    if (!statusEl) return;
+
+    const palette = {
+        info: 'text-gray-400',
+        success: 'text-green-400',
+        warning: 'text-yellow-300',
+        error: 'text-red-400'
+    };
+
+    statusEl.classList.remove('text-gray-400', 'text-green-400', 'text-yellow-300', 'text-red-400');
+    statusEl.classList.add(palette[level] || palette.info);
+    statusEl.textContent = message;
+}
+
+async function clearSiteData() {
+    const feedback = [];
+
+    try {
+        const cacheCount = await clearAllCaches();
+        feedback.push(`Cache Storage: ${cacheCount} cache(s) removido(s).`);
+    } catch (error) {
+        feedback.push(`Cache Storage: erro (${error.message}).`);
+    }
+
+    if ('serviceWorker' in navigator) {
+        try {
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            const results = await Promise.all(registrations.map(reg => reg.unregister()));
+            const removed = results.filter(Boolean).length;
+            feedback.push(`Service Workers: ${removed}/${registrations.length} desregistrado(s).`);
+        } catch (error) {
+            feedback.push(`Service Workers: erro (${error.message}).`);
+        }
+    } else {
+        feedback.push('Service Workers: não suportado.');
+    }
+
+    try {
+        localStorage.clear();
+        sessionStorage.clear();
+        feedback.push('Storage local/session: limpo.');
+    } catch (error) {
+        feedback.push(`Storage local/session: erro (${error.message}).`);
+    }
+
+    if ('indexedDB' in window) {
+        try {
+            let names = [];
+            if (typeof indexedDB.databases === 'function') {
+                const databases = await indexedDB.databases();
+                names = databases.map(db => db && db.name).filter(Boolean);
+            }
+
+            if (!names.length) {
+                feedback.push('IndexedDB: suporte detectado, nenhum banco listado para remoção automática.');
+            } else {
+                const results = await Promise.all(names.map(name => new Promise(resolve => {
+                    const request = indexedDB.deleteDatabase(name);
+                    request.onsuccess = () => resolve({ ok: true });
+                    request.onerror = () => resolve({ ok: false });
+                    request.onblocked = () => resolve({ ok: false, blocked: true });
+                })));
+                const removed = results.filter(result => result.ok).length;
+                feedback.push(`IndexedDB: ${removed}/${results.length} banco(s) removido(s).`);
+            }
+        } catch (error) {
+            feedback.push(`IndexedDB: erro (${error.message}).`);
+        }
+    } else {
+        feedback.push('IndexedDB: não suportado.');
+    }
+
+    return feedback;
+}
+
+function closeDiagnosticsMenu() {
+    const dropdown = document.getElementById('diagnostics-dropdown');
+    const toggle = document.getElementById('diagnostics-menu-toggle');
+    if (!dropdown || !toggle) return;
+    dropdown.classList.add('hidden');
+    toggle.setAttribute('aria-expanded', 'false');
+    state.isDiagnosticsMenuOpen = false;
+}
+
+function openDiagnosticsMenu() {
+    const dropdown = document.getElementById('diagnostics-dropdown');
+    const toggle = document.getElementById('diagnostics-menu-toggle');
+    if (!dropdown || !toggle) return;
+    dropdown.classList.remove('hidden');
+    toggle.setAttribute('aria-expanded', 'true');
+    state.isDiagnosticsMenuOpen = true;
+}
+
+function closeDiagnosticsModal() {
+    const modal = document.getElementById('diagnostics-modal');
+    if (!modal) return;
+    modal.classList.add('hidden');
+    state.isDiagnosticsModalOpen = false;
+}
+
+function openDiagnosticsModal() {
+    const modal = document.getElementById('diagnostics-modal');
+    if (!modal) return;
+    modal.classList.remove('hidden');
+    state.isDiagnosticsModalOpen = true;
+    setDiagnosticsStatus('Carregando diagnóstico...', 'info');
+    updateDiagnosticsPanel().then(() => {
+        setDiagnosticsStatus('Diagnóstico atualizado.', 'info');
+    });
 }
 
 // --- GESTORES DE EVENTOS ---
@@ -170,17 +283,62 @@ function addEventListeners() {
 
     const clearCacheBtn = document.getElementById('diag-clear-cache');
     if (clearCacheBtn) {
-        clearCacheBtn.addEventListener('click', async () => {
-            await clearAllCaches();
+        clearCacheBtn.onclick = async () => {
+            setDiagnosticsStatus('Limpando dados do site...', 'warning');
+            const feedback = await clearSiteData();
+            const hasError = feedback.some(item => item.toLowerCase().includes('erro'));
+            setDiagnosticsStatus(hasError ? 'Limpeza concluída com avisos.' : 'Cache limpo com sucesso.', hasError ? 'warning' : 'success');
+
+            const container = document.getElementById('diagnostics-container');
+            if (container) {
+                const feedbackHtml = feedback.map(item => `<p class="text-xs text-gray-300">• ${item}</p>`).join('');
+                container.insertAdjacentHTML('afterbegin', `<div class="border border-red-900/40 bg-black/50 px-3 py-2"><p class="text-red-400 text-xs uppercase tracking-wider mb-1">Resultado da limpeza</p>${feedbackHtml}</div>`);
+            }
+
             updateDiagnosticsPanel();
-        });
+        };
     }
 
     const reloadBtn = document.getElementById('diag-reload');
     if (reloadBtn) {
-        reloadBtn.addEventListener('click', () => {
+        reloadBtn.onclick = () => {
             location.reload();
-        });
+        };
+    }
+
+    const diagnosticsMenuToggle = document.getElementById('diagnostics-menu-toggle');
+    if (diagnosticsMenuToggle) {
+        diagnosticsMenuToggle.onclick = (event) => {
+            event.stopPropagation();
+            soundManager.playClick();
+            if (state.isDiagnosticsMenuOpen) {
+                closeDiagnosticsMenu();
+            } else {
+                openDiagnosticsMenu();
+            }
+        };
+    }
+
+    const diagnosticsOpen = document.getElementById('diagnostics-open');
+    if (diagnosticsOpen) {
+        diagnosticsOpen.onclick = () => {
+            soundManager.playClick();
+            closeDiagnosticsMenu();
+            openDiagnosticsModal();
+        };
+    }
+
+    const diagnosticsClose = document.getElementById('diagnostics-close');
+    if (diagnosticsClose) {
+        diagnosticsClose.onclick = () => {
+            soundManager.playClick();
+            closeDiagnosticsModal();
+        };
+    }
+
+    const diagnosticsBackdrop = document.getElementById('diagnostics-modal-backdrop');
+    if (diagnosticsBackdrop) {
+        diagnosticsBackdrop.onclick = closeDiagnosticsModal;
     }
 }
 
@@ -290,6 +448,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.addEventListener('online', updateDiagnosticsPanel);
     window.addEventListener('offline', updateDiagnosticsPanel);
+
+    document.addEventListener('click', (event) => {
+        const menu = document.getElementById('diagnostics-menu');
+        if (state.isDiagnosticsMenuOpen && menu && !menu.contains(event.target)) {
+            closeDiagnosticsMenu();
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            if (state.isDiagnosticsMenuOpen) closeDiagnosticsMenu();
+            if (state.isDiagnosticsModalOpen) closeDiagnosticsModal();
+        }
+    });
 
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {

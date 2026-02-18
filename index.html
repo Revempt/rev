@@ -41,6 +41,39 @@
     
     <!-- Conteúdo Principal (escondido inicialmente) -->
     <div id="main-container" class="w-screen min-h-screen flex-col lg:flex-row font-mono hidden relative z-10">
+
+        <div id="diagnostics-menu" class="fixed top-4 right-4 z-50">
+            <button id="diagnostics-menu-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="diagnostics-dropdown" class="w-12 h-12 ui-background border border-red-800/70 hover:bg-red-500/10 transition-colors flex items-center justify-center">
+                <span class="sr-only">Abrir menu de diagnóstico</span>
+                <span class="flex flex-col gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                </span>
+            </button>
+
+            <div id="diagnostics-dropdown" class="hidden absolute top-14 right-0 min-w-44 ui-background border border-red-800/70 p-1">
+                <button id="diagnostics-open" class="w-full text-left px-3 py-2 text-red-300 hover:bg-red-500/10 transition-colors">Diagnóstico</button>
+            </div>
+        </div>
+
+        <div id="diagnostics-modal" class="hidden fixed inset-0 z-[60]">
+            <div id="diagnostics-modal-backdrop" class="absolute inset-0 bg-black/70"></div>
+            <div role="dialog" aria-modal="true" aria-labelledby="diagnostics-modal-title" class="relative z-10 w-[calc(100%-2rem)] max-w-2xl mx-auto mt-16 sm:mt-24 ui-background border border-red-800/60 p-4 sm:p-5">
+                <div class="flex items-center justify-between gap-4 mb-3">
+                    <h2 id="diagnostics-modal-title" class="text-red-500 text-lg sm:text-xl tracking-widest text-glow">DIAGNÓSTICO</h2>
+                    <button id="diagnostics-close" class="text-red-400 hover:text-white text-xl leading-none px-2" aria-label="Fechar diagnóstico">&times;</button>
+                </div>
+
+                <p id="diagnostics-status" class="text-sm text-gray-400 mb-3">Pronto para diagnóstico.</p>
+                <div id="diagnostics-container" class="space-y-3"></div>
+
+                <div class="mt-4 flex flex-wrap gap-2">
+                    <button id="diag-clear-cache" class="px-3 py-2 border border-red-800/70 text-red-300 hover:bg-red-500/10">Limpar cache do site</button>
+                    <button id="diag-reload" class="px-3 py-2 border border-red-800/70 text-red-300 hover:bg-red-500/10">Recarregar</button>
+                </div>
+            </div>
+        </div>
         
         <!-- Menu Mobile Toggle -->
         <button id="mobile-menu-toggle" class="lg:hidden fixed top-4 left-4 z-30 bg-gray-900/80 p-3 border border-red-800/50 text-red-500 hover:bg-red-500/20 transition-colors">
