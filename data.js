@@ -91,6 +91,9 @@ const staticData = {
         "imagens/gallery/gallery3.jpg",
         "imagens/gallery/gallery4.jpg",
         "imagens/gallery/gallery5.jpg",
+        "imagens/gallery/gallery6.png",
+        "imagens/gallery/gallery7.png",
+        "imagens/gallery/gallery8.png",
     ],
 
     // ✅ ÍCONES DO MENU (AGORA COM WISHLIST)
