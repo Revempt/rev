@@ -12,17 +12,17 @@ const CORE_ASSETS = [
   './audio.js',
   './particles.js',
   './manifest.json',
-  './assets/miniatura.png',
-  './icons/icon-192.png',
-  './icons/icon-512.png',
-  './icons/maskable-192.png',
-  './icons/maskable-512.png',
+  '.imagens/assets/miniatura.png',
+  '.imagens/icons/icon-192.png',
+  '.imagens/icons/icon-512.png',
+  '.imagens/icons/maskable-192.png',
+  '.imagens/icons/maskable-512.png',
   '/manifest.json',
-  '/assets/miniatura.png',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
-  '/icons/maskable-192.png',
-  '/icons/maskable-512.png'
+  'imagens/assets/miniatura.png',
+  'imagens/icons/icon-192.png',
+  'imagens/icons/icon-512.png',
+  'imagens/icons/maskable-192.png',
+  'imagens/icons/maskable-512.png'
 ];
 
 self.addEventListener('install', (event) => {
