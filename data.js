@@ -46,13 +46,6 @@ const staticData = {
             { name: "Tokyo Ghoul", image: "imagens/manga/tokyo-ghoul.jpg" },
             { name: "Bleach", image: "imagens/manga/bleach.jpg" }
         ]},
-        { icon: "fas fa-book", items: [
-            { name: "Solo Leveling", image: "imagens/manhwa/solo-leveling.jpg" },
-            { name: "The God of The High School", image: "imagens/manhwa/TGOHS.jpg" },
-            { name: "The Beginning After The End", image: "imagens/manhwa/tbate.jpg" },
-            { name: "Tower of God", image: "imagens/manhwa/tog.jpg" },
-            { name: "Omniscient Reader", image: "imagens/manhwa/orv.jpg" }
-        ]},
         { icon: "fas fa-user-ninja", items: [
             { name: "Flash", image: "imagens/characters/Flash.jpg" },
             { name: "Arthur Morgan", image: "imagens/characters/Arthur-Morgan.jpg" },
@@ -275,7 +268,6 @@ const languageData = {
                 { name: "Filmes" },
                 { name: "Animes" },
                 { name: "Mangás" },
-                { name: "Manhwas" },
                 { name: "Personagens" },
                 { name: "Músicas" },
                 { name: "Playlists" }
@@ -383,7 +375,6 @@ const languageData = {
                 { name: "Movies" },
                 { name: "Animes" },
                 { name: "Mangas" },
-                { name: "Manhwas" },
                 { name: "Characters" },
                 { name: "Music" },
                 { name: "Playlists" }
@@ -490,7 +481,6 @@ const languageData = {
                 { name: "Películas" },
                 { name: "Animes" },
                 { name: "Mangas" },
-                { name: "Manhwas" },
                 { name: "Personajes" },
                 { name: "Música" },
                 { name: "Playlists" }
@@ -597,7 +587,6 @@ const languageData = {
                 { name: "映画" },
                 { name: "アニメ" },
                 { name: "漫画" },
-                { name: "ウェブトゥーン" },
                 { name: "キャラクター" },
                 { name: "音楽" },
                 { name: "プレイリスト" }
