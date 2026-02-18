@@ -1,6 +1,6 @@
-const CACHE_NAME = 'rev-cache-v1';
-const IMAGES_CACHE_NAME = 'rev-images-v1';
-const MAX_IMAGE_ENTRIES = 150;
+const CACHE_NAME = 'rev-cache-v2';
+const IMAGES_CACHE_NAME = 'rev-images-v2';
+const MAX_IMAGE_ENTRIES = 200;
 
 const CORE_ASSETS = [
   './',
@@ -11,7 +11,18 @@ const CORE_ASSETS = [
   './data.js',
   './audio.js',
   './particles.js',
-  './manifest.json'
+  './manifest.json',
+  './assets/miniatura.png',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  './icons/maskable-192.png',
+  './icons/maskable-512.png',
+  '/manifest.json',
+  '/assets/miniatura.png',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png',
+  '/icons/maskable-192.png',
+  '/icons/maskable-512.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -100,7 +111,11 @@ async function handleImageRequest(request) {
 function isLocalImageRequest(request) {
   const url = new URL(request.url);
   const isSameOrigin = url.origin === self.location.origin;
-  const isImagePath = url.pathname.includes('/rev/imagens/') || url.pathname.includes('/imagens/');
+  const isImagePath =
+    url.pathname.includes('/rev/imagens/') ||
+    url.pathname.includes('/imagens/') ||
+    url.pathname.includes('/assets/') ||
+    url.pathname.includes('/icons/');
   return isSameOrigin && isImagePath;
 }
 
