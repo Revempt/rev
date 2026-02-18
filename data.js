@@ -49,7 +49,7 @@ const staticData = {
         { icon: "fas fa-user-ninja", items: [
             { name: "Flash", image: "imagens/characters/Flash.jpg" },
             { name: "Arthur Morgan", image: "imagens/characters/Arthur-Morgan.jpg" },
-            { name: "Peter Parker", image: "imagens/characters/parker.jpg" },
+            { name: "Peter Parker", image: "imagens/characters/parker.png" },
             { name: "Izuku Midoriya", image: "imagens/characters/deku.jpg" },
             { name: "Geralt De Rivia", image: "imagens/characters/geralt.jpg" }
         ]},
