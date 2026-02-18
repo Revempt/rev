@@ -281,9 +281,12 @@ function addEventListeners() {
         });
     });
 
+}
+
+function bindDiagnosticsListeners() {
     const clearCacheBtn = document.getElementById('diag-clear-cache');
     if (clearCacheBtn) {
-        clearCacheBtn.onclick = async () => {
+        clearCacheBtn.addEventListener('click', async () => {
             setDiagnosticsStatus('Limpando dados do site...', 'warning');
             const feedback = await clearSiteData();
             const hasError = feedback.some(item => item.toLowerCase().includes('erro'));
@@ -296,19 +299,19 @@ function addEventListeners() {
             }
 
             updateDiagnosticsPanel();
-        };
+        });
     }
 
     const reloadBtn = document.getElementById('diag-reload');
     if (reloadBtn) {
-        reloadBtn.onclick = () => {
+        reloadBtn.addEventListener('click', () => {
             location.reload();
-        };
+        });
     }
 
     const diagnosticsMenuToggle = document.getElementById('diagnostics-menu-toggle');
     if (diagnosticsMenuToggle) {
-        diagnosticsMenuToggle.onclick = (event) => {
+        diagnosticsMenuToggle.addEventListener('click', (event) => {
             event.stopPropagation();
             soundManager.playClick();
             if (state.isDiagnosticsMenuOpen) {
@@ -316,29 +319,29 @@ function addEventListeners() {
             } else {
                 openDiagnosticsMenu();
             }
-        };
+        });
     }
 
     const diagnosticsOpen = document.getElementById('diagnostics-open');
     if (diagnosticsOpen) {
-        diagnosticsOpen.onclick = () => {
+        diagnosticsOpen.addEventListener('click', () => {
             soundManager.playClick();
             closeDiagnosticsMenu();
             openDiagnosticsModal();
-        };
+        });
     }
 
     const diagnosticsClose = document.getElementById('diagnostics-close');
     if (diagnosticsClose) {
-        diagnosticsClose.onclick = () => {
+        diagnosticsClose.addEventListener('click', () => {
             soundManager.playClick();
             closeDiagnosticsModal();
-        };
+        });
     }
 
     const diagnosticsBackdrop = document.getElementById('diagnostics-modal-backdrop');
     if (diagnosticsBackdrop) {
-        diagnosticsBackdrop.onclick = closeDiagnosticsModal;
+        diagnosticsBackdrop.addEventListener('click', closeDiagnosticsModal);
     }
 }
 
@@ -374,6 +377,9 @@ function closeMobileMenu() {
 async function loadLanguage(lang) {
     state.language = lang;
     state.translations = languageData[lang];
+    if (state.translations && state.translations.menu) {
+        delete state.translations.menu.diagnostics;
+    }
     renderApp();
 }
 
@@ -383,6 +389,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const bootScreen = document.getElementById('boot-screen');
     const bootText = document.getElementById('boot-text');
     const muteButton = document.getElementById('mute-button');
+    bindDiagnosticsListeners();
 
     // Mobile menu elements
     function getMobileMenuElements() {
