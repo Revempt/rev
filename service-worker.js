@@ -1,5 +1,5 @@
-const CACHE_NAME = 'rev-cache-v2';
-const IMAGES_CACHE_NAME = 'rev-images-v2';
+const CACHE_NAME = 'rev-cache-v3';
+const IMAGES_CACHE_NAME = 'rev-images-v3';
 const MAX_IMAGE_ENTRIES = 200;
 
 const CORE_ASSETS = [
@@ -12,18 +12,14 @@ const CORE_ASSETS = [
   './audio.js',
   './particles.js',
   './manifest.json',
-  '.imagens/assets/miniatura.png',
-  '.imagens/icons/icon-192.png',
-  '.imagens/icons/icon-512.png',
-  '.imagens/icons/maskable-192.png',
-  '.imagens/icons/maskable-512.png',
-  '/manifest.json',
-  'imagens/assets/miniatura.png',
-  'imagens/icons/icon-192.png',
-  'imagens/icons/icon-512.png',
-  'imagens/icons/maskable-192.png',
-  'imagens/icons/maskable-512.png'
+
+  './imagens/assets/miniatura.png',
+  './imagens/icons/icon-192.png',
+  './imagens/icons/icon-512.png',
+  './imagens/icons/maskable-192.png',
+  './imagens/icons/maskable-512.png'
 ];
+
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
