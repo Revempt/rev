@@ -51,7 +51,8 @@ const staticData = {
             { name: "Arthur Morgan", image: "imagens/characters/Arthur-Morgan.jpg" },
             { name: "Peter Parker", image: "imagens/characters/parker.png" },
             { name: "Izuku Midoriya", image: "imagens/characters/deku.jpg" },
-            { name: "Geralt De Rivia", image: "imagens/characters/geralt.jpg" }
+            { name: "Geralt De Rivia", image: "imagens/characters/geralt.jpg" },
+            { name: "Leon S. Kennedy", image: "imagens/characters/Leon.jpg" }
         ]},
         { icon: "fas fa-music", items: [
             { name: "Time of Dying", image: "imagens/albums/TimeOfDying.jpg" },
