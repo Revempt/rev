@@ -126,47 +126,35 @@ function renderProfile(t) {
             </div>
         </div>`;
 
-    const setupListHtml = `
-        <div class="setup-list-view grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-            ${staticData.setup.map((item, index) => `
-                <div class="flex items-center gap-2 sm:gap-3 bg-gray-800/70 p-2 sm:p-3 border border-transparent">
-                    <i class="fas ${item.icon} text-red-500 w-4 sm:w-5 text-center"></i>
-                    <div class="min-w-0 flex-1">
-                        <p class="font-bold text-white text-xs truncate">${t.setup[index].label}</p>
-                        <p class="text-xs text-gray-400 truncate">${item.value}</p>
-                    </div>
-                </div>
-            `).join('')}
-        </div>
-    `;
-
-    const blueprintSections = (staticData.setupBlueprint && staticData.setupBlueprint.sections) || [];
-    const setupBlueprintHtml = `
-        <div class="setup-blueprint-view" aria-label="Setup blueprint">
-            ${blueprintSections.map(section => `
-                <div class="setup-blueprint-section">
-                    <p class="setup-blueprint-title">${section.name}</p>
-                    <div class="setup-blueprint-slots">
-                        ${(section.slots || []).map(slot => `
-                            <div class="setup-blueprint-slot">
-                                <span class="setup-blueprint-label">${slot.label}</span>
-                                <span class="setup-blueprint-value">${slot.value}</span>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `).join('')}
-        </div>
-    `;
+    const setupIcons = {
+        cpu: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="10" y="10" width="4" height="4" fill="currentColor"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+        gpu: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><rect x="3" y="7" width="15" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 10h3M12 14h3M18 11h3M18 13h3M18 15h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+        ram: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><rect x="3" y="8" width="18" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10v4M10 10v4M14 10v4M18 10v4M6 16v2M10 16v2M14 16v2M18 16v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+        keyboard: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><rect x="2" y="7" width="20" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 10h1M8 10h1M11 10h1M14 10h1M17 10h1M5 13h1M8 13h1M11 13h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+        mouse: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><rect x="7" y="4" width="10" height="16" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 4v5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+        headset: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><path d="M4 13a8 8 0 0 1 16 0" fill="none" stroke="currentColor" stroke-width="2"/><rect x="3" y="12" width="4" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><rect x="17" y="12" width="4" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><path d="M17 18v1a2 2 0 0 1-2 2h-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+        microphone: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4M9 21h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+        monitor: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><rect x="3" y="5" width="18" height="12" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 19h4M8 21h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+        mousepad: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><path d="M4 19V9a4 4 0 0 1 4-4h8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16 5l-3 3M16 5l3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
+    };
 
     const setupHtml = `
-        <div class="mt-4 lg:col-span-2 bg-gray-900/50 p-3 sm:p-4 border border-red-800/50">
-            <p class="text-red-500 font-bold text-xs sm:text-sm uppercase tracking-widest mb-3 sm:mb-4">${t.setupTitle}</p>
-            <div class="setup-blueprint">
-                ${setupBlueprintHtml}
-            </div>
-            <div class="setup-list">
-                ${setupListHtml}
+        <div class="mt-4 lg:col-span-2 arsenal-setup-section">
+            <p class="arsenal-setup-title">${t.setupTitle}</p>
+            <div class="arsenal-setup-grid">
+                ${staticData.setup.map((item, index) => {
+                    const translatedLabel = t.setup[index] && t.setup[index].label ? t.setup[index].label : item.label;
+                    const iconSvg = setupIcons[item.icon] || setupIcons.cpu;
+                    return `
+                        <div class="arsenal-setup-card">
+                            <span class="arsenal-setup-card-icon">${iconSvg}</span>
+                            <div class="min-w-0 flex-1">
+                                <p class="arsenal-setup-card-label">${escapeHtml(translatedLabel)}</p>
+                                <p class="arsenal-setup-card-value">${escapeHtml(item.value)}</p>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
             </div>
         </div>
     `;

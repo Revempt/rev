@@ -113,51 +113,16 @@ const staticData = {
     featuredImage: "imagens/teste3.png",
 
     setup: [
-        { value: "AMD Ryzen 5 5600G", icon: "fas fa-microchip" },
-        { value: "SONHO", icon: "fas fa-gamepad" },
-        { value: "2x8GB DDR4 3200MHz", icon: "fas fa-memory" },
-        { value: "MACHENIKE K500 B61", icon: "fas fa-keyboard" },
-        { value: "LOGITECH G403 HERO", icon: "fas fa-mouse" },
-        { value: "REDRAGON ZEUS X", icon: "fas fa-headset" },
-        { value: "SONHO", icon: "fas fa-microphone" },
-        { value: "LG 22MP58VQ 75HZ", icon: "fas fa-desktop" },
-        { value: "FORTREK SPEED LARGE", icon: "fas fa-mouse-pointer" },
+        { key: "cpu", label: "CPU", value: "AMD Ryzen 5 5600G", icon: "cpu" },
+        { key: "gpu", label: "GPU", value: "SONHO", icon: "gpu" },
+        { key: "ram", label: "RAM", value: "2x8GB DDR4 3200MHz", icon: "ram" },
+        { key: "teclado", label: "Teclado", value: "MACHENIKE K500 B61", icon: "keyboard" },
+        { key: "mouse", label: "Mouse", value: "LOGITECH G403 HERO", icon: "mouse" },
+        { key: "headset", label: "Headset", value: "REDRAGON ZEUS X", icon: "headset" },
+        { key: "microfone", label: "Microfone", value: "SONHO", icon: "microphone" },
+        { key: "monitor", label: "Monitor", value: "LG 22MP58VQ 75HZ", icon: "monitor" },
+        { key: "mousepad", label: "Mousepad", value: "FORTREK SPEED LARGE", icon: "mousepad" }
     ],
-
-    setupBlueprint: {
-        sections: [
-            {
-                name: "PC",
-                slots: [
-                    { label: "CPU", value: "AMD Ryzen 5 5600G" },
-                    { label: "GPU", value: "SONHO" },
-                    { label: "RAM", value: "2x8GB DDR4 3200MHz" }
-                ]
-            },
-            {
-                name: "Monitores",
-                slots: [
-                    { label: "Principal", value: "LG 22MP58VQ 75HZ" }
-                ]
-            },
-            {
-                name: "Periféricos",
-                slots: [
-                    { label: "Teclado", value: "MACHENIKE K500 B61" },
-                    { label: "Mouse", value: "LOGITECH G403 HERO" },
-                    { label: "Mousepad", value: "FORTREK SPEED LARGE" }
-                ]
-            },
-            {
-                name: "Áudio/Rede",
-                slots: [
-                    { label: "Headset", value: "REDRAGON ZEUS X" },
-                    { label: "Microfone", value: "SONHO" },
-                    { label: "Rede", value: "Ethernet + Wi-Fi" }
-                ]
-            }
-        ]
-    },
 
     // ✅ WISHLIST (ESTÁTICO)
     // status: "pendente" | "conquistado"
