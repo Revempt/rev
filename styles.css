@@ -312,6 +312,49 @@ h1, h2, h3, button, h4, h5 {
     z-index: 120 !important;
 }
 
+/* -------- Affinities tabs transitions -------- */
+.aff-panels {
+    position: relative;
+    transition: height 260ms ease;
+}
+
+.aff-panel {
+    width: 100%;
+    opacity: 0;
+    transform: translateY(14px);
+    pointer-events: none;
+    transition: opacity 260ms ease, transform 260ms ease;
+}
+
+.aff-panel.is-active {
+    position: relative;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    z-index: 2;
+}
+
+.aff-panel.is-leaving {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transform: translateY(14px);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.aff-panel.hidden-panel {
+    display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .aff-panels,
+    .aff-panel {
+        transition: none !important;
+        transform: none !important;
+    }
+}
+
 /* -------- Wishlist -------- */
 .wishlist-bar {
     transition: width 400ms ease;

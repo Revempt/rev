@@ -210,19 +210,57 @@ function renderProfile(t) {
 
 function renderAffinities(t) {
     let activeCategoryIndex = 0;
+    const baseCategoryKeys = ['jogos', 'series', 'filmes'];
+    const categoryKeys = staticData.affinities.map((_, index) => baseCategoryKeys[index] || `cat-${index}`);
+
+    const renderCategoryContent = (categoryIndex, categoryKey) => {
+        const items = staticData.affinities[categoryIndex].items;
+        const gridClass = staticData.affinities[categoryIndex].icon === 'fas fa-headphones'
+            ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4'
+            : 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4';
+
+        return `
+            <div class="${gridClass}">
+                ${items.map((item, idx) => {
+                    if (item.isEmbed) {
+                        return `
+                            <div class="border-2 border-gray-800 hover:border-red-500 transition-colors bg-gray-900/50 p-3 sm:p-4">
+                                <h3 class="text-white text-sm sm:text-lg font-bold mb-2 sm:mb-3 text-center">${item.name}</h3>
+                                <div class="spotify-embed">
+                                    ${item.embed}
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    return `
+                        <div class="relative group border-2 border-gray-800 hover:border-red-500 transition-colors cursor-pointer" onclick="openAffinityLightbox('${categoryKey}', ${idx})">
+                            <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover" />
+                            <div class="absolute bottom-0 left-0 w-full p-2 bg-black/70">
+                                <p class="text-white text-xs sm:text-sm font-bold truncate">${item.name}</p>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
+    };
+
     // Lightbox para afinidades (compartilhado com galeria)
     ensureImageViewerModal('affinity-lightbox');
     setupImageViewerControls('affinity-lightbox');
     // Função para abrir o lightbox de afinidades
-    window.openAffinityLightbox = function(idx) {
+    window.openAffinityLightbox = function(categoryKey, idx) {
         const modal = document.getElementById('affinity-lightbox-modal');
         const img = document.getElementById('affinity-lightbox-img');
-        const items = staticData.affinities[activeCategoryIndex].items.filter(item => item.image);
+        const categoryIndex = categoryKeys.indexOf(categoryKey);
+        if (categoryIndex < 0) return;
+        const items = staticData.affinities[categoryIndex].items.filter(item => item.image);
         img.src = items[idx].image;
         img.alt = items[idx].name || 'Imagem de afinidade';
         modal.style.display = 'block';
         modal.setAttribute('data-idx', idx);
-        modal.setAttribute('data-cat', activeCategoryIndex);
+        modal.setAttribute('data-cat', categoryKey);
     };
     // Função para fechar
     window.closeAffinityLightbox = function() {
@@ -232,8 +270,10 @@ function renderAffinities(t) {
     window.affinityLightboxNav = function(dir) {
         const modal = document.getElementById('affinity-lightbox-modal');
         let idx = parseInt(modal.getAttribute('data-idx'));
-        const cat = parseInt(modal.getAttribute('data-cat'));
-        const items = staticData.affinities[cat].items.filter(item => item.image);
+        const cat = modal.getAttribute('data-cat');
+        const categoryIndex = categoryKeys.indexOf(cat);
+        if (categoryIndex < 0) return;
+        const items = staticData.affinities[categoryIndex].items.filter(item => item.image);
         idx = (idx + dir + items.length) % items.length;
         const img = document.getElementById('affinity-lightbox-img');
         img.src = items[idx].image;
@@ -259,58 +299,121 @@ function renderAffinities(t) {
         }
     }, 0);
 
-    const renderContent = () => {
-        const items = staticData.affinities[activeCategoryIndex].items;
-        return items.map((item, idx) => {
-            if (item.isEmbed) {
-                return `
-                    <div class="border-2 border-gray-800 hover:border-red-500 transition-colors bg-gray-900/50 p-3 sm:p-4">
-                        <h3 class="text-white text-sm sm:text-lg font-bold mb-2 sm:mb-3 text-center">${item.name}</h3>
-                        <div class="spotify-embed">
-                            ${item.embed}
-                        </div>
-                    </div>
-                `;
-            } else {
-                return `
-                    <div class="relative group border-2 border-gray-800 hover:border-red-500 transition-colors cursor-pointer" onclick="openAffinityLightbox(${idx})">
-                        <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover" />
-                        <div class="absolute bottom-0 left-0 w-full p-2 bg-black/70">
-                            <p class="text-white text-xs sm:text-sm font-bold truncate">${item.name}</p>
-                        </div>
-                    </div>
-                `;
-            }
-        }).join('');
-    };
-
     const buttonsHtml = t.categories.map((cat, index) => `
-        <button data-index="${index}" class="affinity-cat-button flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 text-xs sm:text-sm border-b-2 transition-colors duration-200 ${index === 0 ? 'border-red-500 text-white' : 'border-gray-700 text-gray-400 hover:text-white'}">
+        <button data-index="${index}" data-aff="${categoryKeys[index]}" aria-selected="${index === 0 ? 'true' : 'false'}" class="affinity-cat-button flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 text-xs sm:text-sm border-b-2 transition-colors duration-200 ${index === 0 ? 'border-red-500 text-white' : 'border-gray-700 text-gray-400 hover:text-white'}">
             <i class="${staticData.affinities[index].icon}"></i>
             <span>${cat.name}</span>
         </button>
     `).join('');
 
+    const panelsHtml = staticData.affinities.map((_, index) => {
+        const key = categoryKeys[index];
+        const isActive = index === 0;
+        return `
+            <section class="aff-panel ${isActive ? 'is-active' : 'hidden-panel'}" data-panel="${key}" ${isActive ? '' : 'aria-hidden="true"'}>
+                ${renderCategoryContent(index, key)}
+            </section>
+        `;
+    }).join('');
+
     const html = `
         <div>
             <div class="flex flex-wrap gap-x-2 sm:gap-x-4 gap-y-2 mb-4 sm:mb-6">${buttonsHtml}</div>
-            <div id="affinities-content" class="${staticData.affinities[activeCategoryIndex].icon === 'fas fa-headphones' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5'} gap-3 sm:gap-4">${renderContent()}</div>
+            <div id="affinities-content" class="aff-panels">${panelsHtml}</div>
         </div>`;
 
     setTimeout(() => {
-        document.querySelectorAll('.affinity-cat-button').forEach(button => {
-            button.addEventListener('click', () => {
-                document.querySelectorAll('.affinity-cat-button').forEach(btn => {
-                    btn.classList.remove('border-red-500', 'text-white');
-                    btn.classList.add('border-gray-700', 'text-gray-400', 'hover:text-white');
-                });
-                button.classList.add('border-red-500', 'text-white');
-                button.classList.remove('border-gray-700', 'text-gray-400', 'hover:text-white');
+        const wrapper = document.getElementById('affinities-content');
+        if (!wrapper) return;
 
-                activeCategoryIndex = parseInt(button.dataset.index);
-                document.getElementById('affinities-content').innerHTML = renderContent();
+        const buttons = [...document.querySelectorAll('.affinity-cat-button')];
+        const panels = [...wrapper.querySelectorAll('.aff-panel')];
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        const getPanel = (key) => wrapper.querySelector(`.aff-panel[data-panel="${key}"]`);
+
+        const syncWrapperHeight = (panel) => {
+            if (!panel) return;
+            wrapper.style.height = `${panel.scrollHeight}px`;
+        };
+
+        let activeKey = categoryKeys[0];
+        let pendingLeaveHandler = null;
+
+        const setButtonsState = (nextKey) => {
+            buttons.forEach((btn) => {
+                const isActive = btn.dataset.aff === nextKey;
+                btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                btn.classList.toggle('border-red-500', isActive);
+                btn.classList.toggle('text-white', isActive);
+                btn.classList.toggle('border-gray-700', !isActive);
+                btn.classList.toggle('text-gray-400', !isActive);
+                btn.classList.toggle('hover:text-white', !isActive);
             });
+        };
+
+        const switchAff = (nextKey) => {
+            if (nextKey === activeKey) return;
+            const currentPanel = getPanel(activeKey);
+            const nextPanel = getPanel(nextKey);
+            if (!currentPanel || !nextPanel) return;
+
+            if (pendingLeaveHandler) {
+                currentPanel.removeEventListener('transitionend', pendingLeaveHandler);
+                pendingLeaveHandler = null;
+            }
+
+            nextPanel.classList.remove('hidden-panel');
+            nextPanel.setAttribute('aria-hidden', 'false');
+            nextPanel.classList.remove('is-leaving');
+            nextPanel.classList.add('is-active');
+
+            currentPanel.classList.remove('is-active');
+            currentPanel.classList.add('is-leaving');
+            currentPanel.setAttribute('aria-hidden', 'true');
+
+            activeKey = nextKey;
+            activeCategoryIndex = categoryKeys.indexOf(activeKey);
+            setButtonsState(activeKey);
+            syncWrapperHeight(nextPanel);
+
+            const hideCurrent = () => {
+                currentPanel.classList.add('hidden-panel');
+                currentPanel.classList.remove('is-leaving');
+            };
+
+            if (prefersReducedMotion) {
+                hideCurrent();
+            } else {
+                pendingLeaveHandler = (event) => {
+                    if (event.propertyName !== 'opacity') return;
+                    currentPanel.removeEventListener('transitionend', pendingLeaveHandler);
+                    pendingLeaveHandler = null;
+                    hideCurrent();
+                };
+                currentPanel.addEventListener('transitionend', pendingLeaveHandler);
+            }
+        };
+
+        panels.forEach((panel) => {
+            if (!panel.classList.contains('is-active')) {
+                panel.classList.add('hidden-panel');
+                panel.setAttribute('aria-hidden', 'true');
+            }
         });
+        syncWrapperHeight(getPanel(activeKey));
+
+        buttons.forEach((button) => {
+            button.addEventListener('click', () => {
+                const nextKey = button.dataset.aff;
+                if (!nextKey) return;
+                switchAff(nextKey);
+            }, { passive: true });
+        });
+
+        window.addEventListener('resize', () => {
+            syncWrapperHeight(getPanel(activeKey));
+        }, { passive: true });
     }, 0);
 
     return html;
