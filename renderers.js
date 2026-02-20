@@ -37,6 +37,23 @@ function typeOutText(element, text, speed = 30) {
     }, speed);
 }
 
+function restartTypewriterAnimations(scope) {
+    if (!scope) return;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    scope.querySelectorAll('[data-typewriter]').forEach((element) => {
+        const text = element.dataset.typewriter || element.textContent || '';
+        const speed = Number.parseInt(element.dataset.typewriterSpeed, 10) || 30;
+
+        if (reduceMotion) {
+            element.textContent = text;
+            return;
+        }
+
+        typeOutText(element, text, speed);
+    });
+}
+
 function triggerParticlesAtElement(element, action) {
     if (!element || !window.ParticlesAPI) return;
     const rect = element.getBoundingClientRect();
@@ -259,9 +276,11 @@ function renderAffinities(t) {
         }
     }, 0);
 
-    const renderContent = () => {
-        const items = staticData.affinities[activeCategoryIndex].items;
-        return items.map((item, idx) => {
+    const renderContent = (categoryIndex) => {
+        const currentCategory = staticData.affinities[categoryIndex];
+        const currentCategoryName = t.categories[categoryIndex]?.name || '';
+        const items = staticData.affinities[categoryIndex].items;
+        const content = items.map((item, idx) => {
             if (item.isEmbed) {
                 return `
                     <div class="border-2 border-gray-800 hover:border-red-500 transition-colors bg-gray-900/50 p-3 sm:p-4">
@@ -282,6 +301,14 @@ function renderAffinities(t) {
                 `;
             }
         }).join('');
+
+        return `
+            <div class="affinity-panel affinity-panel-active" role="tabpanel" aria-label="${escapeHtml(currentCategoryName)}">
+                <div class="${currentCategory.icon === 'fas fa-headphones' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5'} gap-3 sm:gap-4" data-typewriter-scope="true">
+                    ${content}
+                </div>
+            </div>
+        `;
     };
 
     const buttonsHtml = t.categories.map((cat, index) => `
@@ -294,12 +321,66 @@ function renderAffinities(t) {
     const html = `
         <div>
             <div class="flex flex-wrap gap-x-2 sm:gap-x-4 gap-y-2 mb-4 sm:mb-6">${buttonsHtml}</div>
-            <div id="affinities-content" class="${staticData.affinities[activeCategoryIndex].icon === 'fas fa-headphones' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5'} gap-3 sm:gap-4">${renderContent()}</div>
+            <div id="affinities-content">${renderContent(activeCategoryIndex)}</div>
         </div>`;
 
     setTimeout(() => {
+        const contentHost = document.getElementById('affinities-content');
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        const showPanel = (panel) => {
+            panel.hidden = false;
+            panel.classList.remove('affinity-panel-leave-active', 'affinity-panel-leave-to', 'affinity-panel-enter-from');
+            panel.classList.add('affinity-panel-enter-active');
+
+            requestAnimationFrame(() => {
+                panel.classList.add('affinity-panel-enter-to');
+            });
+
+            panel.addEventListener('transitionend', () => {
+                panel.classList.remove('affinity-panel-enter-active', 'affinity-panel-enter-to');
+                panel.classList.add('affinity-panel-active');
+                restartTypewriterAnimations(panel);
+            }, { once: true });
+        };
+
+        const swapPanel = (nextIndex) => {
+            const currentPanel = contentHost.querySelector('.affinity-panel');
+            const nextWrapper = document.createElement('div');
+            nextWrapper.innerHTML = renderContent(nextIndex);
+            const nextPanel = nextWrapper.firstElementChild;
+
+            if (!currentPanel || reduceMotion) {
+                contentHost.innerHTML = '';
+                contentHost.appendChild(nextPanel);
+                nextPanel.classList.add('affinity-panel-active');
+                restartTypewriterAnimations(nextPanel);
+                return;
+            }
+
+            nextPanel.hidden = true;
+            nextPanel.classList.add('affinity-panel-enter-from');
+            contentHost.appendChild(nextPanel);
+
+            currentPanel.classList.remove('affinity-panel-active');
+            currentPanel.classList.add('affinity-panel-leave-active');
+
+            requestAnimationFrame(() => {
+                currentPanel.classList.add('affinity-panel-leave-to');
+            });
+
+            currentPanel.addEventListener('transitionend', () => {
+                currentPanel.hidden = true;
+                currentPanel.remove();
+                showPanel(nextPanel);
+            }, { once: true });
+        };
+
         document.querySelectorAll('.affinity-cat-button').forEach(button => {
             button.addEventListener('click', () => {
+                const nextIndex = Number.parseInt(button.dataset.index, 10);
+                if (nextIndex === activeCategoryIndex) return;
+
                 document.querySelectorAll('.affinity-cat-button').forEach(btn => {
                     btn.classList.remove('border-red-500', 'text-white');
                     btn.classList.add('border-gray-700', 'text-gray-400', 'hover:text-white');
@@ -307,10 +388,12 @@ function renderAffinities(t) {
                 button.classList.add('border-red-500', 'text-white');
                 button.classList.remove('border-gray-700', 'text-gray-400', 'hover:text-white');
 
-                activeCategoryIndex = parseInt(button.dataset.index);
-                document.getElementById('affinities-content').innerHTML = renderContent();
+                activeCategoryIndex = nextIndex;
+                swapPanel(activeCategoryIndex);
             });
         });
+
+        restartTypewriterAnimations(contentHost.querySelector('.affinity-panel'));
     }, 0);
 
     return html;
