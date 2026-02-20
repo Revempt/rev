@@ -21,13 +21,8 @@ function escapeHtml(value) {
         .replace(/'/g, '&#39;');
 }
 
-function isReducedMotionEnabled() {
-    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-}
-
 // --- FUNÇÃO PRINCIPAL DE RENDERIZAÇÃO ---
-function renderApp(options = {}) {
-    const { skipAnimation = false } = options;
+function renderApp() {
     const t = state.translations;
     if (!t.menu) return; // Aguarda o carregamento das traduções
 
@@ -53,17 +48,8 @@ function renderApp(options = {}) {
 
     const sectionTitle = escapeHtml(t[state.activeSection]?.title || '');
     contentWindow.innerHTML = `<h2 class="text-xl sm:text-2xl text-red-500 mb-4 sm:mb-6 tracking-widest text-glow">${sectionTitle}</h2>${contentHtml}`;
-
-    if (!skipAnimation && !isReducedMotionEnabled()) {
-        contentWindow.classList.add('section-enter-active', 'section-enter-from');
-        requestAnimationFrame(() => {
-            contentWindow.classList.remove('section-enter-from');
-            contentWindow.classList.add('section-enter-to');
-        });
-        contentWindow.addEventListener('transitionend', () => {
-            contentWindow.classList.remove('section-enter-active', 'section-enter-to');
-        }, { once: true });
-    }
+    contentWindow.classList.add('fade-in');
+    setTimeout(() => contentWindow.classList.remove('fade-in'), 500);
 
     renderSystemStatus(t.status);
 
@@ -74,32 +60,6 @@ function renderApp(options = {}) {
 
     addEventListeners();
     window.ParticlesAPI?.setMode(state.activeSection);
-}
-
-function changeActiveSection(nextSection) {
-    if (!nextSection || nextSection === state.activeSection) return;
-
-    const contentWindow = document.getElementById('content-window');
-    const reduceMotion = isReducedMotionEnabled();
-    state.activeSection = nextSection;
-
-    if (!contentWindow || reduceMotion) {
-        renderApp({ skipAnimation: reduceMotion });
-        return;
-    }
-
-    contentWindow.classList.remove('section-enter-active', 'section-enter-from', 'section-enter-to');
-    contentWindow.classList.add('section-leave-active');
-    requestAnimationFrame(() => {
-        contentWindow.classList.add('section-leave-to');
-    });
-
-    contentWindow.addEventListener('transitionend', () => {
-        contentWindow.hidden = true;
-        contentWindow.classList.remove('section-leave-active', 'section-leave-to');
-        renderApp({ skipAnimation: false });
-        contentWindow.hidden = false;
-    }, { once: true });
 }
 
 
@@ -313,8 +273,10 @@ function addEventListeners() {
     document.querySelectorAll('.menu-button').forEach(button => {
         button.addEventListener('click', () => {
             soundManager.playClick();
-            changeActiveSection(button.dataset.section);
+            state.activeSection = button.dataset.section;
+            window.ParticlesAPI?.setMode(state.activeSection);
             soundManager.playLoad();
+            renderApp();
             // Fechar menu mobile após clicar
             if (window.innerWidth < 1024) {
                 closeMobileMenu();
