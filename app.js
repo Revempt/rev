@@ -11,6 +11,16 @@ let state = {
     isDiagnosticsModalOpen: false
 };
 
+
+function escapeHtml(value) {
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 // --- FUNÇÃO PRINCIPAL DE RENDERIZAÇÃO ---
 function renderApp() {
     const t = state.translations;
@@ -36,7 +46,7 @@ function renderApp() {
         case 'wishlist': contentHtml = renderWishlist(t.wishlist); break;
     }
 
-    const sectionTitle = t[state.activeSection]?.title || '';
+    const sectionTitle = escapeHtml(t[state.activeSection]?.title || '');
     contentWindow.innerHTML = `<h2 class="text-xl sm:text-2xl text-red-500 mb-4 sm:mb-6 tracking-widest text-glow">${sectionTitle}</h2>${contentHtml}`;
     contentWindow.classList.add('fade-in');
     setTimeout(() => contentWindow.classList.remove('fade-in'), 500);
@@ -132,8 +142,8 @@ async function updateDiagnosticsPanel() {
 
     container.innerHTML = rows.map(row => `
         <div class="border border-red-900/40 bg-black/30 px-3 py-2">
-            <p class="text-red-400 text-xs uppercase tracking-wider">${row.label}</p>
-            <p class="text-gray-200 text-sm break-words">${row.value}</p>
+            <p class="text-red-400 text-xs uppercase tracking-wider">${escapeHtml(row.label)}</p>
+            <p class="text-gray-200 text-sm break-words">${escapeHtml(row.value)}</p>
         </div>
     `).join('');
 }
@@ -377,9 +387,6 @@ function closeMobileMenu() {
 async function loadLanguage(lang) {
     state.language = lang;
     state.translations = languageData[lang];
-    if (state.translations && state.translations.menu) {
-        delete state.translations.menu.diagnostics;
-    }
     renderApp();
 }
 

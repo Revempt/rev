@@ -65,8 +65,10 @@ self.addEventListener('fetch', (event) => {
 async function handleNavigationRequest(request) {
   try {
     const networkResponse = await fetch(request);
-    const cache = await caches.open(CACHE_NAME);
-    cache.put(request, networkResponse.clone());
+    if (networkResponse && networkResponse.ok) {
+      const cache = await caches.open(CACHE_NAME);
+      cache.put(request, networkResponse.clone());
+    }
     return networkResponse;
   } catch (error) {
     const cachedResponse = await caches.match(request);
@@ -81,8 +83,10 @@ async function handleAssetRequest(request) {
   }
 
   const networkResponse = await fetch(request);
-  const cache = await caches.open(CACHE_NAME);
-  cache.put(request, networkResponse.clone());
+  if (networkResponse && networkResponse.ok) {
+    const cache = await caches.open(CACHE_NAME);
+    cache.put(request, networkResponse.clone());
+  }
   return networkResponse;
 }
 
@@ -91,8 +95,10 @@ async function handleImageRequest(request) {
 
   try {
     const networkResponse = await fetch(request);
-    cache.put(request, networkResponse.clone());
-    await trimImageCache(cache, MAX_IMAGE_ENTRIES);
+    if (networkResponse && networkResponse.ok) {
+      cache.put(request, networkResponse.clone());
+      await trimImageCache(cache, MAX_IMAGE_ENTRIES);
+    }
     return networkResponse;
   } catch (error) {
     const cachedResponse = await cache.match(request);
@@ -100,7 +106,10 @@ async function handleImageRequest(request) {
       return cachedResponse;
     }
 
-    return caches.match(request);
+    const genericCached = await caches.match(request);
+    if (genericCached) return genericCached;
+
+    return new Response('', { status: 404, statusText: 'Not Found' });
   }
 }
 

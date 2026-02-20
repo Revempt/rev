@@ -1,4 +1,26 @@
 // --- FUNÇÕES DE RENDERIZAÇÃO ---
+
+function escapeHtml(value) {
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function safeUrl(value) {
+    try {
+        const url = new URL(value, window.location.origin);
+        if (url.protocol === 'http:' || url.protocol === 'https:') {
+            return url.toString();
+        }
+    } catch (error) {
+        return '#';
+    }
+    return '#';
+}
+
 function typeOutText(element, text, speed = 30) {
     if (!element) return;
     let i = 0;
@@ -93,11 +115,11 @@ function renderProfile(t) {
             <p class="text-red-500 font-bold text-xs sm:text-sm uppercase tracking-widest mb-3 sm:mb-4">${t.socialsTitle}</p>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 ${staticData.socials.map(social => `
-                    <a href="${social.url}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 sm:gap-3 text-gray-400 hover:text-red-500 transition-colors bg-gray-800/70 p-2 sm:p-3 border border-transparent hover:border-red-700">
+                    <a href="${safeUrl(social.url)}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 sm:gap-3 text-gray-400 hover:text-red-500 transition-colors bg-gray-800/70 p-2 sm:p-3 border border-transparent hover:border-red-700">
                         <i class="${social.icon} w-4 sm:w-5 text-center"></i>
                         <div class="min-w-0 flex-1">
-                            <p class="font-bold text-white text-xs sm:text-sm truncate">${social.name}</p>
-                            <p class="text-xs truncate">${social.user}</p>
+                            <p class="font-bold text-white text-xs sm:text-sm truncate">${escapeHtml(social.name)}</p>
+                            <p class="text-xs truncate">${escapeHtml(social.user)}</p>
                         </div>
                     </a>
                 `).join('')}
@@ -561,21 +583,6 @@ function renderWishlist(t) {
             <div class="grid grid-cols-1 gap-3 sm:gap-4">
                 ${cardsHtml}
             </div>
-        </div>
-    `;
-}
-
-
-function renderDiagnostics() {
-    return `
-        <div class="bg-gray-900/50 p-3 sm:p-4 border border-red-800/50">
-            <p class="text-gray-400 text-sm">Carregando diagnóstico...</p>
-            <div id="diagnostics-container" class="mt-3 space-y-3"></div>
-            <div class="mt-4 flex flex-wrap gap-2">
-                <button id="diag-clear-cache" class="px-3 py-2 border border-red-800/70 text-red-300 hover:bg-red-500/10">Limpar cache</button>
-                <button id="diag-reload" class="px-3 py-2 border border-red-800/70 text-red-300 hover:bg-red-500/10">Recarregar/Atualizar</button>
-            </div>
-            <p class="text-xs text-gray-500 mt-2">Se atualização não aplicar, tente hard reload (Ctrl/Cmd + Shift + R).</p>
         </div>
     `;
 }
