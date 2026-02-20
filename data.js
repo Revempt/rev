@@ -71,7 +71,8 @@ const staticData = {
             { name: "Lonely Day", image: "imagens/albums/LonelyDay.jpg" },
             { name: "Bodies", image: "imagens/albums/Bodies.jpg" },
             { name: "Espresso", image: "imagens/albums/Espresso.jpg" },
-            { name: "One More Light", image: "imagens/albums/OML.jpg" }
+            { name: "One More Light", image: "imagens/albums/OML.jpg" },
+            { name: "Behind Blue Eyes", image: "imagens/albums/BBE.jpg" }
         ]},
         { icon: "fas fa-headphones", items: [
             {
