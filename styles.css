@@ -391,78 +391,8 @@ h1, h2, h3, button, h4, h5 {
     color: rgba(250, 204, 21, 1);
 }
 
-/* -------- Arsenal / Setup (classic) -------- */
-.arsenal-setup-section {
-    background: rgba(3, 9, 22, 0.58);
-    border: 1px solid rgba(239, 68, 68, 0.58);
-    box-shadow: inset 0 0 10px rgba(239, 68, 68, 0.08), 0 0 14px rgba(239, 68, 68, 0.1);
-    padding: 14px;
-}
-
-.arsenal-setup-title {
-    color: #ef4444;
-    font-size: 0.85rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    margin-bottom: 12px;
-}
-
-.arsenal-setup-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
-}
-
-.arsenal-setup-card {
-    background: rgba(30, 41, 59, 0.62);
-    border: 1px solid rgba(148, 163, 184, 0.22);
-    box-shadow: 0 4px 12px rgba(2, 6, 23, 0.32);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-}
-
-.arsenal-setup-card-icon {
-    display: inline-flex;
-    color: #ef4444;
-    flex-shrink: 0;
-}
-
+/* -------- Arsenal / Setup -------- */
 .setup-item-icon {
     width: 18px;
     height: 18px;
-}
-
-.arsenal-setup-card-label {
-    color: #f3f4f6;
-    font-size: 0.82rem;
-    font-weight: 700;
-    line-height: 1.2;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.arsenal-setup-card-value {
-    color: #9ca3af;
-    font-size: 0.78rem;
-    line-height: 1.2;
-    margin-top: 2px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-@media (max-width: 900px) {
-    .arsenal-setup-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-}
-
-@media (max-width: 560px) {
-    .arsenal-setup-grid {
-        grid-template-columns: 1fr;
-    }
 }

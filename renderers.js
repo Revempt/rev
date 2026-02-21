@@ -139,18 +139,18 @@ function renderProfile(t) {
     };
 
     const setupHtml = `
-        <div class="mt-4 lg:col-span-2 arsenal-setup-section">
-            <p class="arsenal-setup-title">${t.setupTitle}</p>
-            <div class="arsenal-setup-grid">
+        <div class="mt-4 lg:col-span-2 bg-gray-900/50 p-3 sm:p-4 border border-red-800/50">
+            <p class="text-red-500 font-bold text-xs sm:text-sm uppercase tracking-widest mb-3 sm:mb-4">${t.setupTitle}</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 ${staticData.setup.map((item, index) => {
                     const translatedLabel = t.setup[index] && t.setup[index].label ? t.setup[index].label : item.label;
                     const iconSvg = setupIcons[item.icon] || setupIcons.cpu;
                     return `
-                        <div class="arsenal-setup-card">
-                            <span class="arsenal-setup-card-icon">${iconSvg}</span>
+                        <div class="flex items-center gap-2 sm:gap-3 text-gray-400 bg-gray-800/70 p-2 sm:p-3 border border-transparent">
+                            <span class="inline-flex text-red-500 flex-shrink-0">${iconSvg}</span>
                             <div class="min-w-0 flex-1">
-                                <p class="arsenal-setup-card-label">${escapeHtml(translatedLabel)}</p>
-                                <p class="arsenal-setup-card-value">${escapeHtml(item.value)}</p>
+                                <p class="font-bold text-white text-xs sm:text-sm truncate">${escapeHtml(translatedLabel)}</p>
+                                <p class="text-xs truncate">${escapeHtml(item.value)}</p>
                             </div>
                         </div>
                     `;
@@ -538,6 +538,7 @@ function renderSystemStatus(t) {
    =========================== */
 function renderWishlist(t) {
     const items = staticData.wishlistItems || [];
+
     const sortedItems = [...items].sort((a, b) => {
         const aPending = a.status === 'pendente' ? 0 : 1;
         const bPending = b.status === 'pendente' ? 0 : 1;
