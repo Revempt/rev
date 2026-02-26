@@ -129,14 +129,15 @@ const staticData = {
     wishlistItems: [
         {
             id: "monitor",
-            name: "Alienware 27” QHD AW2725DM",
+            name: "Alienware 34”- AW3423DWF",
             category: "Monitor",
-            model: "2560x1440 / 180Hz / FIPS",
-            price: 2500,
+            model: "3440 x 1440 / 165 Hz / QD-OLED",
+            price: 6500,
             image: "imagens/wishlist/monitor.png",
             status: "pendente",
             priority: 2,
-            note: "Pra enxergar até o último pixel de sua vida"
+            note: "Visão dos Deuses"
+            
         },
         {
             id: "gpu",
@@ -144,7 +145,7 @@ const staticData = {
             category: "Placa de vídeo",
             model: "ASUS PRIME RTX 5060 TI 16GB",
             price: 4000,
-            image: "imagens/wishlist/gpu.jpg",
+            image: "imagens/wishlist/gpu.png",
             status: "pendente",
             priority: 1,
             note: "Roda Doom"
