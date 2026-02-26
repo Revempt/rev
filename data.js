@@ -53,7 +53,8 @@ const staticData = {
             { name: "Peter Parker", image: "imagens/characters/parker.png" },
             { name: "Izuku Midoriya", image: "imagens/characters/deku.jpg" },
             { name: "Geralt De Rivia", image: "imagens/characters/geralt.jpg" },
-            { name: "Leon S. Kennedy", image: "imagens/characters/Leon.jpg" }
+            { name: "Leon S. Kennedy", image: "imagens/characters/Leon.jpg" },
+            { name: "Ciri", image: "imagens/characters/Ciri.jpg" }
         ]},
         { icon: "fas fa-music", items: [
             { name: "Time of Dying", image: "imagens/albums/TimeOfDying.jpg" },
