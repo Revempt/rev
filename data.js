@@ -130,9 +130,9 @@ const staticData = {
     wishlistItems: [
         {
             id: "monitor",
-            name: "Alienware 34”- AW3423DWF",
+            name: "Dell Alienware UltraWide 34”",
             category: "Monitor",
-            model: "3440 x 1440 / 165 Hz / QD-OLED",
+            model: "Alienware 34”- AW3423DWF",
             price: 6500,
             image: "imagens/wishlist/monitor.png",
             status: "pendente",
