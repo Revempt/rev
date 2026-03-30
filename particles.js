@@ -74,7 +74,6 @@ const baseSettings = {
 const modeSettings = {
     default: { speed: 1, connectDistance: 170, densityDivisor: 9000, maxSpeed: 0.7 },
     profile: { speed: 0.92, connectDistance: 180, densityDivisor: 9400, maxSpeed: 0.66 },
-    wishlist: { speed: 1.02, connectDistance: 165, densityDivisor: 9000, maxSpeed: 0.72 },
     gallery: { speed: 1.08, connectDistance: 155, densityDivisor: 8600, maxSpeed: 0.78 },
     records: { speed: 0.88, connectDistance: 185, densityDivisor: 9800, maxSpeed: 0.64 }
 };

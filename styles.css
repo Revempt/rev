@@ -355,42 +355,6 @@ h1, h2, h3, button, h4, h5 {
     }
 }
 
-/* -------- Wishlist -------- */
-.wishlist-bar {
-    transition: width 400ms ease;
-}
-
-.wishlist-thumb {
-    width: 92px;
-    height: 92px;
-}
-
-@media (min-width: 640px) {
-    .wishlist-thumb {
-        width: 108px;
-        height: 108px;
-    }
-}
-
-.wishlist-achieved {
-    border-color: rgba(34, 197, 94, 0.35) !important;
-    box-shadow: 0 0 14px rgba(34, 197, 94, 0.15);
-}
-
-.wishlist-pending {
-    box-shadow: 0 0 14px rgba(255, 50, 50, 0.08);
-}
-
-.wishlist-badge-achieved {
-    border-color: rgba(34, 197, 94, 0.5);
-    color: rgba(74, 222, 128, 1);
-}
-
-.wishlist-badge-pending {
-    border-color: rgba(250, 204, 21, 0.5);
-    color: rgba(250, 204, 21, 1);
-}
-
 /* -------- Arsenal / Setup -------- */
 .setup-item-icon {
     width: 18px;

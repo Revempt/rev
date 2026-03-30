@@ -106,7 +106,6 @@ const staticData = {
         affinities: "fas fa-heart",
         records: "fas fa-book-open",
         gallery: "fas fa-image",
-        wishlist: "fas fa-star",
         diagnostics: "fas fa-stethoscope"
     },
 
@@ -124,78 +123,6 @@ const staticData = {
         { key: "monitor", label: "Monitor", value: "LG 22MP58VQ 75HZ", icon: "monitor" },
         { key: "mousepad", label: "Mousepad", value: "FORTREK SPEED LARGE", icon: "mousepad" }
     ],
-
-    // ✅ WISHLIST (ESTÁTICO)
-    // status: "pendente" | "conquistado"
-    wishlistItems: [
-        {
-            id: "monitor",
-            name: "Dell Alienware UltraWide 34”",
-            category: "Monitor",
-            model: "Alienware 34”- AW3423DWF",
-            price: 6500,
-            image: "imagens/wishlist/monitor.png",
-            status: "pendente",
-            priority: 2,
-            note: "Visão dos Deuses"
-            
-        },
-        {
-            id: "gpu",
-            name: "RTX 5060 TI",
-            category: "Placa de vídeo",
-            model: "ASUS PRIME RTX 5060 TI 16GB",
-            price: 4000,
-            image: "imagens/wishlist/gpu.png",
-            status: "pendente",
-            priority: 1,
-            note: "Roda Doom"
-        },
-        {
-            id: "mouse",
-            name: "G703",
-            category: "Periféricos",
-            model: "Logitech G703 Lightspeed",
-            price: 400,
-            image: "imagens/wishlist/mouse.png",
-            status: "pendente",
-            priority: 4,
-            note: "Pra subir capa"
-        },
-        {
-            id: "teclado",
-            name: "Aula F75",
-            category: "Periféricos",
-            model: "Aula F75 Wireless",
-            price: 400,
-            image: "imagens/wishlist/teclado.png",
-            status: "pendente",
-            priority: 5,
-            note: "Pra codar liso liso filho"
-        },
-        {
-            id: "microfone",
-            name: "A6V",
-            category: "Áudio",
-            model: "Fifine A6V Ampligame",
-            price: 200,
-            image: "imagens/wishlist/microfone.png",
-            status: "pendente",
-            priority: 3,
-            note: "Fala baixo nengue"
-        },
-        {
-            id: "headset",
-            name: "Zeus X Pro",
-            category: "Áudio",
-            model: "Redragon H510-Pro Zeus",
-            price: 400,
-            image: "imagens/wishlist/headset.png",
-            status: "pendente",
-            priority: 3,
-            note: "Pra ouvir rock no talo"
-        }
-    ]
 };
 
 // --- DADOS DE TRADUÇÃO ---
@@ -270,17 +197,6 @@ const languageData = {
         },
         gallery: { title: "Banco de Memória Visual" },
 
-        // ✅ WISHLIST TRADUZIDA
-        wishlist: {
-            title: "Wishlist de Upgrade",
-            progress: "Progresso",
-            total: "Total",
-            achieved: "Conquistado",
-            pending: "Pendente",
-            priority: "Prioridade",
-            nextTarget: "Próximo alvo"
-        },
-
         diagnostics: {
             title: "Diagnóstico"
         },
@@ -290,7 +206,6 @@ const languageData = {
             affinities: "Afinidades",
             records: "Registros",
             gallery: "Galeria",
-            wishlist: "Wishlist",
             diagnostics: "DIAGNÓSTICO"
         },
         status: {
@@ -377,16 +292,6 @@ const languageData = {
         },
         gallery: { title: "Visual Memory Bank" },
 
-        wishlist: {
-            title: "Upgrade Wishlist",
-            progress: "Progress",
-            total: "Total",
-            achieved: "Achieved",
-            pending: "Pending",
-            priority: "Priority",
-            nextTarget: "Next target"
-        },
-
         diagnostics: {
             title: "Diagnostics"
         },
@@ -396,7 +301,6 @@ const languageData = {
             affinities: "Affinities",
             records: "Records",
             gallery: "Gallery",
-            wishlist: "Wishlist",
             diagnostics: "DIAGNÓSTICO"
         },
         status: {
@@ -483,16 +387,6 @@ const languageData = {
         },
         gallery: { title: "Banco de Memoria Visual" },
 
-        wishlist: {
-            title: "Lista de Deseos (Upgrade)",
-            progress: "Progreso",
-            total: "Total",
-            achieved: "Conseguido",
-            pending: "Pendiente",
-            priority: "Prioridad",
-            nextTarget: "Próximo objetivo"
-        },
-
         diagnostics: {
             title: "Diagnóstico"
         },
@@ -502,7 +396,6 @@ const languageData = {
             affinities: "Afinidades",
             records: "Registros",
             gallery: "Galería",
-            wishlist: "Wishlist",
             diagnostics: "DIAGNÓSTICO"
         },
         status: {
@@ -589,16 +482,6 @@ const languageData = {
         },
         gallery: { title: "視覚的記憶バンク" },
 
-        wishlist: {
-            title: "アップグレード・ウィッシュリスト",
-            progress: "進捗",
-            total: "合計",
-            achieved: "達成",
-            pending: "保留",
-            priority: "優先度",
-            nextTarget: "次の目標"
-        },
-
         diagnostics: {
             title: "診断"
         },
@@ -608,7 +491,6 @@ const languageData = {
             affinities: "親和性",
             records: "記録",
             gallery: "ギャラリー",
-            wishlist: "Wishlist",
             diagnostics: "DIAGNÓSTICO"
         },
         status: {

@@ -41,9 +41,6 @@ function renderApp() {
         case 'affinities': contentHtml = renderAffinities(t.affinities); break;
         case 'records': contentHtml = renderRecords(t.records); break;
         case 'gallery': contentHtml = renderGallery(); break;
-
-        // ✅ NOVA SEÇÃO: WISHLIST
-        case 'wishlist': contentHtml = renderWishlist(t.wishlist); break;
     }
 
     const sectionTitle = escapeHtml(t[state.activeSection]?.title || '');
