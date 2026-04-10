@@ -56,7 +56,8 @@ const staticData = {
             { name: "Geralt De Rivia", image: "imagens/characters/geralt.jpg" },
             { name: "Leon S. Kennedy", image: "imagens/characters/Leon.jpg" },
             { name: "Ciri", image: "imagens/characters/Ciri.jpg" },
-            { name: "Patrick Jane", image: "imagens/characters/pjane.jpg" }
+            { name: "Patrick Jane", image: "imagens/characters/pjane.jpg" },
+            { name: "Gregory House", image: "imagens/characters/house.jpg" }
         ]},
         { icon: "fas fa-music", items: [
             { name: "Time of Dying", image: "imagens/albums/TimeOfDying.jpg" },
