@@ -22,7 +22,8 @@ const staticData = {
             { name: "Reacher", image: "imagens/series/reacher.jpg" },
             { name: "Stranger Things", image: "imagens/series/stranger-things.jpg" },
             { name: "Game of Thrones", image: "imagens/series/game-of-thrones.jpg" },
-            { name: "Fallout", image: "imagens/series/Fallout.jpg" }
+            { name: "Fallout", image: "imagens/series/Fallout.jpg" },
+            { name: "The Mentalist", image: "imagens/series/mentalist.jpg" }
         ]},
         { icon: "fas fa-film", items: [
             { name: "Interstellar", image: "imagens/movies/interstellar.jpg" },
@@ -54,7 +55,8 @@ const staticData = {
             { name: "Izuku Midoriya", image: "imagens/characters/deku.jpg" },
             { name: "Geralt De Rivia", image: "imagens/characters/geralt.jpg" },
             { name: "Leon S. Kennedy", image: "imagens/characters/Leon.jpg" },
-            { name: "Ciri", image: "imagens/characters/Ciri.jpg" }
+            { name: "Ciri", image: "imagens/characters/Ciri.jpg" },
+            { name: "Patrick Jane", image: "imagens/characters/pjane.jpg" }
         ]},
         { icon: "fas fa-music", items: [
             { name: "Time of Dying", image: "imagens/albums/TimeOfDying.jpg" },
