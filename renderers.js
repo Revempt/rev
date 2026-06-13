@@ -21,14 +21,33 @@ function safeUrl(value) {
     return '#';
 }
 
-// --- MÁQUINA DE ESCREVER (loop único via requestAnimationFrame) ---
+// --- MÁQUINA DE ESCREVER (Otimizado via TextNode) ---
 const typewriterQueue = [];
 let typewriterRaf = null;
 
 function typeOutText(element, text, speed = 30) {
     if (!element) return;
+    
+    // Otimização: Evita innerHTML contínuo. Usamos nós de texto diretos.
     element.innerHTML = '';
-    typewriterQueue.push({ element, text, speed, startTime: null, lastIndex: -1 });
+    const textNode = document.createTextNode('');
+    const cursorNode = document.createElement('span');
+    cursorNode.className = 'animate-pulse cursor';
+    cursorNode.textContent = '_';
+    
+    element.appendChild(textNode);
+    element.appendChild(cursorNode);
+
+    typewriterQueue.push({ 
+        element, 
+        textNode, 
+        cursorNode, 
+        text, 
+        speed, 
+        startTime: null, 
+        lastIndex: -1 
+    });
+
     if (typewriterRaf === null) {
         typewriterRaf = requestAnimationFrame(runTypewriters);
     }
@@ -44,11 +63,16 @@ function runTypewriters(now) {
 
         if (targetIndex !== item.lastIndex) {
             item.lastIndex = targetIndex;
+            
+            // Otimização: Atualiza só a string na memória, sem forçar reflow/parse de HTML
+            item.textNode.nodeValue = item.text.substring(0, targetIndex);
+
             if (targetIndex >= item.text.length) {
-                item.element.innerHTML = item.text;
+                // Remove o cursor suavemente quando termina
+                if (item.cursorNode.parentNode) {
+                    item.cursorNode.parentNode.removeChild(item.cursorNode);
+                }
                 typewriterQueue.splice(i, 1);
-            } else {
-                item.element.innerHTML = item.text.substring(0, targetIndex) + '<span class="animate-pulse cursor">_</span>';
             }
         }
     }
@@ -56,7 +80,6 @@ function runTypewriters(now) {
     typewriterRaf = typewriterQueue.length > 0 ? requestAnimationFrame(runTypewriters) : null;
 }
 
-// Cancela todas as digitações em andamento (chamar ao trocar de seção)
 function clearTypewriters() {
     typewriterQueue.length = 0;
     if (typewriterRaf !== null) {
@@ -83,17 +106,12 @@ function bindReactiveParticleEvents(selector) {
         if (element.dataset.particlesBound === '1') return;
         element.dataset.particlesBound = '1';
 
-        element.addEventListener('mouseenter', () => {
-            triggerParticlesAtElement(element, 'attract');
-        });
-
-        element.addEventListener('click', () => {
-            triggerParticlesAtElement(element, 'burst');
-        });
+        element.addEventListener('mouseenter', () => triggerParticlesAtElement(element, 'attract'), { passive: true });
+        element.addEventListener('click', () => triggerParticlesAtElement(element, 'burst'), { passive: true });
     });
 }
 
-// --- LIGHTBOX (modal de imagens, criado uma única vez sob demanda) ---
+// --- LIGHTBOX ---
 
 function ensureImageViewerModal(prefix) {
     const modalId = `${prefix}-modal`;
@@ -164,7 +182,6 @@ function createLightbox(prefix) {
     return { open, close, nav };
 }
 
-// Singletons criados sob demanda (no primeiro clique em uma imagem)
 let affinityLightbox = null;
 let galleryLightbox = null;
 
@@ -185,7 +202,7 @@ window.openLightbox = function (idx) {
     galleryLightbox.open(items, idx);
 };
 
-// --- ÍCONES DO SETUP (constantes, computadas uma única vez) ---
+// --- ÍCONES DO SETUP ---
 const PROFILE_SETUP_ICONS = {
     cpu: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="10" y="10" width="4" height="4" fill="currentColor"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
     gpu: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><rect x="3" y="7" width="15" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 10h3M12 14h3M18 11h3M18 13h3M18 15h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
@@ -304,13 +321,10 @@ function renderAffinities(t) {
                         return `
                             <div class="border-2 border-gray-800 hover:border-red-500 transition-colors bg-gray-900/50 p-3 sm:p-4">
                                 <h3 class="text-white text-sm sm:text-lg font-bold mb-2 sm:mb-3 text-center">${item.name}</h3>
-                                <div class="spotify-embed">
-                                    ${item.embed}
-                                </div>
+                                <div class="spotify-embed">${item.embed}</div>
                             </div>
                         `;
                     }
-
                     return `
                         <div class="relative group border-2 border-gray-800 hover:border-red-500 transition-colors cursor-pointer" onclick="openAffinityLightbox('${categoryKey}', ${idx})">
                             <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover" />
@@ -435,12 +449,18 @@ function renderAffinities(t) {
             }, { passive: true });
         });
 
-        // Throttle via rAF + remove o listener anterior pra não acumular a cada visita à aba
+        // Otimização: Previne memory leak seccionando o Resize Observer
         if (window.__affinitiesResizeHandler) {
             window.removeEventListener('resize', window.__affinitiesResizeHandler);
         }
         let resizeRaf = null;
         window.__affinitiesResizeHandler = () => {
+            // Auto-destruição do listener se o elemento não existir mais na tela (ex: mudou de aba)
+            if (!document.body.contains(wrapper)) {
+                window.removeEventListener('resize', window.__affinitiesResizeHandler);
+                return;
+            }
+            
             if (resizeRaf) return;
             resizeRaf = requestAnimationFrame(() => {
                 syncWrapperHeight(getPanel(activeKey));
@@ -474,6 +494,25 @@ function renderGallery() {
 }
 
 function renderSystemStatus(t) {
+    // Otimização: Removido o setInterval de JS. Injeção de CSS para animação nativa acelerada por GPU.
+    const cssId = 'chaos-bar-style';
+    if (!document.getElementById(cssId)) {
+        const style = document.createElement('style');
+        style.id = cssId;
+        style.innerHTML = `
+            @keyframes chaos-fluctuate {
+                0% { width: 60%; }
+                33% { width: 75%; }
+                66% { width: 65%; }
+                100% { width: 60%; }
+            }
+            .animate-chaos {
+                animation: chaos-fluctuate 6s infinite ease-in-out;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
     const container = document.getElementById('system-status-container');
     const languagesHtml = t.languages.map((lang, index) => `
         <div>
@@ -494,7 +533,7 @@ function renderSystemStatus(t) {
                 <div>
                     <p class="text-gray-400">${t.chaos}:</p>
                     <div class="w-full bg-gray-800 border border-gray-700 h-3 sm:h-4 mt-1">
-                        <div id="chaos-bar" class="bg-red-600 h-full" style="width: 60%;"></div>
+                        <div id="chaos-bar" class="bg-red-600 h-full animate-chaos"></div>
                     </div>
                 </div>
                 <div class="flex justify-between items-center">
@@ -514,20 +553,4 @@ function renderSystemStatus(t) {
                 </div>
             </div>
         </div>`;
-
-    const chaosBar = document.getElementById('chaos-bar');
-    const widths = ['60%', '75%', '65%'];
-    let i = 0;
-
-    if (state.chaosIntervalId) {
-        clearInterval(state.chaosIntervalId);
-    }
-
-    state.chaosIntervalId = setInterval(() => {
-        if (chaosBar) {
-            chaosBar.style.transition = 'width 2s ease-in-out';
-            chaosBar.style.width = widths[i];
-            i = (i + 1) % widths.length;
-        }
-    }, 2000);
 }

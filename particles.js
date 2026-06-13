@@ -1,4 +1,7 @@
 // --- LÓGICA DO CANVAS DE FUNDO ---
+
+const PI2 = Math.PI * 2; // Cache do cálculo do círculo para otimização
+
 class Particle {
     constructor(x, y, directionX, directionY, size, color) {
         this.x = x;
@@ -11,12 +14,13 @@ class Particle {
     
     draw() {
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+        ctx.arc(this.x, this.y, this.size, 0, PI2, false);
         ctx.fillStyle = this.color;
         ctx.fill();
     }
     
     update() {
+        // Colisão com as bordas
         if (this.x > canvas.width || this.x < 0) {
             this.directionX = -this.directionX;
         }
@@ -24,30 +28,38 @@ class Particle {
             this.directionY = -this.directionY;
         }
         
-        let dx = mouse.x - this.x;
-        let dy = mouse.y - this.y;
-        let distance = Math.sqrt(dx*dx + dy*dy);
-        
-        if (distance < mouse.radius + this.size) {
-            if (mouse.x < this.x && this.x < canvas.width - this.size * 10) {
-                this.x += 5;
-            }
-            if (mouse.x > this.x && this.x > this.size * 10) {
-                this.x -= 5;
-            }
-            if (mouse.y < this.y && this.y < canvas.height - this.size * 10) {
-                this.y += 5;
-            }
-            if (mouse.y > this.y && this.y > this.size * 10) {
-                this.y -= 5;
+        // Interação com o mouse (Otimizado sem Math.sqrt)
+        if (mouse.x != null && mouse.y != null) {
+            let dx = mouse.x - this.x;
+            let dy = mouse.y - this.y;
+            let distanceSq = dx * dx + dy * dy;
+            let interactionRadius = mouse.radius + this.size;
+            
+            if (distanceSq < interactionRadius * interactionRadius) {
+                if (mouse.x < this.x && this.x < canvas.width - this.size * 10) {
+                    this.x += 5;
+                }
+                if (mouse.x > this.x && this.x > this.size * 10) {
+                    this.x -= 5;
+                }
+                if (mouse.y < this.y && this.y < canvas.height - this.size * 10) {
+                    this.y += 5;
+                }
+                if (mouse.y > this.y && this.y > this.size * 10) {
+                    this.y -= 5;
+                }
             }
         }
         
         applyAttractorForce(this);
 
+        // Limite de velocidade (Otimizado usando distâncias ao quadrado)
         const maxSpeed = currentSettings.maxSpeed;
-        const speedMagnitude = Math.hypot(this.directionX, this.directionY);
-        if (speedMagnitude > maxSpeed && speedMagnitude > 0) {
+        const speedSq = this.directionX * this.directionX + this.directionY * this.directionY;
+        const maxSpeedSq = maxSpeed * maxSpeed;
+
+        if (speedSq > maxSpeedSq && speedSq > 0) {
+            const speedMagnitude = Math.sqrt(speedSq); // Só calcula a raiz se precisar ajustar
             const clampRatio = maxSpeed / speedMagnitude;
             this.directionX *= clampRatio;
             this.directionY *= clampRatio;
@@ -103,18 +115,20 @@ function attractTo(x, y, strength = 1, duration = 400) {
 function burst(x, y, intensity = 1) {
     if (!particlesArray || !particlesArray.length) return;
     const radius = 150;
+    const radiusSq = radius * radius;
     const maxBoost = 0.9 * Math.max(0.5, intensity);
 
     for (let i = 0; i < particlesArray.length; i++) {
         const particle = particlesArray[i];
         const dx = particle.x - x;
         const dy = particle.y - y;
-        const distance = Math.hypot(dx, dy);
+        const distanceSq = dx * dx + dy * dy;
 
-        if (distance > radius) continue;
+        if (distanceSq > radiusSq) continue;
 
+        const distance = Math.sqrt(distanceSq);
         const distanceRatio = 1 - (distance / radius);
-        const baseAngle = distance > 0 ? Math.atan2(dy, dx) : Math.random() * Math.PI * 2;
+        const baseAngle = distance > 0 ? Math.atan2(dy, dx) : Math.random() * PI2;
         const boost = maxBoost * distanceRatio;
 
         particle.directionX += Math.cos(baseAngle) * boost;
@@ -133,11 +147,15 @@ function applyAttractorForce(particle) {
 
     const dx = activeAttractor.x - particle.x;
     const dy = activeAttractor.y - particle.y;
-    const distance = Math.hypot(dx, dy);
+    const distanceSq = dx * dx + dy * dy;
     const range = 180;
-    if (distance === 0 || distance > range) return;
+    const rangeSq = range * range;
+    
+    if (distanceSq === 0 || distanceSq > rangeSq) return;
 
+    const distance = Math.sqrt(distanceSq);
     const force = 0.018 * activeAttractor.strength * (1 - (distance / range));
+    
     particle.directionX += (dx / distance) * force;
     particle.directionY += (dy / distance) * force;
 }
@@ -167,8 +185,8 @@ function createParticle() {
     let size = (Math.random() * 2) + 1;
     let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
     let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
-    let directionX = (Math.random() * .4) - .2;
-    let directionY = (Math.random() * .4) - .2;
+    let directionX = (Math.random() * 0.4) - 0.2;
+    let directionY = (Math.random() * 0.4) - 0.2;
     let color = ['rgba(57, 197, 187, 0.86)', 'rgba(0, 229, 255, 0.78)', 'rgba(126, 231, 255, 0.72)'][Math.floor(Math.random() * 3)];
     return new Particle(x, y, directionX, directionY, size, color);
 }
@@ -183,7 +201,7 @@ function initParticles() {
     mouse = {
         x: null,
         y: null,
-        radius: (canvas.height/100) * (canvas.width/100)
+        radius: (canvas.height / 100) * (canvas.width / 100)
     };
 
     currentSettings = cloneSettings(baseSettings);
@@ -195,21 +213,20 @@ function initParticles() {
         burst
     };
 
-
     window.addEventListener('mousemove', (event) => {
-        mouse.x = event.x;
-        mouse.y = event.y;
+        mouse.x = event.clientX;
+        mouse.y = event.clientY;
     });
 
     window.addEventListener('mouseout', () => {
-        mouse.x = undefined;
-        mouse.y = undefined;
+        mouse.x = null;
+        mouse.y = null;
     });
 
     window.addEventListener('resize', () => {
-        canvas.width = innerWidth;
-        canvas.height = innerHeight;
-        mouse.radius = ((canvas.height/100) * (canvas.width/100));
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        mouse.radius = ((canvas.height / 100) * (canvas.width / 100));
         init();
     });
 
@@ -229,13 +246,19 @@ function init() {
 function connect() {
     let opacityValue = 1;
     
+    // Otimização: Calcular a distância máxima ao quadrado FORA do loop!
+    const maxConnectDistSq = currentSettings.connectDistance * currentSettings.connectDistance;
+    
     for (let a = 0; a < particlesArray.length; a++) {
-        for (let b = a; b < particlesArray.length; b++) {
-            let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x))
-            + ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+        for (let b = a + 1; b < particlesArray.length; b++) { // Iniciando de a+1 para evitar checar a partícula com ela mesma
+            let dx = particlesArray[a].x - particlesArray[b].x;
+            let dy = particlesArray[a].y - particlesArray[b].y;
+            let distanceSq = dx * dx + dy * dy;
             
-            if (distance < currentSettings.connectDistance * currentSettings.connectDistance) {
-                opacityValue = 1 - (distance/20000);
+            if (distanceSq < maxConnectDistSq) {
+                // A fórmula do opacity foi ajustada suavemente para usar a distância ao quadrado
+                opacityValue = 1 - (distanceSq / 20000); 
+                
                 ctx.strokeStyle = `rgba(0, 229, 255, ${opacityValue})`;
                 ctx.lineWidth = 1;
                 ctx.beginPath();

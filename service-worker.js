@@ -20,7 +20,6 @@ const CORE_ASSETS = [
   './imagens/icons/maskable-512.png'
 ];
 
-
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(CORE_ASSETS))
@@ -45,29 +44,34 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const { request } = event;
 
+  // Só interceptamos requisições GET
   if (request.method !== 'GET') {
     return;
   }
 
+  // Passamos o 'event' junto para podermos usar event.waitUntil e não bloquear a resposta
   if (isLocalImageRequest(request)) {
-    event.respondWith(handleImageRequest(request));
+    event.respondWith(handleImageRequest(request, event));
     return;
   }
 
   if (request.mode === 'navigate') {
-    event.respondWith(handleNavigationRequest(request));
+    event.respondWith(handleNavigationRequest(request, event));
     return;
   }
 
-  event.respondWith(handleAssetRequest(request));
+  event.respondWith(handleAssetRequest(request, event));
 });
 
-async function handleNavigationRequest(request) {
+async function handleNavigationRequest(request, event) {
   try {
     const networkResponse = await fetch(request);
     if (networkResponse && networkResponse.ok) {
-      const cache = await caches.open(CACHE_NAME);
-      cache.put(request, networkResponse.clone());
+      const responseToCache = networkResponse.clone();
+      // Salva no cache em segundo plano sem atrasar o retorno para a tela
+      event.waitUntil(
+        caches.open(CACHE_NAME).then((cache) => cache.put(request, responseToCache))
+      );
     }
     return networkResponse;
   } catch (error) {
@@ -76,36 +80,51 @@ async function handleNavigationRequest(request) {
   }
 }
 
-async function handleAssetRequest(request) {
+async function handleAssetRequest(request, event) {
   const cachedResponse = await caches.match(request);
   if (cachedResponse) {
     return cachedResponse;
   }
 
-  const networkResponse = await fetch(request);
-  if (networkResponse && networkResponse.ok) {
-    const cache = await caches.open(CACHE_NAME);
-    cache.put(request, networkResponse.clone());
+  try {
+    const networkResponse = await fetch(request);
+    if (networkResponse && networkResponse.ok) {
+      const responseToCache = networkResponse.clone();
+      // Salva no cache em segundo plano
+      event.waitUntil(
+        caches.open(CACHE_NAME).then((cache) => cache.put(request, responseToCache))
+      );
+    }
+    return networkResponse;
+  } catch (error) {
+    // Retorna vazio caso falhe a rede e não tenha no cache, evitando crash
+    return new Response('', { status: 404, statusText: 'Not Found' });
   }
-  return networkResponse;
 }
 
-async function handleImageRequest(request) {
+async function handleImageRequest(request, event) {
   const cache = await caches.open(IMAGES_CACHE_NAME);
+  
+  // Otimização: Cache-First para imagens. Retorna super rápido se já existir.
+  const cachedResponse = await cache.match(request);
+  if (cachedResponse) {
+    return cachedResponse;
+  }
 
   try {
     const networkResponse = await fetch(request);
     if (networkResponse && networkResponse.ok) {
-      cache.put(request, networkResponse.clone());
-      await trimImageCache(cache, MAX_IMAGE_ENTRIES);
+      const responseToCache = networkResponse.clone();
+      // Salva e limpa o cache em background, sem travar o carregamento da imagem
+      event.waitUntil(
+        (async () => {
+          await cache.put(request, responseToCache);
+          await trimImageCache(cache, MAX_IMAGE_ENTRIES);
+        })()
+      );
     }
     return networkResponse;
   } catch (error) {
-    const cachedResponse = await cache.match(request);
-    if (cachedResponse) {
-      return cachedResponse;
-    }
-
     const genericCached = await caches.match(request);
     if (genericCached) return genericCached;
 
