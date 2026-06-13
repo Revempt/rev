@@ -21,20 +21,48 @@ function safeUrl(value) {
     return '#';
 }
 
+// --- MÁQUINA DE ESCREVER (loop único via requestAnimationFrame) ---
+const typewriterQueue = [];
+let typewriterRaf = null;
+
 function typeOutText(element, text, speed = 30) {
     if (!element) return;
-    let i = 0;
     element.innerHTML = '';
-    const intervalId = setInterval(() => {
-        if (i >= text.length) {
-            clearInterval(intervalId);
-            const cursor = element.querySelector('.cursor');
-            if (cursor) cursor.remove();
-        } else {
-            element.innerHTML = text.substring(0, i + 1) + '<span class="animate-pulse cursor">_</span>';
-            i++;
+    typewriterQueue.push({ element, text, speed, startTime: null, lastIndex: -1 });
+    if (typewriterRaf === null) {
+        typewriterRaf = requestAnimationFrame(runTypewriters);
+    }
+}
+
+function runTypewriters(now) {
+    for (let i = typewriterQueue.length - 1; i >= 0; i--) {
+        const item = typewriterQueue[i];
+        if (item.startTime === null) item.startTime = now;
+
+        const elapsed = now - item.startTime;
+        const targetIndex = Math.min(Math.floor(elapsed / item.speed), item.text.length);
+
+        if (targetIndex !== item.lastIndex) {
+            item.lastIndex = targetIndex;
+            if (targetIndex >= item.text.length) {
+                item.element.innerHTML = item.text;
+                typewriterQueue.splice(i, 1);
+            } else {
+                item.element.innerHTML = item.text.substring(0, targetIndex) + '<span class="animate-pulse cursor">_</span>';
+            }
         }
-    }, speed);
+    }
+
+    typewriterRaf = typewriterQueue.length > 0 ? requestAnimationFrame(runTypewriters) : null;
+}
+
+// Cancela todas as digitações em andamento (chamar ao trocar de seção)
+function clearTypewriters() {
+    typewriterQueue.length = 0;
+    if (typewriterRaf !== null) {
+        cancelAnimationFrame(typewriterRaf);
+        typewriterRaf = null;
+    }
 }
 
 function triggerParticlesAtElement(element, action) {
@@ -65,6 +93,7 @@ function bindReactiveParticleEvents(selector) {
     });
 }
 
+// --- LIGHTBOX (modal de imagens, criado uma única vez sob demanda) ---
 
 function ensureImageViewerModal(prefix) {
     const modalId = `${prefix}-modal`;
@@ -86,11 +115,88 @@ function ensureImageViewerModal(prefix) {
     document.body.appendChild(modal);
 }
 
-function setupImageViewerControls(prefix) {
+function createLightbox(prefix) {
+    ensureImageViewerModal(prefix);
     const modal = document.getElementById(`${prefix}-modal`);
-    if (!modal || modal.viewerReady) return;
-    modal.viewerReady = true;
+    const img = document.getElementById(`${prefix}-img`);
+
+    let items = [];
+    let index = 0;
+
+    const showCurrent = () => {
+        const item = items[index];
+        if (!item) return;
+        img.src = item.image;
+        img.alt = item.name || '';
+    };
+
+    const close = () => { modal.style.display = 'none'; };
+
+    const nav = (dir) => {
+        if (!items.length) return;
+        index = (index + dir + items.length) % items.length;
+        showCurrent();
+    };
+
+    const open = (newItems, startIndex) => {
+        items = newItems;
+        index = startIndex;
+        showCurrent();
+        modal.style.display = 'block';
+    };
+
+    if (!modal.hasListeners) {
+        modal.hasListeners = true;
+        document.getElementById(`${prefix}-close`).onclick = close;
+        document.getElementById(`${prefix}-backdrop`).onclick = (e) => {
+            if (e.target.id === `${prefix}-backdrop`) close();
+        };
+        document.getElementById(`${prefix}-prev`).onclick = (e) => { e.stopPropagation(); nav(-1); };
+        document.getElementById(`${prefix}-next`).onclick = (e) => { e.stopPropagation(); nav(1); };
+        document.addEventListener('keydown', (e) => {
+            if (modal.style.display !== 'block') return;
+            if (e.key === 'Escape') close();
+            if (e.key === 'ArrowLeft') nav(-1);
+            if (e.key === 'ArrowRight') nav(1);
+        });
+    }
+
+    return { open, close, nav };
 }
+
+// Singletons criados sob demanda (no primeiro clique em uma imagem)
+let affinityLightbox = null;
+let galleryLightbox = null;
+
+const AFFINITY_BASE_KEYS = ['jogos', 'series', 'filmes'];
+const AFFINITY_CATEGORY_KEYS = staticData.affinities.map((_, index) => AFFINITY_BASE_KEYS[index] || `cat-${index}`);
+
+window.openAffinityLightbox = function (categoryKey, idx) {
+    const categoryIndex = AFFINITY_CATEGORY_KEYS.indexOf(categoryKey);
+    if (categoryIndex < 0) return;
+    const items = staticData.affinities[categoryIndex].items.filter(item => item.image);
+    if (!affinityLightbox) affinityLightbox = createLightbox('affinity-lightbox');
+    affinityLightbox.open(items, idx);
+};
+
+window.openLightbox = function (idx) {
+    const items = staticData.gallery.map(src => ({ image: src, name: 'Imagem da galeria' }));
+    if (!galleryLightbox) galleryLightbox = createLightbox('lightbox');
+    galleryLightbox.open(items, idx);
+};
+
+// --- ÍCONES DO SETUP (constantes, computadas uma única vez) ---
+const PROFILE_SETUP_ICONS = {
+    cpu: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="10" y="10" width="4" height="4" fill="currentColor"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+    gpu: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><rect x="3" y="7" width="15" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 10h3M12 14h3M18 11h3M18 13h3M18 15h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+    ram: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><rect x="3" y="8" width="18" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10v4M10 10v4M14 10v4M18 10v4M6 16v2M10 16v2M14 16v2M18 16v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+    keyboard: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><rect x="2" y="7" width="20" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 10h1M8 10h1M11 10h1M14 10h1M17 10h1M5 13h1M8 13h1M11 13h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+    mouse: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><rect x="7" y="4" width="10" height="16" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 4v5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+    headset: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><path d="M4 13a8 8 0 0 1 16 0" fill="none" stroke="currentColor" stroke-width="2"/><rect x="3" y="12" width="4" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><rect x="17" y="12" width="4" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><path d="M17 18v1a2 2 0 0 1-2 2h-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+    microphone: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4M9 21h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+    monitor: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><rect x="3" y="5" width="18" height="12" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 19h4M8 21h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+    mousepad: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><path d="M4 19V9a4 4 0 0 1 4-4h8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16 5l-3 3M16 5l3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
+};
 
 function renderProfile(t) {
     const gridFieldsHtml = t.fields.map((field, index) => `
@@ -126,25 +232,13 @@ function renderProfile(t) {
             </div>
         </div>`;
 
-    const setupIcons = {
-        cpu: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="10" y="10" width="4" height="4" fill="currentColor"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
-        gpu: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><rect x="3" y="7" width="15" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 10h3M12 14h3M18 11h3M18 13h3M18 15h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
-        ram: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><rect x="3" y="8" width="18" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10v4M10 10v4M14 10v4M18 10v4M6 16v2M10 16v2M14 16v2M18 16v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
-        keyboard: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><rect x="2" y="7" width="20" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 10h1M8 10h1M11 10h1M14 10h1M17 10h1M5 13h1M8 13h1M11 13h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
-        mouse: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><rect x="7" y="4" width="10" height="16" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 4v5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
-        headset: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><path d="M4 13a8 8 0 0 1 16 0" fill="none" stroke="currentColor" stroke-width="2"/><rect x="3" y="12" width="4" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><rect x="17" y="12" width="4" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><path d="M17 18v1a2 2 0 0 1-2 2h-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
-        microphone: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4M9 21h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
-        monitor: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><rect x="3" y="5" width="18" height="12" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 19h4M8 21h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
-        mousepad: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><path d="M4 19V9a4 4 0 0 1 4-4h8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16 5l-3 3M16 5l3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
-    };
-
     const setupHtml = `
         <div class="mt-4 lg:col-span-2 bg-gray-900/50 p-3 sm:p-4 border border-red-800/50">
             <p class="text-red-500 font-bold text-xs sm:text-sm uppercase tracking-widest mb-3 sm:mb-4">${t.setupTitle}</p>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 ${staticData.setup.map((item, index) => {
                     const translatedLabel = t.setup[index] && t.setup[index].label ? t.setup[index].label : item.label;
-                    const iconSvg = setupIcons[item.icon] || setupIcons.cpu;
+                    const iconSvg = PROFILE_SETUP_ICONS[item.icon] || PROFILE_SETUP_ICONS.cpu;
                     return `
                         <div class="flex items-center gap-2 sm:gap-3 text-gray-400 bg-gray-800/70 p-2 sm:p-3 border border-transparent">
                             <span class="inline-flex text-red-500 flex-shrink-0">${iconSvg}</span>
@@ -197,10 +291,6 @@ function renderProfile(t) {
 }
 
 function renderAffinities(t) {
-    let activeCategoryIndex = 0;
-    const baseCategoryKeys = ['jogos', 'series', 'filmes'];
-    const categoryKeys = staticData.affinities.map((_, index) => baseCategoryKeys[index] || `cat-${index}`);
-
     const renderCategoryContent = (categoryIndex, categoryKey) => {
         const items = staticData.affinities[categoryIndex].items;
         const gridClass = staticData.affinities[categoryIndex].icon === 'fas fa-headphones'
@@ -234,68 +324,15 @@ function renderAffinities(t) {
         `;
     };
 
-    // Lightbox para afinidades (compartilhado com galeria)
-    ensureImageViewerModal('affinity-lightbox');
-    setupImageViewerControls('affinity-lightbox');
-    // Função para abrir o lightbox de afinidades
-    window.openAffinityLightbox = function(categoryKey, idx) {
-        const modal = document.getElementById('affinity-lightbox-modal');
-        const img = document.getElementById('affinity-lightbox-img');
-        const categoryIndex = categoryKeys.indexOf(categoryKey);
-        if (categoryIndex < 0) return;
-        const items = staticData.affinities[categoryIndex].items.filter(item => item.image);
-        img.src = items[idx].image;
-        img.alt = items[idx].name || 'Imagem de afinidade';
-        modal.style.display = 'block';
-        modal.setAttribute('data-idx', idx);
-        modal.setAttribute('data-cat', categoryKey);
-    };
-    // Função para fechar
-    window.closeAffinityLightbox = function() {
-        document.getElementById('affinity-lightbox-modal').style.display = 'none';
-    };
-    // Função para navegar
-    window.affinityLightboxNav = function(dir) {
-        const modal = document.getElementById('affinity-lightbox-modal');
-        let idx = parseInt(modal.getAttribute('data-idx'));
-        const cat = modal.getAttribute('data-cat');
-        const categoryIndex = categoryKeys.indexOf(cat);
-        if (categoryIndex < 0) return;
-        const items = staticData.affinities[categoryIndex].items.filter(item => item.image);
-        idx = (idx + dir + items.length) % items.length;
-        const img = document.getElementById('affinity-lightbox-img');
-        img.src = items[idx].image;
-        img.alt = items[idx].name || 'Imagem de afinidade';
-        modal.setAttribute('data-idx', idx);
-    };
-    // Adicionar listeners (uma vez só)
-    setTimeout(() => {
-        const modal = document.getElementById('affinity-lightbox-modal');
-        if (modal && !modal.hasListeners) {
-            modal.hasListeners = true;
-            document.getElementById('affinity-lightbox-close').onclick = window.closeAffinityLightbox;
-            document.getElementById('affinity-lightbox-backdrop').onclick = (e) => { if (e.target.id === 'affinity-lightbox-backdrop') window.closeAffinityLightbox(); };
-            document.getElementById('affinity-lightbox-prev').onclick = (e) => { e.stopPropagation(); window.affinityLightboxNav(-1); };
-            document.getElementById('affinity-lightbox-next').onclick = (e) => { e.stopPropagation(); window.affinityLightboxNav(1); };
-            document.addEventListener('keydown', (e) => {
-                if (modal.style.display === 'block') {
-                    if (e.key === 'Escape') window.closeAffinityLightbox();
-                    if (e.key === 'ArrowLeft') window.affinityLightboxNav(-1);
-                    if (e.key === 'ArrowRight') window.affinityLightboxNav(1);
-                }
-            });
-        }
-    }, 0);
-
     const buttonsHtml = t.categories.map((cat, index) => `
-        <button data-index="${index}" data-aff="${categoryKeys[index]}" aria-selected="${index === 0 ? 'true' : 'false'}" class="affinity-cat-button flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 text-xs sm:text-sm border-b-2 transition-colors duration-200 ${index === 0 ? 'border-red-500 text-white' : 'border-gray-700 text-gray-400 hover:text-white'}">
+        <button data-index="${index}" data-aff="${AFFINITY_CATEGORY_KEYS[index]}" aria-selected="${index === 0 ? 'true' : 'false'}" class="affinity-cat-button flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 text-xs sm:text-sm border-b-2 transition-colors duration-200 ${index === 0 ? 'border-red-500 text-white' : 'border-gray-700 text-gray-400 hover:text-white'}">
             <i class="${staticData.affinities[index].icon}"></i>
             <span>${cat.name}</span>
         </button>
     `).join('');
 
     const panelsHtml = staticData.affinities.map((_, index) => {
-        const key = categoryKeys[index];
+        const key = AFFINITY_CATEGORY_KEYS[index];
         const isActive = index === 0;
         return `
             <section class="aff-panel ${isActive ? 'is-active' : 'hidden-panel'}" data-panel="${key}" ${isActive ? '' : 'aria-hidden="true"'}>
@@ -325,7 +362,7 @@ function renderAffinities(t) {
             wrapper.style.height = `${panel.scrollHeight}px`;
         };
 
-        let activeKey = categoryKeys[0];
+        let activeKey = AFFINITY_CATEGORY_KEYS[0];
         let pendingLeaveHandler = null;
 
         const setButtonsState = (nextKey) => {
@@ -361,7 +398,6 @@ function renderAffinities(t) {
             currentPanel.setAttribute('aria-hidden', 'true');
 
             activeKey = nextKey;
-            activeCategoryIndex = categoryKeys.indexOf(activeKey);
             setButtonsState(activeKey);
             syncWrapperHeight(nextPanel);
 
@@ -399,9 +435,19 @@ function renderAffinities(t) {
             }, { passive: true });
         });
 
-        window.addEventListener('resize', () => {
-            syncWrapperHeight(getPanel(activeKey));
-        }, { passive: true });
+        // Throttle via rAF + remove o listener anterior pra não acumular a cada visita à aba
+        if (window.__affinitiesResizeHandler) {
+            window.removeEventListener('resize', window.__affinitiesResizeHandler);
+        }
+        let resizeRaf = null;
+        window.__affinitiesResizeHandler = () => {
+            if (resizeRaf) return;
+            resizeRaf = requestAnimationFrame(() => {
+                syncWrapperHeight(getPanel(activeKey));
+                resizeRaf = null;
+            });
+        };
+        window.addEventListener('resize', window.__affinitiesResizeHandler, { passive: true });
     }, 0);
 
     return html;
@@ -423,53 +469,8 @@ function renderRecords(t) {
 }
 
 function renderGallery() {
-    // Lightbox container (inserido apenas uma vez)
-    ensureImageViewerModal('lightbox');
-    setupImageViewerControls('lightbox');
-
-    // Função para abrir o lightbox
-    window.openLightbox = function(idx) {
-        const modal = document.getElementById('lightbox-modal');
-        const img = document.getElementById('lightbox-img');
-        img.src = staticData.gallery[idx];
-        img.alt = 'Imagem da galeria';
-        modal.style.display = 'block';
-        modal.setAttribute('data-idx', idx);
-    };
-    // Função para fechar
-    window.closeLightbox = function() {
-        document.getElementById('lightbox-modal').style.display = 'none';
-    };
-    // Função para navegar
-    window.lightboxNav = function(dir) {
-        const modal = document.getElementById('lightbox-modal');
-        let idx = parseInt(modal.getAttribute('data-idx'));
-        idx = (idx + dir + staticData.gallery.length) % staticData.gallery.length;
-        document.getElementById('lightbox-img').src = staticData.gallery[idx];
-        modal.setAttribute('data-idx', idx);
-    };
-    // Adicionar listeners (uma vez só)
-    setTimeout(() => {
-        const modal = document.getElementById('lightbox-modal');
-        if (modal && !modal.hasListeners) {
-            modal.hasListeners = true;
-            document.getElementById('lightbox-close').onclick = window.closeLightbox;
-            document.getElementById('lightbox-backdrop').onclick = (e) => { if (e.target.id === 'lightbox-backdrop') window.closeLightbox(); };
-            document.getElementById('lightbox-prev').onclick = (e) => { e.stopPropagation(); window.lightboxNav(-1); };
-            document.getElementById('lightbox-next').onclick = (e) => { e.stopPropagation(); window.lightboxNav(1); };
-            document.addEventListener('keydown', (e) => {
-                if (modal.style.display === 'block') {
-                    if (e.key === 'Escape') window.closeLightbox();
-                    if (e.key === 'ArrowLeft') window.lightboxNav(-1);
-                    if (e.key === 'ArrowRight') window.lightboxNav(1);
-                }
-            });
-        }
-    }, 0);
-
-    // Renderizar galeria normalmente, mas com onclick para abrir o lightbox
     setTimeout(() => bindReactiveParticleEvents('.gallery-reactive-item'), 0);
-    return `<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">${staticData.gallery.map((src,idx) => `<div class="gallery-reactive-item border-2 border-gray-800 hover:border-red-500 transition-colors cursor-pointer" onclick="openLightbox(${idx})"><img src="${src}" class="w-full h-auto object-cover" /></div>`).join('')}</div>`;
+    return `<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">${staticData.gallery.map((src, idx) => `<div class="gallery-reactive-item border-2 border-gray-800 hover:border-red-500 transition-colors cursor-pointer" onclick="openLightbox(${idx})"><img src="${src}" class="w-full h-auto object-cover" /></div>`).join('')}</div>`;
 }
 
 function renderSystemStatus(t) {

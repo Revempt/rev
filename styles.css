@@ -1,10 +1,27 @@
-@import url('https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap');
+/* Hatsune Miku inspired holographic palette */
+:root {
+    --miku-primary-cyan: #39C5BB;
+    --miku-neon-cyan: #00E5FF;
+    --miku-ice-blue: #7EE7FF;
+    --miku-dark-bg: #081018;
+    --miku-secondary-bg: #102030;
+    --miku-surface-bg: #142433;
+    --miku-text-primary: #EAFEFF;
+    --miku-text-secondary: #A8D8E8;
+}
+
+html {
+    background: var(--miku-dark-bg);
+}
 
 body {
     font-family: 'Share Tech Mono', monospace;
     overflow-x: hidden;
-    background-color: #050B12;
-    color: #EAFEFF;
+    background:
+        radial-gradient(circle at 18% 12%, rgba(57, 197, 187, 0.18), transparent 28%),
+        radial-gradient(circle at 82% 18%, rgba(0, 229, 255, 0.14), transparent 30%),
+        linear-gradient(180deg, #050B12 0%, var(--miku-dark-bg) 48%, #0B1B28 100%);
+    color: var(--miku-text-primary);
 }
 
 h1, h2, h3, button, h4, h5 {
@@ -370,34 +387,8 @@ h1, h2, h3, button, h4, h5 {
     width: 18px;
     height: 18px;
 }
-/* Hatsune Miku inspired holographic palette */
-:root {
-    --miku-primary-cyan: #39C5BB;
-    --miku-neon-cyan: #00E5FF;
-    --miku-ice-blue: #7EE7FF;
-    --miku-dark-bg: #081018;
-    --miku-secondary-bg: #102030;
-    --miku-surface-bg: #142433;
-    --miku-text-primary: #EAFEFF;
-    --miku-text-secondary: #A8D8E8;
-}
 
-html {
-    background: var(--miku-dark-bg);
-}
-
-body {
-    background:
-        radial-gradient(circle at 18% 12%, rgba(57, 197, 187, 0.18), transparent 28%),
-        radial-gradient(circle at 82% 18%, rgba(0, 229, 255, 0.14), transparent 30%),
-        linear-gradient(180deg, #050B12 0%, var(--miku-dark-bg) 48%, #0B1B28 100%);
-    color: var(--miku-text-primary);
-}
-
-#particle-canvas {
-    filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.36));
-}
-
+/* -------- Miku-themed overrides sobre as classes do Tailwind -------- */
 .bg-black {
     background-color: #050B12 !important;
 }
@@ -429,9 +420,7 @@ body {
     border-color: rgba(57, 197, 187, 0.38) !important;
 }
 
-.text-red-500,
-.text-red-400,
-.text-red-300 {
+.text-red-500 {
     color: var(--miku-primary-cyan) !important;
 }
 

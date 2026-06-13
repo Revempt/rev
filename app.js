@@ -24,7 +24,9 @@ function escapeHtml(value) {
 // --- FUNÇÃO PRINCIPAL DE RENDERIZAÇÃO ---
 function renderApp() {
     const t = state.translations;
-    if (!t.menu) return; // Aguarda o carregamento das traduções
+    if (!t.menu) return;
+    
+    clearTypewriters();// Aguarda o carregamento das traduções
 
     const contentWindow = document.getElementById('content-window');
 
@@ -55,7 +57,6 @@ function renderApp() {
         <button data-lang="${lang}" class="lang-button px-2 sm:px-3 py-1 text-sm sm:text-base transition-colors ${state.language === lang ? 'bg-red-600 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}">${lang.toUpperCase()}</button>
     `).join('');
 
-    addEventListeners();
     window.ParticlesAPI?.setMode(state.activeSection);
 }
 
@@ -72,14 +73,12 @@ function formatBytes(value) {
     return `${size.toFixed(size >= 10 || unit === 0 ? 0 : 1)} ${units[unit]}`;
 }
 
-async function updateDiagnosticsPanel() {
-    if (!state.isDiagnosticsModalOpen) return;
-    const container = document.getElementById('diagnostics-container');
-    if (!container) return;
+// --- DIAGNÓSTICOS (checagens paralelas) ---
 
-    const rows = [];
+async function getServiceWorkerRows() {
     const swSupported = 'serviceWorker' in navigator;
     let swRegistered = 'N/A';
+
     if (swSupported) {
         try {
             const reg = await navigator.serviceWorker.getRegistration();
@@ -88,54 +87,78 @@ async function updateDiagnosticsPanel() {
             swRegistered = 'Erro ao consultar';
         }
     }
-    rows.push({ label: 'Service Worker - suporte', value: swSupported ? 'Suportado' : 'Não suportado' });
-    rows.push({ label: 'Service Worker - registro', value: swRegistered });
-    rows.push({ label: 'Service Worker - controle da página', value: navigator.serviceWorker && navigator.serviceWorker.controller ? 'Controlando' : 'Sem controle' });
-    rows.push({ label: 'Conectividade', value: navigator.onLine ? 'Online' : 'Offline' });
 
-    if (navigator.storage && navigator.storage.estimate) {
-        try {
-            const estimate = await navigator.storage.estimate();
-            rows.push({ label: 'Storage usado', value: formatBytes(estimate.usage) });
-            rows.push({ label: 'Storage quota', value: formatBytes(estimate.quota) });
-        } catch {
-            rows.push({ label: 'Storage estimate', value: 'Erro ao consultar' });
-        }
-    } else {
-        rows.push({ label: 'Storage estimate', value: 'API indisponível neste navegador' });
+    return [
+        { label: 'Service Worker - suporte', value: swSupported ? 'Suportado' : 'Não suportado' },
+        { label: 'Service Worker - registro', value: swRegistered },
+        { label: 'Service Worker - controle da página', value: navigator.serviceWorker && navigator.serviceWorker.controller ? 'Controlando' : 'Sem controle' },
+        { label: 'Conectividade', value: navigator.onLine ? 'Online' : 'Offline' }
+    ];
+}
+
+async function getStorageRows() {
+    if (!(navigator.storage && navigator.storage.estimate)) {
+        return [{ label: 'Storage estimate', value: 'API indisponível neste navegador' }];
     }
-
-    if ('caches' in window) {
-        try {
-            const keys = await caches.keys();
-            const details = await Promise.all(keys.map(async key => {
-                try {
-                    const cache = await caches.open(key);
-                    const entries = await cache.keys();
-                    return `${key} (${entries.length} itens)`;
-                } catch {
-                    return `${key} (itens: N/A)`;
-                }
-            }));
-            rows.push({ label: 'Caches', value: details.length ? details.join(', ') : 'Nenhum cache encontrado' });
-        } catch {
-            rows.push({ label: 'Caches', value: 'Erro ao consultar caches' });
-        }
-    } else {
-        rows.push({ label: 'Caches', value: 'Cache API não suportada' });
+    try {
+        const estimate = await navigator.storage.estimate();
+        return [
+            { label: 'Storage usado', value: formatBytes(estimate.usage) },
+            { label: 'Storage quota', value: formatBytes(estimate.quota) }
+        ];
+    } catch {
+        return [{ label: 'Storage estimate', value: 'Erro ao consultar' }];
     }
+}
 
+async function getCachesRows() {
+    if (!('caches' in window)) {
+        return [{ label: 'Caches', value: 'Cache API não suportada' }];
+    }
+    try {
+        const keys = await caches.keys();
+        const details = await Promise.all(keys.map(async key => {
+            try {
+                const cache = await caches.open(key);
+                const entries = await cache.keys();
+                return `${key} (${entries.length} itens)`;
+            } catch {
+                return `${key} (itens: N/A)`;
+            }
+        }));
+        return [{ label: 'Caches', value: details.length ? details.join(', ') : 'Nenhum cache encontrado' }];
+    } catch {
+        return [{ label: 'Caches', value: 'Erro ao consultar caches' }];
+    }
+}
+
+async function getBuildInfoRow() {
     try {
         const response = await fetch('./build-info.json', { cache: 'no-store' });
         if (response.ok) {
             const info = await response.json();
-            rows.push({ label: 'Build/versão', value: info.version || info.build || JSON.stringify(info) });
-        } else {
-            rows.push({ label: 'Build/versão', value: 'N/A' });
+            return [{ label: 'Build/versão', value: info.version || info.build || JSON.stringify(info) }];
         }
+        return [{ label: 'Build/versão', value: 'N/A' }];
     } catch {
-        rows.push({ label: 'Build/versão', value: 'N/A' });
+        return [{ label: 'Build/versão', value: 'N/A' }];
     }
+}
+
+async function updateDiagnosticsPanel() {
+    if (!state.isDiagnosticsModalOpen) return;
+    const container = document.getElementById('diagnostics-container');
+    if (!container) return;
+
+    // As 4 checagens são independentes, então rodam em paralelo
+    const rowGroups = await Promise.all([
+        getServiceWorkerRows(),
+        getStorageRows(),
+        getCachesRows(),
+        getBuildInfoRow()
+    ]);
+
+    const rows = rowGroups.flat();
 
     container.innerHTML = rows.map(row => `
         <div class="border border-red-900/40 bg-black/30 px-3 py-2">
@@ -168,63 +191,77 @@ function setDiagnosticsStatus(message, level = 'info') {
     statusEl.textContent = message;
 }
 
-async function clearSiteData() {
-    const feedback = [];
+// --- Limpeza de dados (operações independentes em paralelo) ---
 
+async function clearCachesFeedback() {
     try {
         const cacheCount = await clearAllCaches();
-        feedback.push(`Cache Storage: ${cacheCount} cache(s) removido(s).`);
+        return `Cache Storage: ${cacheCount} cache(s) removido(s).`;
     } catch (error) {
-        feedback.push(`Cache Storage: erro (${error.message}).`);
+        return `Cache Storage: erro (${error.message}).`;
     }
+}
 
-    if ('serviceWorker' in navigator) {
-        try {
-            const registrations = await navigator.serviceWorker.getRegistrations();
-            const results = await Promise.all(registrations.map(reg => reg.unregister()));
-            const removed = results.filter(Boolean).length;
-            feedback.push(`Service Workers: ${removed}/${registrations.length} desregistrado(s).`);
-        } catch (error) {
-            feedback.push(`Service Workers: erro (${error.message}).`);
-        }
-    } else {
-        feedback.push('Service Workers: não suportado.');
+async function clearServiceWorkersFeedback() {
+    if (!('serviceWorker' in navigator)) {
+        return 'Service Workers: não suportado.';
     }
+    try {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        const results = await Promise.all(registrations.map(reg => reg.unregister()));
+        const removed = results.filter(Boolean).length;
+        return `Service Workers: ${removed}/${registrations.length} desregistrado(s).`;
+    } catch (error) {
+        return `Service Workers: erro (${error.message}).`;
+    }
+}
 
+function clearLocalStorageFeedback() {
     try {
         localStorage.clear();
         sessionStorage.clear();
-        feedback.push('Storage local/session: limpo.');
+        return 'Storage local/session: limpo.';
     } catch (error) {
-        feedback.push(`Storage local/session: erro (${error.message}).`);
+        return `Storage local/session: erro (${error.message}).`;
     }
+}
 
-    if ('indexedDB' in window) {
-        try {
-            let names = [];
-            if (typeof indexedDB.databases === 'function') {
-                const databases = await indexedDB.databases();
-                names = databases.map(db => db && db.name).filter(Boolean);
-            }
-
-            if (!names.length) {
-                feedback.push('IndexedDB: suporte detectado, nenhum banco listado para remoção automática.');
-            } else {
-                const results = await Promise.all(names.map(name => new Promise(resolve => {
-                    const request = indexedDB.deleteDatabase(name);
-                    request.onsuccess = () => resolve({ ok: true });
-                    request.onerror = () => resolve({ ok: false });
-                    request.onblocked = () => resolve({ ok: false, blocked: true });
-                })));
-                const removed = results.filter(result => result.ok).length;
-                feedback.push(`IndexedDB: ${removed}/${results.length} banco(s) removido(s).`);
-            }
-        } catch (error) {
-            feedback.push(`IndexedDB: erro (${error.message}).`);
+async function clearIndexedDbFeedback() {
+    if (!('indexedDB' in window)) {
+        return 'IndexedDB: não suportado.';
+    }
+    try {
+        let names = [];
+        if (typeof indexedDB.databases === 'function') {
+            const databases = await indexedDB.databases();
+            names = databases.map(db => db && db.name).filter(Boolean);
         }
-    } else {
-        feedback.push('IndexedDB: não suportado.');
+
+        if (!names.length) {
+            return 'IndexedDB: suporte detectado, nenhum banco listado para remoção automática.';
+        }
+
+        const results = await Promise.all(names.map(name => new Promise(resolve => {
+            const request = indexedDB.deleteDatabase(name);
+            request.onsuccess = () => resolve({ ok: true });
+            request.onerror = () => resolve({ ok: false });
+            request.onblocked = () => resolve({ ok: false, blocked: true });
+        })));
+        const removed = results.filter(result => result.ok).length;
+        return `IndexedDB: ${removed}/${results.length} banco(s) removido(s).`;
+    } catch (error) {
+        return `IndexedDB: erro (${error.message}).`;
     }
+}
+
+async function clearSiteData() {
+    // As 4 limpezas são independentes, então rodam em paralelo
+    const feedback = await Promise.all([
+        clearCachesFeedback(),
+        clearServiceWorkersFeedback(),
+        Promise.resolve(clearLocalStorageFeedback()),
+        clearIndexedDbFeedback()
+    ]);
 
     return feedback;
 }
@@ -265,29 +302,30 @@ function openDiagnosticsModal() {
     });
 }
 
-// --- GESTORES DE EVENTOS ---
-function addEventListeners() {
-    document.querySelectorAll('.menu-button').forEach(button => {
-        button.addEventListener('click', () => {
-            soundManager.playClick();
-            state.activeSection = button.dataset.section;
-            window.ParticlesAPI?.setMode(state.activeSection);
-            soundManager.playLoad();
-            renderApp();
-            // Fechar menu mobile após clicar
-            if (window.innerWidth < 1024) {
-                closeMobileMenu();
-            }
-        });
+// --- GESTORES DE EVENTOS (delegação - ligados uma única vez) ---
+function bindMenuListeners() {
+    document.getElementById('main-menu').addEventListener('click', (event) => {
+        const button = event.target.closest('.menu-button');
+        if (!button) return;
+
+        soundManager.playClick();
+        state.activeSection = button.dataset.section;
+        window.ParticlesAPI?.setMode(state.activeSection);
+        soundManager.playLoad();
+        renderApp();
+
+        if (window.innerWidth < 1024) {
+            closeMobileMenu();
+        }
     });
 
-    document.querySelectorAll('.lang-button').forEach(button => {
-        button.addEventListener('click', () => {
-            soundManager.playClick();
-            loadLanguage(button.dataset.lang);
-        });
-    });
+    document.getElementById('lang-buttons').addEventListener('click', (event) => {
+        const button = event.target.closest('.lang-button');
+        if (!button) return;
 
+        soundManager.playClick();
+        loadLanguage(button.dataset.lang);
+    });
 }
 
 function bindDiagnosticsListeners() {
@@ -393,7 +431,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const bootScreen = document.getElementById('boot-screen');
     const bootText = document.getElementById('boot-text');
     const muteButton = document.getElementById('mute-button');
+
     bindDiagnosticsListeners();
+    bindMenuListeners(); // listeners do menu e do idioma, ligados uma única vez
 
     // Mobile menu elements
     function getMobileMenuElements() {
