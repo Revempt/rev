@@ -10,11 +10,13 @@ const staticData = {
     ],
     affinities: [
         { icon: "fas fa-gamepad", items: [
-            { name: "Resident Evil 2", image: "imagens/games/resident-evil-2.jpg" },
-            { name: "The Witcher 3", image: "imagens/games/the-witcher-3.jpg" },
-            { name: "Red Dead Redemption 2", image: "imagens/games/red-dead-redemption-2.jpg" },
-            { name: "Resident Evil 7", image: "imagens/games/resident-evil-7.jpg" },
-            { name: "Terraria", image: "imagens/games/terraria.jpg" }
+            { name: "Resident Evil 2", image: "imagens/games/resident-evil-2.webp" },
+            { name: "The Witcher 3", image: "imagens/games/the-witcher-3.webp" },
+            { name: "Red Dead Redemption 2", image: "imagens/games/red-dead-redemption-2.webp" },
+            { name: "Resident Evil 7", image: "imagens/games/resident-evil-7.webp" },
+            { name: "Terraria", image: "imagens/games/terraria.webp" },
+            { name: "Resident Evil 3", image: "imagens/games/resident-evil-3.webp" },
+            { name: "The NOexistenceN of you AND me", image: "imagens/games/TNEOYM.webp" }
         ]},
         { icon: "fas fa-tv", items: [
             { name: "House, M.D.", image: "imagens/series/house.jpg" },
