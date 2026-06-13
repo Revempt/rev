@@ -16,7 +16,10 @@ const staticData = {
             { name: "Resident Evil 7", image: "imagens/games/resident-evil-7.webp" },
             { name: "Terraria", image: "imagens/games/terraria.webp" },
             { name: "Resident Evil 3", image: "imagens/games/resident-evil-3.webp" },
-            { name: "The NOexistenceN of you AND me", image: "imagens/games/TNEOYM.webp" }
+            { name: "The NOexistenceN of you AND me", image: "imagens/games/TNEOYM.webp" },
+            { name: "Doki Doki Literature Club", image: "imagens/games/doki-doki.webp" },
+            { name: "Resident Evil 4", image: "imagens/games/resident-evil-4.webp" }
+
         ]},
         { icon: "fas fa-tv", items: [
             { name: "House, M.D.", image: "imagens/series/house.jpg" },
