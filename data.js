@@ -114,7 +114,7 @@ const staticData = {
     },
 
     languageLevels: [ "100%", "60%", "30%" ],
-    featuredImage: "imagens/teste3.png",
+    featuredImage: "imagens/foco.webp",
 
     setup: [
         { key: "cpu", label: "CPU", value: "AMD Ryzen 5 5600G", icon: "cpu" },
@@ -147,9 +147,9 @@ const languageData = {
             socialsTitle: "Canais de Comunicação",
             featuredTitle: "Foco Atual",
             featured: {
-                title: "Makima",
-                subtitle: "Demônio do Controle ",
-                description: "Todos os demônios nascem com nomes, e quanto mais esses nomes são temidos, mais poderoso o diabo se torna."
+                title: "Hatsune Miku",
+                subtitle: "Princesa Número Um do Mundo",
+                description: "No momento em que eu não puder mais cantar, será o instante em que deixarei de existir. Afinal, eu fui criada apenas para isso."
             },
             setupTitle: "Arsenal / Setup",
             setup: [
@@ -242,9 +242,9 @@ const languageData = {
             socialsTitle: "Communication Channels",
             featuredTitle: "Current Focus",
             featured: {
-                title: "Makima",
-                subtitle: "Control Devil",
-                description: "Every demon is born with a name, and the more that name is feared, the stronger the devil grows."
+                title: "Hatsune Miku",
+                subtitle: "World's Number One Princess",
+                description: "The moment I can no longer sing will be the instant I cease to exist. After all, I was created only for this."
             },
             setupTitle: "Arsenal / Setup",
             setup: [
@@ -337,9 +337,9 @@ const languageData = {
             socialsTitle: "Canales de Comunicación",
             featuredTitle: "Enfoque Actual",
             featured: {
-                title: "Makima",
-                subtitle: "El Demonio del Control",
-                description: "Cada demonio nace con un nombre, y cuanto más se teme ese nombre, más fuerte se vuelve el diablo."
+                title: "Hatsune Miku",
+                subtitle: "Princesa Número Uno del Mundo",
+                description: "El momento en que yo no pueda cantar será el instante en que deje de existir. Al fin, fui creada solo para esto."
             },
             setupTitle: "Arsenal / Configuración",
             setup: [
@@ -432,9 +432,9 @@ const languageData = {
             socialsTitle: "通信チャネル",
             featuredTitle: "現在の焦点",
             featured: {
-                title: "マキマ",
-                subtitle: "支配の悪魔",
-                description: "悪魔は皆、名を持って生まれ、その名への恐怖が増すほど、悪魔は力を増していく。"
+                title: "初音ミク",
+                subtitle: "世界で一番お姫様",
+                description: "「歌えなくなった瞬間が、私が消え去る時。だって、私はその為だけに作られたのだから。」"
             },
             setupTitle: "アーセナル / セットアップ",
             setup: [
