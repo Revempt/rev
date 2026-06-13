@@ -58,7 +58,7 @@ const staticData = {
             { name: "Ciri", image: "imagens/characters/Ciri.jpg" },
             { name: "Patrick Jane", image: "imagens/characters/pjane.jpg" },
             { name: "Gregory House", image: "imagens/characters/house.jpg" },
-            { name: "Hatsune Miku", image: "imagens/characters/hatsune.jpg" }
+            { name: "Hatsune Miku", image: "imagens/characters/hatsune.webp" }
         ]},
         { icon: "fas fa-music", items: [
             { name: "Time of Dying", image: "imagens/albums/TimeOfDying.jpg" },
