@@ -11,14 +11,14 @@ const staticData = {
     affinities: [
         { icon: "fas fa-gamepad", items: [
             { name: "Resident Evil 2", image: "imagens/games/resident-evil-2.webp" },
+            { name: "Resident Evil 3", image: "imagens/games/resident-evil-3.webp" },
+            { name: "Resident Evil 4", image: "imagens/games/resident-evil-4.webp" },
+            { name: "Resident Evil 7", image: "imagens/games/resident-evil-7.webp" },
             { name: "The Witcher 3", image: "imagens/games/the-witcher-3.webp" },
             { name: "Red Dead Redemption 2", image: "imagens/games/red-dead-redemption-2.webp" },
-            { name: "Resident Evil 7", image: "imagens/games/resident-evil-7.webp" },
             { name: "Terraria", image: "imagens/games/terraria.webp" },
-            { name: "Resident Evil 3", image: "imagens/games/resident-evil-3.webp" },
             { name: "The NOexistenceN of you AND me", image: "imagens/games/TNEOYM.webp" },
-            { name: "Doki Doki Literature Club", image: "imagens/games/doki-doki.webp" },
-            { name: "Resident Evil 4", image: "imagens/games/resident-evil-4.webp" }
+            { name: "Doki Doki Literature Club", image: "imagens/games/doki-doki.webp" }
 
         ]},
         { icon: "fas fa-tv", items: [
@@ -185,23 +185,19 @@ const languageData = {
         records: {
             title: "Registros Pessoais",
             items: [
-                "Eu tenho 3k+ de horas jogadas de Fortnite.",
+                "Faço aniversário em 24/09/2007",
                 "Meu primeiro console foi um Xbox One",
                 "Prefiro jogos com narrativas profundas e que me toquem emocionalmente",
                 "Curto Rock alternativo, Metal e vários outros estilos que eu chamo de 'quebrar tudo'",
                 "Às vezes escuto a mesma música por dias sem parar",
-                "Tenho vontade de aprender a tocar algum instrumento musical",
-                "Tenho perda auditiva grave",
+                "Tenho perda auditiva",
                 "Meu jogo favorito é The Witcher 3: Wild Hunt",
+                "Minha franquia favorita de jogos é Resident Evil",
                 "É difícil pra mim definir uma música favorita",
-                "Gosto de ler mangás e livros",
+                "Gosto de ler mangás, manhwas, livros",
                 "Odeio Funk, fanatismo político e NTR",
                 "Pra mim, o tempo é um dos conceitos mais interessantes da física",
                 "Acho difícil lidar com pessoas fora do meu escopo social",
-                "Eu escolho o meu próprio caminho",
-                "Às vezes, é preciso destruir para criar algo novo",
-                "Às vezes, temos certeza de estar certos e falhamos mesmo assim",
-                "O poder absoluto é um fardo."
             ]
         },
         gallery: { title: "Banco de Memória Visual" },
