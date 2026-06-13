@@ -3,9 +3,8 @@
 body {
     font-family: 'Share Tech Mono', monospace;
     overflow-x: hidden;
-    background-color: #05070A;
+    background-color: #050B12;
     color: #EAFEFF;
-
 }
 
 h1, h2, h3, button, h4, h5 {
@@ -18,26 +17,23 @@ h1, h2, h3, button, h4, h5 {
     left: 0;
     width: 100%;
     height: 100%;
-      z-index: 0;
+    z-index: 0;
     pointer-events: none;
     mix-blend-mode: screen;
     filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.36));
-
 }
 
 .ui-background {
     background:
-        linear-gradient(135deg, rgba(13, 18, 24, 0.94), rgba(5, 7, 10, 0.96)),
+        linear-gradient(135deg, rgba(20, 36, 51, 0.92), rgba(5, 11, 18, 0.94)),
         radial-gradient(circle at top left, rgba(0, 229, 255, 0.18), transparent 40%);
     border-color: rgba(0, 229, 255, 0.58);
     box-shadow: inset 0 1px 0 rgba(126, 231, 255, 0.14), 0 0 28px rgba(0, 229, 255, 0.14);
     backdrop-filter: blur(8px) saturate(150%);
-
 }
 
 .text-glow {
     text-shadow: 0 0 8px rgba(57, 197, 187, 0.95), 0 0 22px rgba(0, 229, 255, 0.42), 0 0 36px rgba(126, 231, 255, 0.18);
-
 }
 
 .fade-in {
@@ -69,7 +65,7 @@ h1, h2, h3, button, h4, h5 {
         width: 80vw;
         max-width: 340px;
         background:
-            linear-gradient(135deg, rgba(13, 18, 24, 0.98), rgba(5, 7, 10, 0.98)),
+            linear-gradient(135deg, rgba(20, 36, 51, 0.98), rgba(5, 11, 18, 0.98)),
             radial-gradient(circle at top left, rgba(0, 229, 255, 0.18), transparent 42%);
         box-shadow: 2px 0 22px rgba(0, 229, 255, 0.22);
         transition: transform 0.3s;
@@ -132,10 +128,9 @@ h1, h2, h3, button, h4, h5 {
         touch-action: manipulation;
     }
     .menu-button:active, .menu-button:focus {
-           background: rgba(0, 229, 255, 0.14) !important;
+        background: rgba(0, 229, 255, 0.14) !important;
         color: #EAFEFF !important;
         outline: none;
-     
         box-shadow: 0 0 0 2px #00E5FF, 0 0 22px rgba(0, 229, 255, 0.38);
     }
     .menu-button i {
@@ -166,7 +161,7 @@ h1, h2, h3, button, h4, h5 {
 }
 
 ::-webkit-scrollbar-track {
-    background: rgba(8, 11, 16, 0.92);
+    background: rgba(16, 32, 48, 0.88);
     border-radius: 6px;
     border: 1px solid rgba(57, 197, 187, 0.32);
 }
@@ -188,13 +183,13 @@ h1, h2, h3, button, h4, h5 {
 }
 
 ::-webkit-scrollbar-corner {
-    background: rgba(8, 11, 16, 0.92);
+    background: rgba(16, 32, 48, 0.88);
 }
 
 /* Firefox Scrollbar */
 * {
     scrollbar-width: thin;
-    scrollbar-color: #39C5BB rgba(8, 11, 16, 0.92);
+    scrollbar-color: #39C5BB rgba(16, 32, 48, 0.88);
 }
 
 /* Scrollbar para elementos específicos */
@@ -203,7 +198,7 @@ h1, h2, h3, button, h4, h5 {
 }
 
 .scrollable-content::-webkit-scrollbar-track {
-    background: rgba(5, 7, 10, 0.94);
+    background: rgba(8, 16, 24, 0.92);
     border-radius: 4px;
 }
 
@@ -380,9 +375,9 @@ h1, h2, h3, button, h4, h5 {
     --miku-primary-cyan: #39C5BB;
     --miku-neon-cyan: #00E5FF;
     --miku-ice-blue: #7EE7FF;
-    --miku-dark-bg: #05070A;
-    --miku-secondary-bg: #080B10;
-    --miku-surface-bg: #0D1218;
+    --miku-dark-bg: #081018;
+    --miku-secondary-bg: #102030;
+    --miku-surface-bg: #142433;
     --miku-text-primary: #EAFEFF;
     --miku-text-secondary: #A8D8E8;
 }
@@ -395,7 +390,7 @@ body {
     background:
         radial-gradient(circle at 18% 12%, rgba(57, 197, 187, 0.18), transparent 28%),
         radial-gradient(circle at 82% 18%, rgba(0, 229, 255, 0.14), transparent 30%),
-        linear-gradient(180deg, #05070A 0%, var(--miku-dark-bg) 48%, #080B10 100%);
+        linear-gradient(180deg, #050B12 0%, var(--miku-dark-bg) 48%, #0B1B28 100%);
     color: var(--miku-text-primary);
 }
 
@@ -404,17 +399,17 @@ body {
 }
 
 .bg-black {
-    background-color: #05070A !important;
+    background-color: #050B12 !important;
 }
 
 .bg-gray-900\/50,
 .bg-gray-900\/80 {
-    background-color: rgba(13, 18, 24, 0.92) !important;
+    background-color: rgba(20, 36, 51, 0.88) !important;
 }
 
 .bg-gray-800\/70,
 .bg-gray-800 {
-    background-color: rgba(8, 11, 16, 0.94) !important;
+    background-color: rgba(16, 32, 48, 0.92) !important;
 }
 
 .text-gray-300,
