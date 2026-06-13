@@ -31,27 +31,32 @@ const staticData = {
             { name: "The Mentalist", image: "imagens/series/mentalist.webp" }
         ]},
         { icon: "fas fa-film", items: [
-            { name: "Interstellar", image: "imagens/movies/interstellar.jpg" },
-            { name: "Oppenheimer", image: "imagens/movies/oppenheimer.jpg" },
-            { name: "The Dark Knight", image: "imagens/movies/batman-dark-knight.jpg" },
-            { name: "Django Livre", image: "imagens/movies/django.jpg" },
-            { name: "Top Gun: Maverick", image: "imagens/movies/top-gun.jpg" },
-            { name: "Homem Aranha Através do AranhaVerso", image: "imagens/movies/aranhaverso.jpg" },
-            { name: "Forrest Gump", image: "imagens/movies/FGump.jpg" }
+            { name: "Interstellar", image: "imagens/movies/interstellar.webp" },
+            { name: "Oppenheimer", image: "imagens/movies/oppenheimer.webp" },
+            { name: "The Dark Knight", image: "imagens/movies/batman-dark-knight.webp" },
+            { name: "Django Livre", image: "imagens/movies/django.webp" },
+            { name: "Top Gun: Maverick", image: "imagens/movies/top-gun.webp" },
+            { name: "Homem Aranha Através do AranhaVerso", image: "imagens/movies/aranhaverso.webp" },
+            { name: "Forrest Gump", image: "imagens/movies/FGump.webp" }
         ]},
         { icon: "fas fa-shield-halved", items: [
             { name: "Shingeki no Kyojin", image: "imagens/animes/shingeki.jpg" },
             { name: "Sousou no Frieren", image: "imagens/animes/frieren.jpg" },
             { name: "Dan Dan Dan", image: "imagens/animes/dan.jpg" },
             { name: "Kaiju No 8", image: "imagens/animes/kaiju.jpg" },
-            { name: "Castlevania", image: "imagens/animes/castlevania.jpg" }
+            { name: "Castlevania", image: "imagens/animes/castlevania.jpg" },
+            { name: "Spy x Family", image: "imagens/animes/spyxfamily.webp" }
+
         ]},
         { icon: "fas fa-book-open", items: [
-            { name: "Chainsaw Man", image: "imagens/manga/chainsaw-man.jpg" },
-            { name: "Komi-San", image: "imagens/manga/komi-san.jpg" },
-            { name: "Boku No Hero", image: "imagens/manga/boku-no-hero.jpg" },
-            { name: "Tokyo Ghoul", image: "imagens/manga/tokyo-ghoul.jpg" },
-            { name: "Bleach", image: "imagens/manga/bleach.jpg" }
+            { name: "Chainsaw Man", image: "imagens/manga/chainsaw-man.webp" },
+            { name: "Komi-San", image: "imagens/manga/komi-san.webp" },
+            { name: "Boku No Hero", image: "imagens/manga/boku-no-hero.webp" },
+            { name: "Tokyo Ghoul", image: "imagens/manga/tokyo-ghoul.webp" },
+            { name: "Bleach", image: "imagens/manga/bleach.webp" },
+            { name: "Horimiya", image: "imagens/manga/horimiya.webp" },
+            { name: "My Dress-Up Darling", image: "imagens/manga/sono-bisque-doll.webp" },
+            { name: "One Piece", image: "imagens/manga/one-piece.webp" }
         ]},
         { icon: "fas fa-user-ninja", items: [
             { name: "Flash", image: "imagens/characters/Flash.jpg" },
@@ -63,7 +68,8 @@ const staticData = {
             { name: "Ciri", image: "imagens/characters/Ciri.jpg" },
             { name: "Patrick Jane", image: "imagens/characters/pjane.jpg" },
             { name: "Gregory House", image: "imagens/characters/house.jpg" },
-            { name: "Hatsune Miku", image: "imagens/characters/miku.webp" }
+            { name: "Hatsune Miku", image: "imagens/characters/miku.webp" },
+            { name: "Frieren", image: "imagens/characters/frieren.webp" }
         ]},
         { icon: "fas fa-music", items: [
             { name: "Time of Dying", image: "imagens/albums/TimeOfDying.jpg" },
