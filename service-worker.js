@@ -22,7 +22,10 @@ const CORE_ASSETS = [
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(CORE_ASSETS))
+    caches.open(CACHE_NAME).then((cache) =>
+      // allSettled: se um arquivo falhar (404, rede), os demais ainda são cacheados
+      Promise.allSettled(CORE_ASSETS.map((asset) => cache.add(asset)))
+    )
   );
   self.skipWaiting();
 });
@@ -63,21 +66,27 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(handleAssetRequest(request, event));
 });
 
+// Stale-while-revalidate: responde com o cache na hora (carregamento instantâneo)
+// e atualiza o cache em segundo plano pra próxima visita.
 async function handleNavigationRequest(request, event) {
-  try {
-    const networkResponse = await fetch(request);
+  const cachedResponse = (await caches.match(request)) || (await caches.match('./index.html'));
+
+  const updateCache = fetch(request).then((networkResponse) => {
     if (networkResponse && networkResponse.ok) {
       const responseToCache = networkResponse.clone();
-      // Salva no cache em segundo plano sem atrasar o retorno para a tela
-      event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => cache.put(request, responseToCache))
-      );
+      caches.open(CACHE_NAME).then((cache) => cache.put(request, responseToCache));
     }
     return networkResponse;
-  } catch (error) {
-    const cachedResponse = await caches.match(request);
-    return cachedResponse || caches.match('./index.html');
+  }).catch(() => null);
+
+  if (cachedResponse) {
+    event.waitUntil(updateCache);
+    return cachedResponse;
   }
+
+  // Sem nada em cache (primeira visita): precisa esperar a rede
+  const networkResponse = await updateCache;
+  return networkResponse || new Response('Offline', { status: 503, statusText: 'Offline' });
 }
 
 async function handleAssetRequest(request, event) {
@@ -104,7 +113,7 @@ async function handleAssetRequest(request, event) {
 
 async function handleImageRequest(request, event) {
   const cache = await caches.open(IMAGES_CACHE_NAME);
-  
+
   // Otimização: Cache-First para imagens. Retorna super rápido se já existir.
   const cachedResponse = await cache.match(request);
   if (cachedResponse) {
@@ -136,7 +145,6 @@ function isLocalImageRequest(request) {
   const url = new URL(request.url);
   const isSameOrigin = url.origin === self.location.origin;
   const isImagePath =
-    url.pathname.includes('/rev/imagens/') ||
     url.pathname.includes('/imagens/') ||
     url.pathname.includes('/assets/') ||
     url.pathname.includes('/icons/');

@@ -1,6 +1,8 @@
 // --- LÓGICA DO CANVAS DE FUNDO ---
 
 const PI2 = Math.PI * 2; // Cache do cálculo do círculo para otimização
+const PARTICLE_COLORS = ['rgba(57, 197, 187, 0.86)', 'rgba(0, 229, 255, 0.78)', 'rgba(126, 231, 255, 0.72)'];
+const CONNECT_OPACITY_BUCKETS = 6; // Quantas faixas de opacidade usar nas linhas de conexão
 
 class Particle {
     constructor(x, y, directionX, directionY, size, color) {
@@ -11,14 +13,14 @@ class Particle {
         this.size = size;
         this.color = color;
     }
-    
+
     draw() {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, PI2, false);
         ctx.fillStyle = this.color;
         ctx.fill();
     }
-    
+
     update() {
         // Colisão com as bordas
         if (this.x > canvas.width || this.x < 0) {
@@ -27,14 +29,14 @@ class Particle {
         if (this.y > canvas.height || this.y < 0) {
             this.directionY = -this.directionY;
         }
-        
+
         // Interação com o mouse (Otimizado sem Math.sqrt)
         if (mouse.x != null && mouse.y != null) {
             let dx = mouse.x - this.x;
             let dy = mouse.y - this.y;
             let distanceSq = dx * dx + dy * dy;
             let interactionRadius = mouse.radius + this.size;
-            
+
             if (distanceSq < interactionRadius * interactionRadius) {
                 if (mouse.x < this.x && this.x < canvas.width - this.size * 10) {
                     this.x += 5;
@@ -50,7 +52,7 @@ class Particle {
                 }
             }
         }
-        
+
         applyAttractorForce(this);
 
         // Limite de velocidade (Otimizado usando distâncias ao quadrado)
@@ -75,6 +77,7 @@ let canvas, ctx, particlesArray, mouse;
 let currentSettings, targetSettings;
 let activeAttractor = null;
 let lastAttractCall = 0;
+let resizeTimeoutId = null;
 
 const baseSettings = {
     densityDivisor: 9000,
@@ -150,12 +153,12 @@ function applyAttractorForce(particle) {
     const distanceSq = dx * dx + dy * dy;
     const range = 180;
     const rangeSq = range * range;
-    
+
     if (distanceSq === 0 || distanceSq > rangeSq) return;
 
     const distance = Math.sqrt(distanceSq);
     const force = 0.018 * activeAttractor.strength * (1 - (distance / range));
-    
+
     particle.directionX += (dx / distance) * force;
     particle.directionY += (dy / distance) * force;
 }
@@ -187,14 +190,14 @@ function createParticle() {
     let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
     let directionX = (Math.random() * 0.4) - 0.2;
     let directionY = (Math.random() * 0.4) - 0.2;
-    let color = ['rgba(57, 197, 187, 0.86)', 'rgba(0, 229, 255, 0.78)', 'rgba(126, 231, 255, 0.72)'][Math.floor(Math.random() * 3)];
+    let color = PARTICLE_COLORS[Math.floor(Math.random() * PARTICLE_COLORS.length)];
     return new Particle(x, y, directionX, directionY, size, color);
 }
 
 function initParticles() {
     canvas = document.getElementById('particle-canvas');
     ctx = canvas.getContext('2d');
-    
+
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
@@ -223,11 +226,16 @@ function initParticles() {
         mouse.y = null;
     });
 
+    // Debounce: evita recriar o array de partículas em cada pixel de redimensionamento
     window.addEventListener('resize', () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        mouse.radius = ((canvas.height / 100) * (canvas.width / 100));
-        init();
+        if (resizeTimeoutId) clearTimeout(resizeTimeoutId);
+        resizeTimeoutId = setTimeout(() => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            mouse.radius = ((canvas.height / 100) * (canvas.width / 100));
+            init();
+            resizeTimeoutId = null;
+        }, 150);
     });
 
     init();
@@ -237,49 +245,70 @@ function initParticles() {
 function init() {
     particlesArray = [];
     let numberOfParticles = getTargetParticleCount();
-    
+
     for (let i = 0; i < numberOfParticles; i++) {
         particlesArray.push(createParticle());
     }
 }
 
+// Conecta partículas próximas, agrupando as linhas em "baldes" de opacidade
+// para minimizar o número de chamadas a ctx.stroke() por frame.
 function connect() {
-    let opacityValue = 1;
-    
-    // Otimização: Calcular a distância máxima ao quadrado FORA do loop!
     const maxConnectDistSq = currentSettings.connectDistance * currentSettings.connectDistance;
-    
+
+    // Cada balde guarda pares de índices [a, b, a, b, ...]
+    const buckets = [];
+    for (let i = 0; i < CONNECT_OPACITY_BUCKETS; i++) buckets.push([]);
+
     for (let a = 0; a < particlesArray.length; a++) {
-        for (let b = a + 1; b < particlesArray.length; b++) { // Iniciando de a+1 para evitar checar a partícula com ela mesma
-            let dx = particlesArray[a].x - particlesArray[b].x;
-            let dy = particlesArray[a].y - particlesArray[b].y;
-            let distanceSq = dx * dx + dy * dy;
-            
+        for (let b = a + 1; b < particlesArray.length; b++) {
+            const dx = particlesArray[a].x - particlesArray[b].x;
+            const dy = particlesArray[a].y - particlesArray[b].y;
+            const distanceSq = dx * dx + dy * dy;
+
             if (distanceSq < maxConnectDistSq) {
-                // A fórmula do opacity foi ajustada suavemente para usar a distância ao quadrado
-                opacityValue = 1 - (distanceSq / 20000); 
-                
-                ctx.strokeStyle = `rgba(0, 229, 255, ${opacityValue})`;
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
-                ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
-                ctx.stroke();
+                let opacity = 1 - (distanceSq / 20000);
+                if (opacity <= 0) continue;
+                if (opacity > 1) opacity = 1;
+
+                let bucketIndex = Math.floor(opacity * CONNECT_OPACITY_BUCKETS);
+                if (bucketIndex >= CONNECT_OPACITY_BUCKETS) bucketIndex = CONNECT_OPACITY_BUCKETS - 1;
+
+                buckets[bucketIndex].push(a, b);
             }
         }
+    }
+
+    ctx.lineWidth = 1;
+    for (let i = 0; i < CONNECT_OPACITY_BUCKETS; i++) {
+        const segments = buckets[i];
+        if (!segments.length) continue;
+
+        const opacity = (i + 1) / CONNECT_OPACITY_BUCKETS;
+        ctx.strokeStyle = `rgba(0, 229, 255, ${opacity.toFixed(2)})`;
+        ctx.beginPath();
+
+        for (let s = 0; s < segments.length; s += 2) {
+            const pa = particlesArray[segments[s]];
+            const pb = particlesArray[segments[s + 1]];
+            ctx.moveTo(pa.x, pa.y);
+            ctx.lineTo(pb.x, pb.y);
+        }
+
+        ctx.stroke();
     }
 }
 
 function animate() {
     requestAnimationFrame(animate);
-    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     updateSettingsSmoothly();
     reconcileParticleCount();
-    
+
     for (let i = 0; i < particlesArray.length; i++) {
         particlesArray[i].update();
     }
-    
+
     connect();
 }
