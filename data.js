@@ -22,13 +22,13 @@ const staticData = {
 
         ]},
         { icon: "fas fa-tv", items: [
-            { name: "House, M.D.", image: "imagens/series/house.jpg" },
-            { name: "Flash", image: "imagens/series/the-flash.jpg" },
-            { name: "Reacher", image: "imagens/series/reacher.jpg" },
-            { name: "Stranger Things", image: "imagens/series/stranger-things.jpg" },
-            { name: "Game of Thrones", image: "imagens/series/game-of-thrones.jpg" },
-            { name: "Fallout", image: "imagens/series/Fallout.jpg" },
-            { name: "The Mentalist", image: "imagens/series/mentalist.jpg" }
+            { name: "House, M.D.", image: "imagens/series/house.webp" },
+            { name: "Flash", image: "imagens/series/the-flash.webp" },
+            { name: "Reacher", image: "imagens/series/reacher.webp" },
+            { name: "Stranger Things", image: "imagens/series/stranger-things.webp" },
+            { name: "Game of Thrones", image: "imagens/series/game-of-thrones.webp" },
+            { name: "Fallout", image: "imagens/series/Fallout.webp" },
+            { name: "The Mentalist", image: "imagens/series/mentalist.webp" }
         ]},
         { icon: "fas fa-film", items: [
             { name: "Interstellar", image: "imagens/movies/interstellar.jpg" },
