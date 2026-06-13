@@ -40,11 +40,11 @@ const staticData = {
             { name: "Forrest Gump", image: "imagens/movies/FGump.webp" }
         ]},
         { icon: "fas fa-shield-halved", items: [
-            { name: "Shingeki no Kyojin", image: "imagens/animes/shingeki.jpg" },
-            { name: "Sousou no Frieren", image: "imagens/animes/frieren.jpg" },
-            { name: "Dan Dan Dan", image: "imagens/animes/dan.jpg" },
-            { name: "Kaiju No 8", image: "imagens/animes/kaiju.jpg" },
-            { name: "Castlevania", image: "imagens/animes/castlevania.jpg" },
+            { name: "Shingeki no Kyojin", image: "imagens/animes/shingeki.webp" },
+            { name: "Sousou no Frieren", image: "imagens/animes/frieren.webp" },
+            { name: "Dan Dan Dan", image: "imagens/animes/dan.webp" },
+            { name: "Kaiju No 8", image: "imagens/animes/kaiju.webp" },
+            { name: "Castlevania", image: "imagens/animes/castlevania.webp" },
             { name: "Spy x Family", image: "imagens/animes/spyxfamily.webp" }
 
         ]},
