@@ -215,9 +215,7 @@ const PROFILE_SETUP_ICONS = {
     mousepad: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><path d="M4 19V9a4 4 0 0 1 4-4h8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16 5l-3 3M16 5l3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
 };
 
-function renderProfile(t) {
-    const gridFieldsHtml = t.fields.map((field, index) => `
-    setTimeout(() => initProfileTilt(), 50);
+const gridFieldsHtml = t.fields.map((field, index) => `
         <div class="bg-gray-900/50 p-3 sm:p-4 border border-red-800/50 flex items-center gap-3 sm:gap-4">
             <i class="fas ${field.icon} text-red-500 text-xl sm:text-2xl w-6 sm:w-8 text-center"></i>
             <div class="min-w-0 flex-1">
@@ -314,7 +312,6 @@ function renderProfile(t) {
                 </div>
                 ${featuredHtml}
             </div>`;
-}
 
 function renderAffinities(t) {
     const renderCategoryContent = (categoryIndex, categoryKey) => {
