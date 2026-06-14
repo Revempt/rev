@@ -2,7 +2,6 @@
 const soundManager = {
     clickSynth: null,
     loadSynth: null,
-    bgNoise: null,
 
     initialize: () => {
         if (state.hasInitializedAudio) return;
@@ -26,12 +25,6 @@ const soundManager = {
                 release: 0.2
             }
         }).toDestination();
-
-        soundManager.bgNoise = new Tone.Noise({
-            type: 'brown',
-            volume: -35,
-            fadeIn: 2
-        }).toDestination().start();
 
         state.hasInitializedAudio = true;
     },
