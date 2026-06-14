@@ -45,13 +45,14 @@ function renderApp() {
         case 'gallery': contentHtml = renderGallery(); break;
     }
 
-    const sectionTitle = escapeHtml(t[state.activeSection]?.title || '');
     contentWindow.innerHTML = `<h2 class="text-xl sm:text-2xl text-red-500 mb-4 sm:mb-6 tracking-widest text-glow">${sectionTitle}</h2>${contentHtml}`;
-    contentWindow.classList.add('fade-in');
-    setTimeout(() => contentWindow.classList.remove('fade-in'), 500);
+contentWindow.classList.add('fade-in');
+setTimeout(() => contentWindow.classList.remove('fade-in'), 500);
 
-    if (state.activeSection === 'profile') {
+if (state.activeSection === 'profile') {
     setTimeout(() => initProfileTilt(), 50);
+}
+
 }
 
     renderSystemStatus(t.status);
@@ -62,8 +63,6 @@ function renderApp() {
     `).join('');
 
     window.ParticlesAPI?.setMode(state.activeSection);
-}
-
 
 function formatBytes(value) {
     if (!Number.isFinite(value)) return 'N/A';
