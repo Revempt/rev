@@ -2,6 +2,8 @@
 
 const PI2 = Math.PI * 2; // Cache do cálculo do círculo para otimização
 const PARTICLE_COLORS = ['rgba(57, 197, 187, 0.86)', 'rgba(0, 229, 255, 0.78)', 'rgba(126, 231, 255, 0.72)'];
+const MUSIC_NOTES = ['♪', '♫', '♩', '♬'];
+let noteParticles = [];
 const CONNECT_OPACITY_BUCKETS = 6; // Quantas faixas de opacidade usar nas linhas de conexão
 
 class Particle {
@@ -73,6 +75,44 @@ class Particle {
     }
 }
 
+class NoteParticle {
+    constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = canvas.height * (0.2 + Math.random() * 0.7);
+        this.char = MUSIC_NOTES[Math.floor(Math.random() * MUSIC_NOTES.length)];
+        this.color = PARTICLE_COLORS[Math.floor(Math.random() * PARTICLE_COLORS.length)];
+        this.size = 13 + Math.random() * 9;
+        this.speedY = 0.35 + Math.random() * 0.35;
+        this.swayOffset = Math.random() * Math.PI * 2;
+        this.life = 0;
+        this.maxLife = 110 + Math.random() * 90;
+        this.opacity = 0;
+    }
+
+    update() {
+        this.life++;
+        this.y -= this.speedY;
+        this.x += Math.sin(this.life * 0.05 + this.swayOffset) * 0.5;
+
+        if (this.life < 20) {
+            this.opacity = this.life / 20;
+        } else if (this.life > this.maxLife - 30) {
+            this.opacity = (this.maxLife - this.life) / 30;
+        } else {
+            this.opacity = 0.65;
+        }
+
+        ctx.save();
+        ctx.globalAlpha = this.opacity;
+        ctx.font = `${this.size}px VT323, monospace`;
+        ctx.fillStyle = this.color;
+        ctx.fillText(this.char, this.x, this.y);
+        ctx.restore();
+
+        return this.life < this.maxLife;
+    }
+}
+
 let canvas, ctx, particlesArray, mouse;
 let currentSettings, targetSettings;
 let activeAttractor = null;
@@ -136,6 +176,12 @@ function burst(x, y, intensity = 1) {
 
         particle.directionX += Math.cos(baseAngle) * boost;
         particle.directionY += Math.sin(baseAngle) * boost;
+    }
+}
+
+function spawnNote() {
+    if (noteParticles.length < 5 && Math.random() < 0.004) {
+        noteParticles.push(new NoteParticle());
     }
 }
 
@@ -311,4 +357,7 @@ function animate() {
     }
 
     connect();
+
+    spawnNote();
+    noteParticles = noteParticles.filter(note => note.update());
 }

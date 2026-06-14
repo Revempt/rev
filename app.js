@@ -50,6 +50,10 @@ function renderApp() {
     contentWindow.classList.add('fade-in');
     setTimeout(() => contentWindow.classList.remove('fade-in'), 500);
 
+    if (state.activeSection === 'profile') {
+    setTimeout(() => initProfileTilt(), 50);
+}
+
     renderSystemStatus(t.status);
 
     const langContainer = document.getElementById('lang-buttons');
@@ -563,3 +567,55 @@ function copyToClipboard(text, btn) {
         }, 1500);
     });
 }
+
+async function initDiscordStatus(userId) {
+    const el = document.getElementById('discord-status');
+    if (!el) return;
+
+    const STATUS_COLORS = {
+        online:  { color: '#3ba55d', label: 'ONLINE' },
+        idle:    { color: '#faa81a', label: 'AUSENTE' },
+        dnd:     { color: '#ed4245', label: 'OCUPADO' },
+        offline: { color: '#747f8d', label: 'OFFLINE' }
+    };
+
+    const render = (data) => {
+        const status = data.discord_status || 'offline';
+        const { color, label } = STATUS_COLORS[status] || STATUS_COLORS.offline;
+
+        let spotifyHtml = '';
+        if (data.spotify) {
+            spotifyHtml = `
+                <div class="mt-2 text-[0.62rem] border-t border-gray-800 pt-2">
+                    <span style="color:var(--miku-primary-cyan)">♪</span>
+                    <span class="text-gray-400 truncate block">${data.spotify.song}</span>
+                    <span class="text-gray-500 truncate block">${data.spotify.artist}</span>
+                </div>
+            `;
+        }
+
+        el.innerHTML = `
+            <div class="flex items-center gap-2 text-xs">
+                <div class="w-2 h-2 rounded-full flex-shrink-0 animate-pulse"
+                     style="background:${color}; box-shadow:0 0 6px ${color};"></div>
+                <span style="color:${color}; font-family:'VT323',monospace; font-size:0.85rem;">
+                    ${label}
+                </span>
+            </div>
+            ${spotifyHtml}
+        `;
+    };
+
+    const fetchStatus = async () => {
+        try {
+            const res = await fetch(`https://api.lanyard.rest/v1/users/${userId}`);
+            const json = await res.json();
+            if (json.success) render(json.data);
+        } catch (e) {}
+    };
+
+    fetchStatus();
+    setInterval(fetchStatus, 30000);
+}
+
+initDiscordStatus(653575880555364372);
