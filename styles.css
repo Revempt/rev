@@ -52,30 +52,38 @@ h1, h2, h3, button, h4, h5 {
 .text-glow {
     text-shadow: 0 0 8px rgba(57, 197, 187, 0.95), 0 0 22px rgba(0, 229, 255, 0.42), 0 0 36px rgba(126, 231, 255, 0.18);
 }
-@keyframes neon-pulse {
+
+@keyframes neon-wave {
     0%, 100% {
         text-shadow:
-            0 0 4px #fff,
-            0 0 11px #fff,
-            0 0 14px #fff,
+            0 0 6px var(--miku-ice-blue),
+            0 0 14px var(--miku-primary-cyan),
             0 0 28px var(--miku-primary-cyan),
-            0 0 56px var(--miku-primary-cyan),
-            0 0 84px var(--miku-neon-cyan),
-            0 0 120px var(--miku-neon-cyan);
+            0 0 52px var(--miku-neon-cyan),
+            0 0 88px var(--miku-neon-cyan);
     }
-    50% {
+    30% {
         text-shadow:
-            0 0 2px #fff,
-            0 0 6px #fff,
-            0 0 8px #fff,
+            0 0 3px var(--miku-ice-blue),
+            0 0 8px var(--miku-primary-cyan),
             0 0 16px var(--miku-primary-cyan),
-            0 0 32px var(--miku-primary-cyan),
-            0 0 48px var(--miku-neon-cyan);
+            0 0 30px var(--miku-neon-cyan),
+            0 0 50px var(--miku-neon-cyan);
+    }
+    70% {
+        text-shadow:
+            0 0 10px var(--miku-ice-blue),
+            0 0 22px var(--miku-primary-cyan),
+            0 0 44px var(--miku-primary-cyan),
+            0 0 80px var(--miku-neon-cyan),
+            0 0 130px var(--miku-neon-cyan),
+            0 0 180px rgba(0, 229, 255, 0.2);
     }
 }
 
 .neon-title {
-    animation: neon-pulse 3s ease-in-out infinite;
+    color: var(--miku-ice-blue) !important;
+    animation: neon-wave 3s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -83,6 +91,7 @@ h1, h2, h3, button, h4, h5 {
         animation: none;
     }
 }
+
 .fade-in {
     animation: fadeIn 0.5s ease-in-out;
 }
