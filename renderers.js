@@ -214,7 +214,7 @@ const PROFILE_SETUP_ICONS = {
     monitor: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><rect x="3" y="5" width="18" height="12" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 19h4M8 21h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
     mousepad: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><path d="M4 19V9a4 4 0 0 1 4-4h8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16 5l-3 3M16 5l3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
 };
-
+function renderProfile(t) {
 const gridFieldsHtml = t.fields.map((field, index) => `
         <div class="bg-gray-900/50 p-3 sm:p-4 border border-red-800/50 flex items-center gap-3 sm:gap-4">
             <i class="fas ${field.icon} text-red-500 text-xl sm:text-2xl w-6 sm:w-8 text-center"></i>
@@ -312,6 +312,7 @@ const gridFieldsHtml = t.fields.map((field, index) => `
                 </div>
                 ${featuredHtml}
             </div>`;
+}
 
 function renderAffinities(t) {
     const renderCategoryContent = (categoryIndex, categoryKey) => {
