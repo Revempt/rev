@@ -309,34 +309,36 @@ function renderProfile(t) {
 
 function renderAffinities(t) {
     const renderCategoryContent = (categoryIndex, categoryKey) => {
-        const items = staticData.affinities[categoryIndex].items;
-        const gridClass = staticData.affinities[categoryIndex].icon === 'fas fa-headphones'
-            ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4'
-            : 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4';
+    const items = staticData.affinities[categoryIndex].items;
+    const gridClass = staticData.affinities[categoryIndex].icon === 'fas fa-headphones'
+        ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4'
+        : 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4';
 
-        return `
-            <div class="${gridClass}">
-                ${items.map((item, idx) => {
-                    if (item.isEmbed) {
-                        return `
-                            <div class="border-2 border-gray-800 hover:border-red-500 transition-colors bg-gray-900/50 p-3 sm:p-4">
-                                <h3 class="text-white text-sm sm:text-lg font-bold mb-2 sm:mb-3 text-center">${item.name}</h3>
-                                <div class="spotify-embed">${item.embed}</div>
-                            </div>
-                        `;
-                    }
+    return `
+        <div class="${gridClass}">
+            ${items.map((item, idx) => {
+                const animStyle = `style="animation: recordFadeIn 0.35s ease forwards; animation-delay: ${idx * 0.05}s; opacity: 0;"`;
+
+                if (item.isEmbed) {
                     return `
-                        <div class="relative group border-2 border-gray-800 hover:border-red-500 transition-colors cursor-pointer" onclick="openAffinityLightbox('${categoryKey}', ${idx})">
-                            <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover" />
-                            <div class="absolute bottom-0 left-0 w-full p-2 bg-black/70">
-                                <p class="text-white text-xs sm:text-sm font-bold truncate">${item.name}</p>
-                            </div>
+                        <div class="border-2 border-gray-800 hover:border-red-500 transition-colors bg-gray-900/50 p-3 sm:p-4" ${animStyle}>
+                            <h3 class="text-white text-sm sm:text-lg font-bold mb-2 sm:mb-3 text-center">${item.name}</h3>
+                            <div class="spotify-embed">${item.embed}</div>
                         </div>
                     `;
-                }).join('')}
-            </div>
-        `;
-    };
+                }
+                return `
+                    <div class="relative group border-2 border-gray-800 hover:border-red-500 transition-colors cursor-pointer" ${animStyle} onclick="openAffinityLightbox('${categoryKey}', ${idx})">
+                        <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover" />
+                        <div class="absolute bottom-0 left-0 w-full p-2 bg-black/70">
+                            <p class="text-white text-xs sm:text-sm font-bold truncate">${item.name}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('')}
+        </div>
+    `;
+};
 
     const buttonsHtml = t.categories.map((cat, index) => `
         <button data-index="${index}" data-aff="${AFFINITY_CATEGORY_KEYS[index]}" aria-selected="${index === 0 ? 'true' : 'false'}" class="affinity-cat-button flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 text-xs sm:text-sm border-b-2 transition-colors duration-200 ${index === 0 ? 'border-red-500 text-white' : 'border-gray-700 text-gray-400 hover:text-white'}">
@@ -490,7 +492,23 @@ function renderRecords(t) {
 
 function renderGallery() {
     setTimeout(() => bindReactiveParticleEvents('.gallery-reactive-item'), 0);
-    return `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">${staticData.gallery.map((src, idx) => `<div class="gallery-reactive-item relative aspect-video border-2 border-gray-800 hover:border-red-500 transition-colors cursor-pointer overflow-hidden" onclick="openLightbox(${idx})"><img src="${src}" class="absolute inset-0 w-full h-full object-cover" /></div>`).join('')}</div>`;
+    return `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">${
+        staticData.gallery.map((src, idx) => `
+            <div
+                class="gallery-reactive-item relative aspect-video border-2 border-gray-800 hover:border-red-500 transition-colors cursor-pointer overflow-hidden"
+                style="animation: recordFadeIn 0.35s ease forwards; animation-delay: ${idx * 0.06}s; opacity: 0;"
+                onclick="openLightbox(${idx})"
+            >
+                <div class="skeleton-box absolute inset-0 w-full h-full"></div>
+                <img
+                    src="${src}"
+                    class="absolute inset-0 w-full h-full object-cover"
+                    onload="this.previousElementSibling.remove()"
+                    onerror="this.previousElementSibling.remove()"
+                />
+            </div>
+        `).join('')
+    }</div>`;
 }
 
 function renderSystemStatus(t) {
