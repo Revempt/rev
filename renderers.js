@@ -257,7 +257,7 @@ function renderProfile(t) {
                     const translatedLabel = t.setup[index] && t.setup[index].label ? t.setup[index].label : item.label;
                     const iconSvg = PROFILE_SETUP_ICONS[item.icon] || PROFILE_SETUP_ICONS.cpu;
                     return `
-                        <div class="setup-item flex items-center gap-2 sm:gap-3 text-gray-400 bg-gray-800/70 p-2 sm:p-3 border border-transparent">
+                        <div class="setup-card flex items-center gap-2 sm:gap-3 text-gray-400 bg-gray-800/70 p-2 sm:p-3 border border-transparent">
                             <span class="inline-flex text-red-500 flex-shrink-0">${iconSvg}</span>
                             <div class="min-w-0 flex-1">
                                 <p class="font-bold text-white text-xs sm:text-sm truncate">${escapeHtml(translatedLabel)}</p>
@@ -329,7 +329,7 @@ function renderAffinities(t) {
                 }
                 return `
                     <div class="relative group border-2 border-gray-800 hover:border-red-500 transition-colors cursor-pointer" ${animStyle} onclick="openAffinityLightbox('${categoryKey}', ${idx})">
-                        <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover" />
+                        <img src="${item.image}" alt="${item.name}" loading="lazy" class="w-full h-full object-cover opacity-0 transition-opacity duration-500" onload="this.style.opacity='1'" />
                         <div class="absolute bottom-0 left-0 w-full p-2 bg-black/70">
                             <p class="text-white text-xs sm:text-sm font-bold truncate">${item.name}</p>
                         </div>
@@ -501,11 +501,12 @@ function renderGallery() {
             >
                 <div class="skeleton-box absolute inset-0 w-full h-full"></div>
                 <img
-                    src="${src}"
-                    class="absolute inset-0 w-full h-full object-cover"
-                    onload="this.previousElementSibling.remove()"
-                    onerror="this.previousElementSibling.remove()"
-                />
+    src="${src}"
+    loading="lazy"
+    class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500"
+    onload="this.style.opacity='1'; this.previousElementSibling.remove();"
+    onerror="this.previousElementSibling.remove()"
+/>
             </div>
         `).join('')
     }</div>`;
