@@ -26,7 +26,7 @@ function renderApp() {
     const t = state.translations;
     if (!t.menu) return;
     
-    clearTypewriters();// Aguarda o carregamento das traduções
+    clearTypewriters();
 
     const contentWindow = document.getElementById('content-window');
 
@@ -39,21 +39,20 @@ function renderApp() {
 
     let contentHtml = '';
     switch(state.activeSection) {
-        case 'profile': contentHtml = renderProfile(t.profile); break;
+        case 'profile':    contentHtml = renderProfile(t.profile);       break;
         case 'affinities': contentHtml = renderAffinities(t.affinities); break;
-        case 'records': contentHtml = renderRecords(t.records); break;
-        case 'gallery': contentHtml = renderGallery(); break;
+        case 'records':    contentHtml = renderRecords(t.records);       break;
+        case 'gallery':    contentHtml = renderGallery();                break;
     }
 
+    const sectionTitle = escapeHtml(t[state.activeSection]?.title || '');
     contentWindow.innerHTML = `<h2 class="text-xl sm:text-2xl text-red-500 mb-4 sm:mb-6 tracking-widest text-glow">${sectionTitle}</h2>${contentHtml}`;
-contentWindow.classList.add('fade-in');
-setTimeout(() => contentWindow.classList.remove('fade-in'), 500);
+    contentWindow.classList.add('fade-in');
+    setTimeout(() => contentWindow.classList.remove('fade-in'), 500);
 
-if (state.activeSection === 'profile') {
-    setTimeout(() => initProfileTilt(), 50);
-}
-
-}
+    if (state.activeSection === 'profile') {
+        setTimeout(() => initProfileTilt(), 50);
+    }
 
     renderSystemStatus(t.status);
 
@@ -63,6 +62,7 @@ if (state.activeSection === 'profile') {
     `).join('');
 
     window.ParticlesAPI?.setMode(state.activeSection);
+}
 
 function formatBytes(value) {
     if (!Number.isFinite(value)) return 'N/A';
@@ -617,4 +617,4 @@ async function initDiscordStatus(userId) {
     setInterval(fetchStatus, 30000);
 }
 
-initDiscordStatus(653575880555364372);
+initDiscordStatus('653575880555364372');
