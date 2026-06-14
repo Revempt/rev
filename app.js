@@ -522,3 +522,44 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+function initProfileTilt() {
+    const wrapper = document.querySelector('.profile-pic-wrapper');
+    if (!wrapper) return;
+
+    const MAX_TILT = 8;
+
+    wrapper.style.willChange = 'transform';
+
+    wrapper.addEventListener('mousemove', (e) => {
+        const rect = wrapper.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+
+        const dx = (e.clientX - cx) / (rect.width / 2);
+        const dy = (e.clientY - cy) / (rect.height / 2);
+
+        const rotX = (-dy * MAX_TILT).toFixed(2);
+        const rotY = (dx * MAX_TILT).toFixed(2);
+
+        wrapper.style.transform = `perspective(350px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+        wrapper.style.transition = 'transform 0.08s ease-out';
+    }, { passive: true });
+
+    wrapper.addEventListener('mouseleave', () => {
+        wrapper.style.transform = 'perspective(350px) rotateX(0deg) rotateY(0deg)';
+        wrapper.style.transition = 'transform 0.4s ease-out';
+    }, { passive: true });
+}
+
+function copyToClipboard(text, btn) {
+    navigator.clipboard.writeText(text).then(() => {
+        const icon = btn.querySelector('i');
+        icon.className = 'fas fa-check text-xs';
+        btn.style.color = 'var(--miku-primary-cyan)';
+        setTimeout(() => {
+            icon.className = 'fas fa-copy text-xs';
+            btn.style.color = '';
+        }, 1500);
+    });
+}

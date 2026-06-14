@@ -663,3 +663,31 @@ a:hover {
     from { opacity: 0; transform: scale(0.95) translateY(10px); }
     to   { opacity: 1; transform: scale(1)    translateY(0);    }
 }
+
+/* ===== ANIMATED BORDER — FEATURED CARD ===== */
+@keyframes borderCycle {
+    0%   {
+        border-color: rgba(57, 197, 187, 0.75);
+        box-shadow: 0 0 14px rgba(57, 197, 187, 0.28),
+                    inset 0 0 12px rgba(57, 197, 187, 0.05);
+    }
+    33%  {
+        border-color: rgba(0, 229, 255, 0.9);
+        box-shadow: 0 0 20px rgba(0, 229, 255, 0.4),
+                    inset 0 0 16px rgba(0, 229, 255, 0.07);
+    }
+    66%  {
+        border-color: rgba(126, 231, 255, 0.82);
+        box-shadow: 0 0 17px rgba(126, 231, 255, 0.34),
+                    inset 0 0 14px rgba(126, 231, 255, 0.06);
+    }
+    100% {
+        border-color: rgba(57, 197, 187, 0.75);
+        box-shadow: 0 0 14px rgba(57, 197, 187, 0.28),
+                    inset 0 0 12px rgba(57, 197, 187, 0.05);
+    }
+}
+
+.featured-card {
+    animation: borderCycle 3.5s ease-in-out infinite;
+}

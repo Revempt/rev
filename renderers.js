@@ -217,6 +217,7 @@ const PROFILE_SETUP_ICONS = {
 
 function renderProfile(t) {
     const gridFieldsHtml = t.fields.map((field, index) => `
+    setTimeout(() => initProfileTilt(), 50);
         <div class="bg-gray-900/50 p-3 sm:p-4 border border-red-800/50 flex items-center gap-3 sm:gap-4">
             <i class="fas ${field.icon} text-red-500 text-xl sm:text-2xl w-6 sm:w-8 text-center"></i>
             <div class="min-w-0 flex-1">
@@ -234,20 +235,28 @@ function renderProfile(t) {
     `;
 
     const socialsHtml = `
-        <div class="mt-4 lg:col-span-2 bg-gray-900/50 p-3 sm:p-4 border border-red-800/50">
-            <p class="text-red-500 font-bold text-xs sm:text-sm uppercase tracking-widest mb-3 sm:mb-4">${t.socialsTitle}</p>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                ${staticData.socials.map(social => `
-                    <a href="${safeUrl(social.url)}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 sm:gap-3 text-gray-400 hover:text-red-500 transition-colors bg-gray-800/70 p-2 sm:p-3 border border-transparent hover:border-red-700">
-                        <i class="${social.icon} w-4 sm:w-5 text-center"></i>
-                        <div class="min-w-0 flex-1">
-                            <p class="font-bold text-white text-xs sm:text-sm truncate">${escapeHtml(social.name)}</p>
-                            <p class="text-xs truncate">${escapeHtml(social.user)}</p>
-                        </div>
-                    </a>
-                `).join('')}
-            </div>
-        </div>`;
+    <div class="mt-4 lg:col-span-2 bg-gray-900/50 p-3 sm:p-4 border border-red-800/50">
+        <p class="text-red-500 font-bold text-xs sm:text-sm uppercase tracking-widest mb-3 sm:mb-4">${t.socialsTitle}</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            ${staticData.socials.map(social => `
+                <a href="${safeUrl(social.url)}" target="_blank" rel="noopener noreferrer"
+                   class="group flex items-center gap-2 sm:gap-3 text-gray-400 hover:text-red-500 transition-colors bg-gray-800/70 p-2 sm:p-3 border border-transparent hover:border-red-700">
+                    <i class="${social.icon} w-4 sm:w-5 text-center flex-shrink-0"></i>
+                    <div class="min-w-0 flex-1">
+                        <p class="font-bold text-white text-xs sm:text-sm truncate">${escapeHtml(social.name)}</p>
+                        <p class="text-xs truncate">${escapeHtml(social.user)}</p>
+                    </div>
+                    <button
+                        class="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-gray-600 hover:text-white p-1"
+                        onclick="event.preventDefault(); event.stopPropagation(); copyToClipboard('${escapeHtml(social.user)}', this)"
+                        title="Copiar"
+                        type="button">
+                        <i class="fas fa-copy text-xs"></i>
+                    </button>
+                </a>
+            `).join('')}
+        </div>
+    </div>`;
 
     const setupHtml = `
         <div class="mt-4 lg:col-span-2 bg-gray-900/50 p-3 sm:p-4 border border-red-800/50">
