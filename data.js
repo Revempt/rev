@@ -106,14 +106,14 @@ const staticData = {
         ]}
     ],
     gallery: [
-        "imagens/gallery/gallery1.jpg",
-        "imagens/gallery/gallery2.jpg",
-        "imagens/gallery/gallery3.jpg",
-        "imagens/gallery/gallery4.jpg",
-        "imagens/gallery/gallery5.jpg",
-        "imagens/gallery/gallery6.png",
-        "imagens/gallery/gallery7.png",
-        "imagens/gallery/gallery8.png",
+        "imagens/gallery/gallery1.webp",
+        "imagens/gallery/gallery2.webp",
+        "imagens/gallery/gallery3.webp",
+        "imagens/gallery/gallery4.webp",
+        "imagens/gallery/gallery5.webp",
+        "imagens/gallery/gallery6.webp",
+        "imagens/gallery/gallery7.webp",
+        "imagens/gallery/gallery8.webp",
     ],
 
     // ✅ ÍCONES DO MENU (AGORA COM WISHLIST)
