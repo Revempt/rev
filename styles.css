@@ -53,43 +53,6 @@ h1, h2, h3, button, h4, h5 {
     text-shadow: 0 0 8px rgba(57, 197, 187, 0.95), 0 0 22px rgba(0, 229, 255, 0.42), 0 0 36px rgba(126, 231, 255, 0.18);
 }
 
-@keyframes neon-wave {
-    0%, 100% {
-        text-shadow:
-            0 0 5px var(--miku-primary-cyan),
-            0 0 12px var(--miku-primary-cyan),
-            0 0 25px var(--miku-neon-cyan),
-            0 0 50px var(--miku-neon-cyan),
-            0 0 80px rgba(0, 229, 255, 0.5);
-    }
-    30% {
-        text-shadow:
-            0 0 3px var(--miku-primary-cyan),
-            0 0 7px var(--miku-primary-cyan),
-            0 0 14px var(--miku-neon-cyan),
-            0 0 28px var(--miku-neon-cyan),
-            0 0 45px rgba(0, 229, 255, 0.3);
-    }
-    70% {
-        text-shadow:
-            0 0 8px var(--miku-primary-cyan),
-            0 0 18px var(--miku-primary-cyan),
-            0 0 36px var(--miku-neon-cyan),
-            0 0 72px var(--miku-neon-cyan),
-            0 0 120px rgba(0, 229, 255, 0.4);
-    }
-}
-
-.neon-title {
-    animation: neon-wave 3s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .neon-title {
-        animation: none;
-    }
-}
-
 .fade-in {
     animation: fadeIn 0.5s ease-in-out;
 }
