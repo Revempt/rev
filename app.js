@@ -49,7 +49,6 @@ function renderApp() {
     contentWindow.innerHTML = `<h2 class="text-xl sm:text-2xl text-red-500 mb-4 sm:mb-6 tracking-widest text-glow">${sectionTitle}</h2>${contentHtml}`;
     contentWindow.classList.add('fade-in');
     setTimeout(() => contentWindow.classList.remove('fade-in'), 500);
-
     if (state.activeSection === 'profile') {
         setTimeout(() => initProfileTilt(), 50);
     }
