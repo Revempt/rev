@@ -490,7 +490,7 @@ function renderRecords(t) {
 
 function renderGallery() {
     setTimeout(() => bindReactiveParticleEvents('.gallery-reactive-item'), 0);
-    return `<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">${staticData.gallery.map((src, idx) => `<div class="gallery-reactive-item border-2 border-gray-800 hover:border-red-500 transition-colors cursor-pointer" onclick="openLightbox(${idx})"><img src="${src}" class="w-full h-auto object-cover" /></div>`).join('')}</div>`;
+    return `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">${staticData.gallery.map((src, idx) => `<div class="gallery-reactive-item relative aspect-video border-2 border-gray-800 hover:border-red-500 transition-colors cursor-pointer overflow-hidden" onclick="openLightbox(${idx})"><img src="${src}" class="absolute inset-0 w-full h-full object-cover" /></div>`).join('')}</div>`;
 }
 
 function renderSystemStatus(t) {
