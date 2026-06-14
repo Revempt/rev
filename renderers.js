@@ -257,7 +257,7 @@ function renderProfile(t) {
                     const translatedLabel = t.setup[index] && t.setup[index].label ? t.setup[index].label : item.label;
                     const iconSvg = PROFILE_SETUP_ICONS[item.icon] || PROFILE_SETUP_ICONS.cpu;
                     return `
-                        <div class="flex items-center gap-2 sm:gap-3 text-gray-400 bg-gray-800/70 p-2 sm:p-3 border border-transparent">
+                        <div class="setup-item flex items-center gap-2 sm:gap-3 text-gray-400 bg-gray-800/70 p-2 sm:p-3 border border-transparent">
                             <span class="inline-flex text-red-500 flex-shrink-0">${iconSvg}</span>
                             <div class="min-w-0 flex-1">
                                 <p class="font-bold text-white text-xs sm:text-sm truncate">${escapeHtml(translatedLabel)}</p>
