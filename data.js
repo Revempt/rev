@@ -152,7 +152,7 @@ const languageData = {
             ],
             directive: {
                 label: "Diretiva Principal",
-                value: "Oi, sou o Rev, gosto de todas as áreas da ciência, principalmente astronomia. Também curto tecnologia e jogos. Atualmente estou estudando, mas sempre arrumo tempo pra jogar."
+                value: "Oi, sou o Rev, amo ciência, tecnologia e jogos. Atualmente estou estudando, mas sempre arrumo tempo pra jogar."
             },
             socialsTitle: "Canais de Comunicação",
             featuredTitle: "Foco Atual",
@@ -237,7 +237,7 @@ const languageData = {
             ],
             directive: {
                 label: "Main Directive",
-                value: "Hi, I'm Rev. I like all fields of science, especially astronomy. I'm into technology and gaming too. I'm studying right now, but I always find time to play."
+                value: "Hi, I'm Rev. I love science, technology, and gaming. I'm currently studying, but I always find time to play."
             },
             socialsTitle: "Communication Channels",
             featuredTitle: "Current Focus",
@@ -322,7 +322,7 @@ const languageData = {
             ],
             directive: {
                 label: "Directiva Principal",
-                value: "Hola, soy Rev. Me gustan todas las áreas de la ciencia, sobre todo la astronomía. También disfruto la tecnología y los juegos. Estoy estudiando actualmente, pero siempre me hago un tiempo para jugar."
+                value: "Hola, soy Rev, me encanta la ciencia, la tecnología y los videojuegos. Actualmente estoy estudiando, pero siempre encuentro tiempo para jugar"
             },
             socialsTitle: "Canales de Comunicación",
             featuredTitle: "Enfoque Actual",
@@ -407,7 +407,7 @@ const languageData = {
             ],
             directive: {
                 label: "主な指令",
-                value: "はじめまして、Revです。科学全般が好きで、特に天文学に興味があり、テクノロジーゲームも好きで、現在は勉強中ですが、いつもゲームをする時間は確保しています。"
+                value: "「こんにちは、レヴです。科学、テクノロジー、そしてゲームが大好きです。現在は勉強中ですが、いつでもゲームをする時間を作っています。」"
             },
             socialsTitle: "通信チャネル",
             featuredTitle: "現在の焦点",
