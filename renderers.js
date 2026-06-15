@@ -1,3 +1,4 @@
+cat > /mnt/user-data/outputs/renderers.js << 'ENDOFFILE'
 // --- FUNÇÕES DE RENDERIZAÇÃO ---
 
 function escapeHtml(value) {
@@ -27,25 +28,25 @@ let typewriterRaf = null;
 
 function typeOutText(element, text, speed = 30) {
     if (!element) return;
-    
+
     // Otimização: Evita innerHTML contínuo. Usamos nós de texto diretos.
     element.innerHTML = '';
     const textNode = document.createTextNode('');
     const cursorNode = document.createElement('span');
     cursorNode.className = 'animate-pulse cursor';
     cursorNode.textContent = '_';
-    
+
     element.appendChild(textNode);
     element.appendChild(cursorNode);
 
-    typewriterQueue.push({ 
-        element, 
-        textNode, 
-        cursorNode, 
-        text, 
-        speed, 
-        startTime: null, 
-        lastIndex: -1 
+    typewriterQueue.push({
+        element,
+        textNode,
+        cursorNode,
+        text,
+        speed,
+        startTime: null,
+        lastIndex: -1
     });
 
     if (typewriterRaf === null) {
@@ -63,7 +64,7 @@ function runTypewriters(now) {
 
         if (targetIndex !== item.lastIndex) {
             item.lastIndex = targetIndex;
-            
+
             // Otimização: Atualiza só a string na memória, sem forçar reflow/parse de HTML
             item.textNode.nodeValue = item.text.substring(0, targetIndex);
 
@@ -185,7 +186,8 @@ function createLightbox(prefix) {
 let affinityLightbox = null;
 let galleryLightbox = null;
 
-const AFFINITY_BASE_KEYS = ['jogos', 'series', 'filmes'];
+// Chaves de identificação das categorias (sem acentos — seguro para atributos HTML e onclick)
+const AFFINITY_BASE_KEYS = ['jogos', 'series', 'filmes', 'animes', 'mangas', 'personagens', 'musicas', 'playlists'];
 const AFFINITY_CATEGORY_KEYS = staticData.affinities.map((_, index) => AFFINITY_BASE_KEYS[index] || `cat-${index}`);
 
 window.openAffinityLightbox = function (categoryKey, idx) {
@@ -214,8 +216,57 @@ const PROFILE_SETUP_ICONS = {
     monitor: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><rect x="3" y="5" width="18" height="12" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 19h4M8 21h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
     mousepad: '<svg viewBox="0 0 24 24" class="setup-item-icon" aria-hidden="true"><path d="M4 19V9a4 4 0 0 1 4-4h8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16 5l-3 3M16 5l3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
 };
+
+// --- GALERIA: fallback para imagem com erro ---
+function onGalleryImageError(img) {
+    const container = img.parentElement;
+    // Remove o skeleton de loading
+    if (img.previousElementSibling) img.previousElementSibling.remove();
+    // Substitui a imagem por um placeholder
+    const fallback = document.createElement('div');
+    fallback.className = 'absolute inset-0 flex items-center justify-center bg-gray-900/50';
+    fallback.innerHTML = '<i class="fas fa-image text-gray-700 text-2xl"></i>';
+    container.replaceChild(fallback, img);
+    // Desativa o lightbox para não abrir com imagem quebrada
+    container.removeAttribute('onclick');
+    container.style.cursor = 'default';
+}
+
+// --- AFINIDADES: conteúdo de cada categoria ---
+function renderCategoryContent(categoryIndex, categoryKey) {
+    const items = staticData.affinities[categoryIndex].items;
+    const gridClass = staticData.affinities[categoryIndex].icon === 'fas fa-headphones'
+        ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4'
+        : 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4';
+
+    return `
+        <div class="${gridClass}">
+            ${items.map((item, idx) => {
+                const animStyle = `style="animation: recordFadeIn 0.35s ease forwards; animation-delay: ${idx * 0.05}s; opacity: 0;"`;
+
+                if (item.isEmbed) {
+                    return `
+                        <div class="border-2 border-gray-800 hover:border-red-500 transition-colors bg-gray-900/50 p-3 sm:p-4" ${animStyle}>
+                            <h3 class="text-white text-sm sm:text-lg font-bold mb-2 sm:mb-3 text-center">${item.name}</h3>
+                            <div class="spotify-embed">${item.embed}</div>
+                        </div>
+                    `;
+                }
+                return `
+                    <div class="relative group border-2 border-gray-800 hover:border-red-500 transition-colors cursor-pointer" ${animStyle} onclick="openAffinityLightbox('${categoryKey}', ${idx})">
+                        <img src="${item.image}" alt="${item.name}" loading="lazy" class="w-full h-full object-cover opacity-0 transition-opacity duration-500" onload="this.style.opacity='1'" />
+                        <div class="absolute bottom-0 left-0 w-full p-2 bg-black/70">
+                            <p class="text-white text-xs sm:text-sm font-bold truncate">${item.name}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('')}
+        </div>
+    `;
+}
+
 function renderProfile(t) {
-const gridFieldsHtml = t.fields.map((field, index) => `
+    const gridFieldsHtml = t.fields.map((field, index) => `
         <div class="bg-gray-900/50 p-3 sm:p-4 border border-red-800/50 flex items-center gap-3 sm:gap-4">
             <i class="fas ${field.icon} text-red-500 text-xl sm:text-2xl w-6 sm:w-8 text-center"></i>
             <div class="min-w-0 flex-1">
@@ -315,38 +366,6 @@ const gridFieldsHtml = t.fields.map((field, index) => `
 }
 
 function renderAffinities(t) {
-    const renderCategoryContent = (categoryIndex, categoryKey) => {
-    const items = staticData.affinities[categoryIndex].items;
-    const gridClass = staticData.affinities[categoryIndex].icon === 'fas fa-headphones'
-        ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4'
-        : 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4';
-
-    return `
-        <div class="${gridClass}">
-            ${items.map((item, idx) => {
-                const animStyle = `style="animation: recordFadeIn 0.35s ease forwards; animation-delay: ${idx * 0.05}s; opacity: 0;"`;
-
-                if (item.isEmbed) {
-                    return `
-                        <div class="border-2 border-gray-800 hover:border-red-500 transition-colors bg-gray-900/50 p-3 sm:p-4" ${animStyle}>
-                            <h3 class="text-white text-sm sm:text-lg font-bold mb-2 sm:mb-3 text-center">${item.name}</h3>
-                            <div class="spotify-embed">${item.embed}</div>
-                        </div>
-                    `;
-                }
-                return `
-                    <div class="relative group border-2 border-gray-800 hover:border-red-500 transition-colors cursor-pointer" ${animStyle} onclick="openAffinityLightbox('${categoryKey}', ${idx})">
-                        <img src="${item.image}" alt="${item.name}" loading="lazy" class="w-full h-full object-cover opacity-0 transition-opacity duration-500" onload="this.style.opacity='1'" />
-                        <div class="absolute bottom-0 left-0 w-full p-2 bg-black/70">
-                            <p class="text-white text-xs sm:text-sm font-bold truncate">${item.name}</p>
-                        </div>
-                    </div>
-                `;
-            }).join('')}
-        </div>
-    `;
-};
-
     const buttonsHtml = t.categories.map((cat, index) => `
         <button data-index="${index}" data-aff="${AFFINITY_CATEGORY_KEYS[index]}" aria-selected="${index === 0 ? 'true' : 'false'}" class="affinity-cat-button flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 text-xs sm:text-sm border-b-2 transition-colors duration-200 ${index === 0 ? 'border-red-500 text-white' : 'border-gray-700 text-gray-400 hover:text-white'}">
             <i class="${staticData.affinities[index].icon}"></i>
@@ -469,7 +488,7 @@ function renderAffinities(t) {
                 window.removeEventListener('resize', window.__affinitiesResizeHandler);
                 return;
             }
-            
+
             if (resizeRaf) return;
             resizeRaf = requestAnimationFrame(() => {
                 syncWrapperHeight(getPanel(activeKey));
@@ -508,12 +527,12 @@ function renderGallery() {
             >
                 <div class="skeleton-box absolute inset-0 w-full h-full"></div>
                 <img
-    src="${src}"
-    loading="lazy"
-    class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500"
-    onload="this.style.opacity='1'; this.previousElementSibling.remove();"
-    onerror="this.previousElementSibling.remove()"
-/>
+                    src="${src}"
+                    loading="lazy"
+                    class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500"
+                    onload="this.style.opacity='1'; this.previousElementSibling.remove();"
+                    onerror="onGalleryImageError(this)"
+                />
             </div>
         `).join('')
     }</div>`;

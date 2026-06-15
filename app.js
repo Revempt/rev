@@ -6,26 +6,121 @@ let state = {
     hasInitializedAudio: false,
     translations: {}, // Será preenchido com o JSON do idioma
     isMobileMenuOpen: false,
-    chaosIntervalId: null,
     isDiagnosticsMenuOpen: false,
     isDiagnosticsModalOpen: false
 };
 
+// --- UTILITÁRIOS ---
+function formatBytes(value) {
+    if (!Number.isFinite(value)) return 'N/A';
+    const units = ['B', 'KB', 'MB', 'GB'];
+    let size = value;
+    let unit = 0;
+    while (size >= 1024 && unit < units.length - 1) {
+        size /= 1024;
+        unit += 1;
+    }
+    return `${size.toFixed(size >= 10 || unit === 0 ? 0 : 1)} ${units[unit]}`;
+}
 
-function escapeHtml(value) {
-    return String(value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+// --- FUNÇÕES DE PERFIL ---
+function initProfileTilt() {
+    const wrapper = document.querySelector('.profile-pic-wrapper');
+    if (!wrapper) return;
+
+    const MAX_TILT = 8;
+
+    wrapper.style.willChange = 'transform';
+
+    wrapper.addEventListener('mousemove', (e) => {
+        const rect = wrapper.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+
+        const dx = (e.clientX - cx) / (rect.width / 2);
+        const dy = (e.clientY - cy) / (rect.height / 2);
+
+        const rotX = (-dy * MAX_TILT).toFixed(2);
+        const rotY = (dx * MAX_TILT).toFixed(2);
+
+        wrapper.style.transform = `perspective(350px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+        wrapper.style.transition = 'transform 0.08s ease-out';
+    }, { passive: true });
+
+    wrapper.addEventListener('mouseleave', () => {
+        wrapper.style.transform = 'perspective(350px) rotateX(0deg) rotateY(0deg)';
+        wrapper.style.transition = 'transform 0.4s ease-out';
+    }, { passive: true });
+}
+
+function copyToClipboard(text, btn) {
+    navigator.clipboard.writeText(text).then(() => {
+        const icon = btn.querySelector('i');
+        icon.className = 'fas fa-check text-xs';
+        btn.style.color = 'var(--miku-primary-cyan)';
+        setTimeout(() => {
+            icon.className = 'fas fa-copy text-xs';
+            btn.style.color = '';
+        }, 1500);
+    });
+}
+
+// --- DISCORD STATUS ---
+async function initDiscordStatus(userId) {
+    const el = document.getElementById('discord-status');
+    if (!el) return;
+
+    const STATUS_COLORS = {
+        online:  { color: '#3ba55d', label: 'ONLINE' },
+        idle:    { color: '#faa81a', label: 'AUSENTE' },
+        dnd:     { color: '#ed4245', label: 'OCUPADO' },
+        offline: { color: '#747f8d', label: 'OFFLINE' }
+    };
+
+    const render = (data) => {
+        const status = data.discord_status || 'offline';
+        const { color, label } = STATUS_COLORS[status] || STATUS_COLORS.offline;
+
+        let spotifyHtml = '';
+        if (data.spotify) {
+            spotifyHtml = `
+                <div class="mt-2 text-[0.62rem] border-t border-gray-800 pt-2">
+                    <span style="color:var(--miku-primary-cyan)">♪</span>
+                    <span class="text-gray-400 truncate block">${data.spotify.song}</span>
+                    <span class="text-gray-500 truncate block">${data.spotify.artist}</span>
+                </div>
+            `;
+        }
+
+        el.innerHTML = `
+            <div class="flex items-center gap-2 text-xs">
+                <div class="w-2 h-2 rounded-full flex-shrink-0 animate-pulse"
+                     style="background:${color}; box-shadow:0 0 6px ${color};"></div>
+                <span style="color:${color}; font-family:'VT323',monospace; font-size:0.85rem;">
+                    ${label}
+                </span>
+            </div>
+            ${spotifyHtml}
+        `;
+    };
+
+    const fetchStatus = async () => {
+        try {
+            const res = await fetch(`https://api.lanyard.rest/v1/users/${userId}`);
+            const json = await res.json();
+            if (json.success) render(json.data);
+        } catch (e) {}
+    };
+
+    fetchStatus();
+    setInterval(fetchStatus, 30000);
 }
 
 // --- FUNÇÃO PRINCIPAL DE RENDERIZAÇÃO ---
 function renderApp() {
     const t = state.translations;
     if (!t.menu) return;
-    
+
     clearTypewriters();
 
     const contentWindow = document.getElementById('content-window');
@@ -61,18 +156,6 @@ function renderApp() {
     `).join('');
 
     window.ParticlesAPI?.setMode(state.activeSection);
-}
-
-function formatBytes(value) {
-    if (!Number.isFinite(value)) return 'N/A';
-    const units = ['B', 'KB', 'MB', 'GB'];
-    let size = value;
-    let unit = 0;
-    while (size >= 1024 && unit < units.length - 1) {
-        size /= 1024;
-        unit += 1;
-    }
-    return `${size.toFixed(size >= 10 || unit === 0 ? 0 : 1)} ${units[unit]}`;
 }
 
 // --- DIAGNÓSTICOS (checagens paralelas) ---
@@ -421,6 +504,7 @@ function closeMobileMenu() {
     state.isMobileMenuOpen = false;
 }
 
+// --- CARREGAMENTO DE IDIOMA ---
 async function loadLanguage(lang) {
     state.language = lang;
     state.translations = languageData[lang];
@@ -436,6 +520,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     bindDiagnosticsListeners();
     bindMenuListeners(); // listeners do menu e do idioma, ligados uma única vez
+    initDiscordStatus('653575880555364372');
 
     // Mobile menu elements
     function getMobileMenuElements() {
@@ -474,7 +559,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 1000);
 
     const startAudio = () => {
-        if(state.hasInitializedAudio) return;
+        if (state.hasInitializedAudio) return;
         Tone.start().then(() => {
             soundManager.initialize();
             state.isMuted = false;
@@ -489,7 +574,7 @@ document.addEventListener('DOMContentLoaded', () => {
         muteButton.innerHTML = state.isMuted ? '<i class="fas fa-volume-xmark fa-lg"></i>' : '<i class="fas fa-volume-high fa-lg"></i>';
     });
 
-    // Close mobile menu on window resize
+    // Fecha o menu mobile ao redimensionar para desktop
     window.addEventListener('resize', () => {
         if (window.innerWidth >= 1024 && state.isMobileMenuOpen) {
             closeMobileMenu();
@@ -524,96 +609,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-
-function initProfileTilt() {
-    const wrapper = document.querySelector('.profile-pic-wrapper');
-    if (!wrapper) return;
-
-    const MAX_TILT = 8;
-
-    wrapper.style.willChange = 'transform';
-
-    wrapper.addEventListener('mousemove', (e) => {
-        const rect = wrapper.getBoundingClientRect();
-        const cx = rect.left + rect.width / 2;
-        const cy = rect.top + rect.height / 2;
-
-        const dx = (e.clientX - cx) / (rect.width / 2);
-        const dy = (e.clientY - cy) / (rect.height / 2);
-
-        const rotX = (-dy * MAX_TILT).toFixed(2);
-        const rotY = (dx * MAX_TILT).toFixed(2);
-
-        wrapper.style.transform = `perspective(350px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
-        wrapper.style.transition = 'transform 0.08s ease-out';
-    }, { passive: true });
-
-    wrapper.addEventListener('mouseleave', () => {
-        wrapper.style.transform = 'perspective(350px) rotateX(0deg) rotateY(0deg)';
-        wrapper.style.transition = 'transform 0.4s ease-out';
-    }, { passive: true });
-}
-
-function copyToClipboard(text, btn) {
-    navigator.clipboard.writeText(text).then(() => {
-        const icon = btn.querySelector('i');
-        icon.className = 'fas fa-check text-xs';
-        btn.style.color = 'var(--miku-primary-cyan)';
-        setTimeout(() => {
-            icon.className = 'fas fa-copy text-xs';
-            btn.style.color = '';
-        }, 1500);
-    });
-}
-
-async function initDiscordStatus(userId) {
-    const el = document.getElementById('discord-status');
-    if (!el) return;
-
-    const STATUS_COLORS = {
-        online:  { color: '#3ba55d', label: 'ONLINE' },
-        idle:    { color: '#faa81a', label: 'AUSENTE' },
-        dnd:     { color: '#ed4245', label: 'OCUPADO' },
-        offline: { color: '#747f8d', label: 'OFFLINE' }
-    };
-
-    const render = (data) => {
-        const status = data.discord_status || 'offline';
-        const { color, label } = STATUS_COLORS[status] || STATUS_COLORS.offline;
-
-        let spotifyHtml = '';
-        if (data.spotify) {
-            spotifyHtml = `
-                <div class="mt-2 text-[0.62rem] border-t border-gray-800 pt-2">
-                    <span style="color:var(--miku-primary-cyan)">♪</span>
-                    <span class="text-gray-400 truncate block">${data.spotify.song}</span>
-                    <span class="text-gray-500 truncate block">${data.spotify.artist}</span>
-                </div>
-            `;
-        }
-
-        el.innerHTML = `
-            <div class="flex items-center gap-2 text-xs">
-                <div class="w-2 h-2 rounded-full flex-shrink-0 animate-pulse"
-                     style="background:${color}; box-shadow:0 0 6px ${color};"></div>
-                <span style="color:${color}; font-family:'VT323',monospace; font-size:0.85rem;">
-                    ${label}
-                </span>
-            </div>
-            ${spotifyHtml}
-        `;
-    };
-
-    const fetchStatus = async () => {
-        try {
-            const res = await fetch(`https://api.lanyard.rest/v1/users/${userId}`);
-            const json = await res.json();
-            if (json.success) render(json.data);
-        } catch (e) {}
-    };
-
-    fetchStatus();
-    setInterval(fetchStatus, 30000);
-}
-
-initDiscordStatus('653575880555364372');
