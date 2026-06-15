@@ -1,4 +1,4 @@
-cat > /mnt/user-data/outputs/renderers.js << 'ENDOFFILE'
+
 // --- FUNÇÕES DE RENDERIZAÇÃO ---
 
 function escapeHtml(value) {
