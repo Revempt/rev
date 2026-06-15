@@ -119,18 +119,12 @@ let activeAttractor = null;
 let lastAttractCall = 0;
 let resizeTimeoutId = null;
 
-const baseSettings = {
-    densityDivisor: 9000,
-    speed: 1,
-    connectDistance: 170,
-    maxSpeed: 0.7
-};
-
 const modeSettings = {
-    default: { speed: 1, connectDistance: 170, densityDivisor: 9000, maxSpeed: 0.7 },
-    profile: { speed: 0.92, connectDistance: 180, densityDivisor: 9400, maxSpeed: 0.66 },
-    gallery: { speed: 1.08, connectDistance: 155, densityDivisor: 8600, maxSpeed: 0.78 },
-    records: { speed: 0.88, connectDistance: 185, densityDivisor: 9800, maxSpeed: 0.64 }
+    default:    { speed: 1,    connectDistance: 170, densityDivisor: 9000, maxSpeed: 0.7  },
+    profile:    { speed: 0.92, connectDistance: 180, densityDivisor: 9400, maxSpeed: 0.66 },
+    affinities: { speed: 1.0,  connectDistance: 165, densityDivisor: 8800, maxSpeed: 0.72 },
+    gallery:    { speed: 1.08, connectDistance: 155, densityDivisor: 8600, maxSpeed: 0.78 },
+    records:    { speed: 0.88, connectDistance: 185, densityDivisor: 9800, maxSpeed: 0.64 }
 };
 
 function cloneSettings(settings) {
@@ -253,8 +247,8 @@ function initParticles() {
         radius: (canvas.height / 100) * (canvas.width / 100)
     };
 
-    currentSettings = cloneSettings(baseSettings);
-    targetSettings = cloneSettings(baseSettings);
+    currentSettings = cloneSettings(modeSettings.default);
+    targetSettings = cloneSettings(modeSettings.default);
 
     window.ParticlesAPI = {
         setMode,

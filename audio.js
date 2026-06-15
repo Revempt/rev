@@ -3,8 +3,8 @@ let sfxCtx;
 
 function playSFX(type) {
     if (!sfxCtx) sfxCtx = new AudioContext();
+    if (state.isMuted) return;
     if (sfxCtx.state === 'suspended') sfxCtx.resume();
-    if (state.isMuted) return; // integra com seu estado de mute existente
 
     const osc = sfxCtx.createOscillator();
     const gain = sfxCtx.createGain();
