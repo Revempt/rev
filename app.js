@@ -522,16 +522,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (timeEl) timeEl.textContent = new Date().toLocaleTimeString();
     }, 1000);
 
-    const startAudio = () => {
-        if (state.hasInitializedAudio) return;
-        Tone.start().then(() => {
-            soundManager.initialize();
-            state.isMuted = false;
-            muteButton.innerHTML = '<i class="fas fa-volume-high fa-lg"></i>';
-        });
-    };
-    document.body.addEventListener('click', startAudio, { once: true });
-
     muteButton.addEventListener('click', () => {
         state.isMuted = !state.isMuted;
         soundManager.toggleMute(state.isMuted);

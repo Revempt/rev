@@ -1,48 +1,48 @@
-// --- GESTOR DE ÁUDIO ---
-const soundManager = {
-    clickSynth: null,
-    loadSynth: null,
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+let sfxCtx;
 
-    initialize: () => {
-        if (state.hasInitializedAudio) return;
-        soundManager.clickSynth = new Tone.MembraneSynth({
-            octaves: 4,
-            pitchDecay: 0.1,
-            envelope: {
-                attack: 0.001,
-                decay: 0.2,
-                sustain: 0.01,
-                release: 0.2
-            }
-        }).toDestination();
+function playSFX(type) {
+    if (!sfxCtx) sfxCtx = new AudioContext();
+    if (sfxCtx.state === 'suspended') sfxCtx.resume();
+    if (state.isMuted) return; // integra com seu estado de mute existente
 
-        soundManager.loadSynth = new Tone.Synth({
-            oscillator: { type: 'sine' },
-            envelope: {
-                attack: 0.005,
-                decay: 0.2,
-                sustain: 0.1,
-                release: 0.2
-            }
-        }).toDestination();
+    const osc = sfxCtx.createOscillator();
+    const gain = sfxCtx.createGain();
+    osc.connect(gain);
+    gain.connect(sfxCtx.destination);
 
-        state.hasInitializedAudio = true;
-    },
+    const vol = 0.08;
 
-    isReady: () => state.hasInitializedAudio && Tone.context.state === 'running',
-
-    playClick: () => {
-        if (!soundManager.isReady()) return;
-        soundManager.clickSynth.triggerAttackRelease("C1", "8n");
-    },
-
-    playLoad: () => {
-        if (!soundManager.isReady()) return;
-        soundManager.loadSynth.triggerAttackRelease("G2", "16n");
-    },
-
-    toggleMute: (isMuted) => {
-        if (!state.hasInitializedAudio) return;
-        Tone.getDestination().mute = isMuted;
+    if (type === 'click') {
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(300, sfxCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(100, sfxCtx.currentTime + 0.1);
+        gain.gain.setValueAtTime(vol, sfxCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, sfxCtx.currentTime + 0.1);
+        osc.start();
+        osc.stop(sfxCtx.currentTime + 0.1);
+    } else if (type === 'load') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(400, sfxCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(800, sfxCtx.currentTime + 0.08);
+        gain.gain.setValueAtTime(vol * 0.5, sfxCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, sfxCtx.currentTime + 0.08);
+        osc.start();
+        osc.stop(sfxCtx.currentTime + 0.08);
     }
+}
+
+// Mantém a mesma interface que o app.js já usa
+const soundManager = {
+    playClick: () => playSFX('click'),
+    playLoad:  () => playSFX('load'),
+    toggleMute: (isMuted) => {
+        if (sfxCtx) {
+            sfxCtx.state === 'running' && isMuted
+                ? sfxCtx.suspend()
+                : sfxCtx.resume();
+        }
+    },
+    initialize: () => {},  // não precisa mais, mas mantém pra não quebrar o app.js
+    isReady: () => true
 };
