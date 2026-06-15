@@ -216,7 +216,6 @@ async function updateDiagnosticsPanel() {
 
     // As 4 checagens são independentes, então rodam em paralelo
     const rowGroups = await Promise.all([
-        getServiceWorkerRows(),
         getStorageRows(),
         getCachesRows(),
         getBuildInfoRow()
