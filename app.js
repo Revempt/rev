@@ -160,27 +160,6 @@ function renderApp() {
 
 // --- DIAGNÓSTICOS (checagens paralelas) ---
 
-async function getServiceWorkerRows() {
-    const swSupported = 'serviceWorker' in navigator;
-    let swRegistered = 'N/A';
-
-    if (swSupported) {
-        try {
-            const reg = await navigator.serviceWorker.getRegistration();
-            swRegistered = reg ? 'Registrado' : 'Não registrado';
-        } catch {
-            swRegistered = 'Erro ao consultar';
-        }
-    }
-
-    return [
-        { label: 'Service Worker - suporte', value: swSupported ? 'Suportado' : 'Não suportado' },
-        { label: 'Service Worker - registro', value: swRegistered },
-        { label: 'Service Worker - controle da página', value: navigator.serviceWorker && navigator.serviceWorker.controller ? 'Controlando' : 'Sem controle' },
-        { label: 'Conectividade', value: navigator.onLine ? 'Online' : 'Offline' }
-    ];
-}
-
 async function getStorageRows() {
     if (!(navigator.storage && navigator.storage.estimate)) {
         return [{ label: 'Storage estimate', value: 'API indisponível neste navegador' }];
@@ -284,20 +263,6 @@ async function clearCachesFeedback() {
         return `Cache Storage: ${cacheCount} cache(s) removido(s).`;
     } catch (error) {
         return `Cache Storage: erro (${error.message}).`;
-    }
-}
-
-async function clearServiceWorkersFeedback() {
-    if (!('serviceWorker' in navigator)) {
-        return 'Service Workers: não suportado.';
-    }
-    try {
-        const registrations = await navigator.serviceWorker.getRegistrations();
-        const results = await Promise.all(registrations.map(reg => reg.unregister()));
-        const removed = results.filter(Boolean).length;
-        return `Service Workers: ${removed}/${registrations.length} desregistrado(s).`;
-    } catch (error) {
-        return `Service Workers: erro (${error.message}).`;
     }
 }
 
@@ -600,12 +565,4 @@ document.addEventListener('DOMContentLoaded', () => {
             if (state.isDiagnosticsModalOpen) closeDiagnosticsModal();
         }
     });
-
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./service-worker.js').catch((error) => {
-                console.error('Falha ao registrar o service worker:', error);
-            });
-        });
-    }
 });
