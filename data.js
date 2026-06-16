@@ -71,6 +71,7 @@ const staticData = {
             { name: "Yennefer de Vengerberg", image: "imagens/characters/yennefer.webp"   },
         ]},
         { icon: "fas fa-music", items: [
+            { name: "Renaissance",      image: "imagens/albums/Renaissance.webp"     },
             { name: "Time of Dying",      image: "imagens/albums/TimeOfDying.webp"     },
             { name: "Duvet",              image: "imagens/albums/Duvet.webp"           },
             { name: "Leave It All Behind",image: "imagens/albums/LeaveItAllBehind.webp"},
@@ -89,6 +90,7 @@ const staticData = {
             { name: "Espresso",           image: "imagens/albums/Espresso.webp"        },
             { name: "One More Light",     image: "imagens/albums/OML.webp"             },
             { name: "Behind Blue Eyes",   image: "imagens/albums/BBE.webp"             },
+            
         ]},
         { icon: "fas fa-headphones", items: [
             {
