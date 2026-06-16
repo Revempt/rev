@@ -19,6 +19,7 @@ const staticData = {
             { name: "Terraria",                           image: "imagens/games/terraria.webp"         },
             { name: "The NOexistenceN of you AND me",     image: "imagens/games/TNEOYM.webp"           },
             { name: "Doki Doki Literature Club",          image: "imagens/games/doki-doki.webp"        },
+            { name: "Devil My Cry 5",          image: "imagens/games/dm5.webp"        },
         ]},
         { icon: "fas fa-tv", items: [
             { name: "House, M.D.",      image: "imagens/series/house.webp"           },
@@ -28,6 +29,7 @@ const staticData = {
             { name: "Game of Thrones",  image: "imagens/series/game-of-thrones.webp" },
             { name: "Fallout",          image: "imagens/series/Fallout.webp"         },
             { name: "The Mentalist",    image: "imagens/series/mentalist.webp"       },
+            { name: "The Crown",    image: "imagens/series/the-crown.webp"       },
         ]},
         { icon: "fas fa-film", items: [
             { name: "Interstellar",                          image: "imagens/movies/interstellar.webp"       },
