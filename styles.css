@@ -70,7 +70,7 @@ h1, h2, h3, button, h4, h5 {
     transform: scale(1.05);
 }
 
-/* Mobile Responsive Styles */
+/* ===== MOBILE RESPONSIVE ===== */
 @media (max-width: 1024px) {
     #sidebar {
         height: 100vh;
@@ -172,7 +172,7 @@ h1, h2, h3, button, h4, h5 {
     }
 }
 
-/* Custom Scrollbar Styles */
+/* ===== SCROLLBAR ===== */
 ::-webkit-scrollbar {
     width: 12px;
 }
@@ -203,33 +203,13 @@ h1, h2, h3, button, h4, h5 {
     background: rgba(16, 32, 48, 0.88);
 }
 
-/* Firefox Scrollbar */
+/* Firefox */
 * {
     scrollbar-width: thin;
     scrollbar-color: #39C5BB rgba(16, 32, 48, 0.88);
 }
 
-/* Scrollbar para elementos específicos */
-.scrollable-content::-webkit-scrollbar {
-    width: 8px;
-}
-
-.scrollable-content::-webkit-scrollbar-track {
-    background: rgba(8, 16, 24, 0.92);
-    border-radius: 4px;
-}
-
-.scrollable-content::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #39C5BB 0%, #1B8F96 100%);
-    border-radius: 4px;
-    border: 1px solid rgba(234, 254, 255, 0.08);
-}
-
-.scrollable-content::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, #00E5FF 0%, #39C5BB 100%);
-}
-
-/* Spotify Embed Styles */
+/* ===== SPOTIFY EMBED ===== */
 .spotify-embed {
     border-radius: 12px;
     overflow: hidden;
@@ -247,7 +227,7 @@ h1, h2, h3, button, h4, h5 {
     background: linear-gradient(135deg, #1db954 0%, #191414 100%);
 }
 
-/* Mobile Lightbox Improvements */
+/* ===== LIGHTBOX ===== */
 .lightbox-backdrop {
     position: fixed;
     z-index: 50;
@@ -318,18 +298,15 @@ h1, h2, h3, button, h4, h5 {
         max-width: 95vw;
         max-height: 70vh;
     }
-
     .lightbox-image {
         max-width: 95vw;
         max-height: 70vh;
     }
-
     .lightbox-close {
         top: 16px !important;
         right: 16px !important;
         font-size: 1.5rem !important;
     }
-
     .lightbox-nav-btn {
         font-size: 2rem !important;
     }
@@ -339,7 +316,7 @@ h1, h2, h3, button, h4, h5 {
     z-index: 120 !important;
 }
 
-/* -------- Affinities tabs transitions -------- */
+/* ===== AFINIDADES: TRANSIÇÕES DE ABAS ===== */
 .aff-panels {
     position: relative;
     transition: height 260ms ease;
@@ -374,21 +351,13 @@ h1, h2, h3, button, h4, h5 {
     display: none;
 }
 
-@media (prefers-reduced-motion: reduce) {
-    .aff-panels,
-    .aff-panel {
-        transition: none !important;
-        transform: none !important;
-    }
-}
-
-/* -------- Arsenal / Setup -------- */
+/* ===== ARSENAL / SETUP ===== */
 .setup-item-icon {
     width: 18px;
     height: 18px;
 }
 
-/* -------- Miku-themed overrides sobre as classes do Tailwind -------- */
+/* ===== MIKU-THEMED OVERRIDES SOBRE AS CLASSES DO TAILWIND ===== */
 .bg-black {
     background-color: #050B12 !important;
 }
@@ -497,32 +466,13 @@ a:hover {
 }
 
 /* ===== GLITCH TEXT ===== */
-
 @keyframes glitchAnim {
-    0% {
-        clip-path: inset(10% 0 30% 0);
-        transform: translate(-2px, 1px);
-    }
-    20% {
-        clip-path: inset(80% 0 5% 0);
-        transform: translate(2px, -1px);
-    }
-    40% {
-        clip-path: inset(40% 0 40% 0);
-        transform: translate(-1px, 2px);
-    }
-    60% {
-        clip-path: inset(15% 0 60% 0);
-        transform: translate(1px, -2px);
-    }
-    80% {
-        clip-path: inset(50% 0 10% 0);
-        transform: translate(-2px, -1px);
-    }
-    100% {
-        clip-path: inset(20% 0 50% 0);
-        transform: translate(2px, 1px);
-    }
+    0%   { clip-path: inset(10% 0 30% 0); transform: translate(-2px,  1px); }
+    20%  { clip-path: inset(80% 0  5% 0); transform: translate( 2px, -1px); }
+    40%  { clip-path: inset(40% 0 40% 0); transform: translate(-1px,  2px); }
+    60%  { clip-path: inset(15% 0 60% 0); transform: translate( 1px, -2px); }
+    80%  { clip-path: inset(50% 0 10% 0); transform: translate(-2px, -1px); }
+    100% { clip-path: inset(20% 0 50% 0); transform: translate( 2px,  1px); }
 }
 
 .glitch-text {
@@ -554,27 +504,16 @@ a:hover {
     animation: glitchAnim 2.5s infinite linear alternate-reverse;
 }
 
-/* ===== PROFILE SCANLINE ===== */
-
+/* ===== PROFILE: SCANLINE E BRILHO ===== */
 @keyframes mikuScanLine {
-    0% {
-        top: -4px;
-        opacity: 0.8;
-    }
-
-    80% {
-        opacity: 0.6;
-    }
-
-    100% {
-        top: 100%;
-        opacity: 0;
-    }
+    0%   { top: -4px;  opacity: 0.8; }
+    80%  {             opacity: 0.6; }
+    100% { top: 100%;  opacity: 0;   }
 }
 
 @keyframes profileGlow {
-    0%, 100% { box-shadow: 0 0 8px rgba(57, 197, 187, 0.4), 0 0 0 1px rgba(57, 197, 187, 0.3); }
-    50%       { box-shadow: 0 0 22px rgba(0, 229, 255, 0.85), 0 0 0 1px rgba(126, 231, 255, 0.9); }
+    0%, 100% { box-shadow: 0 0  8px rgba(57, 197, 187, 0.4), 0 0 0 1px rgba( 57, 197, 187, 0.3); }
+    50%       { box-shadow: 0 0 22px rgba( 0, 229, 255, 0.85), 0 0 0 1px rgba(126, 231, 255, 0.9); }
 }
 
 .profile-pic-wrapper img {
@@ -594,24 +533,13 @@ a:hover {
     left: 0;
     width: 100%;
     height: 4px;
-
-    background: linear-gradient(
-        transparent,
-        rgba(0, 229, 255, 0.85),
-        transparent
-    );
-
+    background: linear-gradient(transparent, rgba(0, 229, 255, 0.85), transparent);
     animation: mikuScanLine 2.8s linear infinite;
-
     pointer-events: none;
-
-    box-shadow:
-        0 0 8px rgba(0, 229, 255, 0.8),
-        0 0 16px rgba(0, 229, 255, 0.4);
+    box-shadow: 0 0 8px rgba(0, 229, 255, 0.8), 0 0 16px rgba(0, 229, 255, 0.4);
 }
 
-/* ===== SETUP CARDS HOVER ===== */
-
+/* ===== SETUP CARDS ===== */
 .setup-card {
     transition: all 0.22s ease;
     border: 1px solid transparent;
@@ -622,22 +550,22 @@ a:hover {
     box-shadow:
         0 0 18px rgba(0, 229, 255, 0.18),
         inset 0 0 10px rgba(0, 229, 255, 0.05);
-
     transform: translateX(5px);
 }
 
 .setup-card:hover i,
 .setup-card:hover .setup-item-icon {
     filter:
-        drop-shadow(0 0 5px rgba(0, 229, 255, 0.9))
+        drop-shadow(0 0  5px rgba(0, 229, 255, 0.9))
         drop-shadow(0 0 10px rgba(57, 197, 187, 0.5));
 }
 
+/* ===== MENU BUTTON GLITCH ===== */
 @keyframes menuGlitch {
-    0%   { transform: translate(1px,  1px); }
-    33%  { transform: translate(-1px, 0);   }
-    66%  { transform: translate(0,   -1px); }
-    100% { transform: translate(1px,  1px); }
+    0%   { transform: translate( 1px,  1px); }
+    33%  { transform: translate(-1px,  0);   }
+    66%  { transform: translate( 0,   -1px); }
+    100% { transform: translate( 1px,  1px); }
 }
 
 .menu-button:hover {
@@ -658,36 +586,79 @@ a:hover {
     animation: skeletonPulse 1.6s ease-in-out infinite;
 }
 
-/* ===== RECORDS ===== */
+/* ===== FADE-IN DE CONTEÚDO (galeria e afinidades) ===== */
 @keyframes recordFadeIn {
     from { opacity: 0; transform: scale(0.95) translateY(10px); }
     to   { opacity: 1; transform: scale(1)    translateY(0);    }
 }
 
-/* ===== ANIMATED BORDER — FEATURED CARD ===== */
+/* ===== FEATURED CARD: BORDA ANIMADA ===== */
 @keyframes borderCycle {
     0%   {
-        border-color: rgba(57, 197, 187, 0.75);
-        box-shadow: 0 0 14px rgba(57, 197, 187, 0.28),
-                    inset 0 0 12px rgba(57, 197, 187, 0.05);
+        border-color: rgba( 57, 197, 187, 0.75);
+        box-shadow: 0 0 14px rgba( 57, 197, 187, 0.28), inset 0 0 12px rgba( 57, 197, 187, 0.05);
     }
     33%  {
-        border-color: rgba(0, 229, 255, 0.9);
-        box-shadow: 0 0 20px rgba(0, 229, 255, 0.4),
-                    inset 0 0 16px rgba(0, 229, 255, 0.07);
+        border-color: rgba(  0, 229, 255, 0.9);
+        box-shadow: 0 0 20px rgba(  0, 229, 255, 0.4),  inset 0 0 16px rgba(  0, 229, 255, 0.07);
     }
     66%  {
         border-color: rgba(126, 231, 255, 0.82);
-        box-shadow: 0 0 17px rgba(126, 231, 255, 0.34),
-                    inset 0 0 14px rgba(126, 231, 255, 0.06);
+        box-shadow: 0 0 17px rgba(126, 231, 255, 0.34), inset 0 0 14px rgba(126, 231, 255, 0.06);
     }
     100% {
-        border-color: rgba(57, 197, 187, 0.75);
-        box-shadow: 0 0 14px rgba(57, 197, 187, 0.28),
-                    inset 0 0 12px rgba(57, 197, 187, 0.05);
+        border-color: rgba( 57, 197, 187, 0.75);
+        box-shadow: 0 0 14px rgba( 57, 197, 187, 0.28), inset 0 0 12px rgba( 57, 197, 187, 0.05);
     }
 }
 
 .featured-card {
     animation: borderCycle 3.5s ease-in-out infinite;
+}
+
+/* ===== ACESSIBILIDADE: REDUÇÃO DE MOVIMENTO ===== */
+@media (prefers-reduced-motion: reduce) {
+    /* Glitch do título */
+    .glitch-text::before,
+    .glitch-text::after {
+        animation: none !important;
+    }
+
+    /* Scanline e pulso da foto de perfil */
+    .profile-pic-wrapper::after {
+        animation: none !important;
+    }
+    .profile-pic-wrapper img {
+        animation: none !important;
+    }
+
+    /* Glitch do menu ao hover */
+    .menu-button:hover {
+        animation: none !important;
+    }
+
+    /* Skeleton de carregamento */
+    .skeleton-box {
+        animation: none !important;
+        background: rgba(20, 36, 51, 0.8) !important;
+    }
+
+    /* Borda animada do card em destaque */
+    .featured-card {
+        animation: none !important;
+    }
+
+    /* Fade-in de itens da galeria e das afinidades */
+    .gallery-reactive-item,
+    .aff-panel > div > div {
+        animation: none !important;
+        opacity: 1 !important;
+    }
+
+    /* Transições das abas de afinidades */
+    .aff-panels,
+    .aff-panel {
+        transition: none !important;
+        transform: none !important;
+    }
 }
