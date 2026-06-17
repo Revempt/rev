@@ -39,6 +39,9 @@ const staticData = {
             { name: "Top Gun: Maverick",                     image: "imagens/movies/top-gun.webp"            },
             { name: "Homem Aranha Através do AranhaVerso",   image: "imagens/movies/aranhaverso.webp"        },
             { name: "Forrest Gump",                          image: "imagens/movies/FGump.webp"              },
+            { name: "Senhor dos Anéis: A Sociedade do Anel", image: "imagens/movies/sociedade-do-anel.webp"       },
+            { name: "Senhor dos Anéis: As Duas Torres",      image: "imagens/movies/duas-torres.webp"          },
+            { name: "Senhor dos Anéis: O Regresso do Rei",      image: "imagens/movies/regresso-do-rei.webp"          },
         ]},
         { icon: "fas fa-shield-halved", items: [
             { name: "Shingeki no Kyojin", image: "imagens/animes/shingeki.webp"    },
@@ -74,6 +77,7 @@ const staticData = {
         ]},
         { icon: "fas fa-music", items: [
             { name: "Renaissance",      image: "imagens/albums/Renaissance.webp"     },
+            { name: "Shikabane no Odori",      image: "imagens/albums/ShikabaneNoOdori.webp"     },
             { name: "Time of Dying",      image: "imagens/albums/TimeOfDying.webp"     },
             { name: "Duvet",              image: "imagens/albums/Duvet.webp"           },
             { name: "Leave It All Behind",image: "imagens/albums/LeaveItAllBehind.webp"},
