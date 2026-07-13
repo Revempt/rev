@@ -120,6 +120,7 @@ const staticData = {
         "imagens/gallery/gallery6.webp",
         "imagens/gallery/gallery7.webp",
         "imagens/gallery/gallery8.webp",
+        "imagens/gallery/gallery9.webp",
     ],
 
     menuIcons: {
