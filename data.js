@@ -75,6 +75,8 @@ const staticData = {
             { name: "Frieren",              image: "imagens/characters/frieren.webp"       },
             { name: "Yennefer de Vengerberg", image: "imagens/characters/yennefer.webp"   },
             { name: "Claire Redfield", image: "imagens/characters/claire.webp"   },
+             ]},
+            
         { icon: "fas fa-music", items: [
             { name: "Renaissance",      image: "imagens/albums/Renaissance.webp"     },
             { name: "Shikabane no Odori",      image: "imagens/albums/ShikabaneNoOdori.webp"     },
