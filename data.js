@@ -75,6 +75,7 @@ const staticData = {
             { name: "Frieren",              image: "imagens/characters/frieren.webp"       },
             { name: "Yennefer de Vengerberg", image: "imagens/characters/yennefer.webp"   },
             { name: "Claire Redfield", image: "imagens/characters/claire.webp"   },
+            { name: "Ada Wong", image: "imagens/characters/ada.webp"   },
              ]},
             
         { icon: "fas fa-music", items: [
