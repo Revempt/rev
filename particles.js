@@ -1,7 +1,7 @@
 // --- LÓGICA DO CANVAS DE FUNDO ---
 
 const PI2 = Math.PI * 2; // Cache do cálculo do círculo para otimização
-const PARTICLE_COLORS = ['rgba(57, 197, 187, 0.86)', 'rgba(0, 229, 255, 0.78)', 'rgba(126, 231, 255, 0.72)'];
+const PARTICLE_COLORS = ['rgba(198, 32, 58, 0.86)', 'rgba(255, 23, 68, 0.78)', 'rgba(255, 138, 155, 0.72)'];
 const MUSIC_NOTES = ['♪', '♫', '♩', '♬'];
 let noteParticles = [];
 const CONNECT_OPACITY_BUCKETS = 6; // Quantas faixas de opacidade usar nas linhas de conexão
@@ -325,7 +325,7 @@ function connect() {
         if (!segments.length) continue;
 
         const opacity = (i + 1) / CONNECT_OPACITY_BUCKETS;
-        ctx.strokeStyle = `rgba(0, 229, 255, ${opacity.toFixed(2)})`;
+        ctx.strokeStyle = `rgba(255, 23, 68, ${opacity.toFixed(2)})`;
         ctx.beginPath();
 
         for (let s = 0; s < segments.length; s += 2) {

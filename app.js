@@ -57,7 +57,7 @@ function copyToClipboard(text, btn) {
     navigator.clipboard.writeText(text).then(() => {
         const icon = btn.querySelector('i');
         icon.className = 'fas fa-check text-xs';
-        btn.style.color = 'var(--miku-primary-cyan)';
+        btn.style.color = 'var(--rev-primary-red)';
         setTimeout(() => {
             icon.className = 'fas fa-copy text-xs';
             btn.style.color = '';
@@ -85,7 +85,7 @@ async function initDiscordStatus(userId) {
         if (data.spotify) {
             spotifyHtml = `
                 <div class="mt-2 text-[0.62rem] border-t border-gray-800 pt-2">
-                    <span style="color:var(--miku-primary-cyan)">♪</span>
+                    <span style="color:var(--rev-primary-red)">♪</span>
                     <span class="text-gray-400 truncate block">${data.spotify.song}</span>
                     <span class="text-gray-500 truncate block">${data.spotify.artist}</span>
                 </div>

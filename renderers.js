@@ -1,4 +1,3 @@
-
 // --- FUNÇÕES DE RENDERIZAÇÃO ---
 
 function escapeHtml(value) {
