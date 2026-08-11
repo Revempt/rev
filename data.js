@@ -170,9 +170,9 @@ const languageData = {
             socialsTitle: "Canais de Comunicação",
             featuredTitle: "Foco Atual",
             featured: {
-                title: "Hatsune Miku",
-                subtitle: "Princesa Número Um do Mundo",
-                description: "No momento em que eu não puder mais cantar, será o instante em que deixarei de existir. Afinal, eu fui criada apenas para isso."
+                title: "Claire Redfield",
+                subtitle: "Sobrevivente de Raccoon City",
+                description: "Ah, sei lá... Só sobrevivendo."
             },
             setupTitle: "Arsenal / Setup",
             setup: [
@@ -255,9 +255,9 @@ const languageData = {
             socialsTitle: "Communication Channels",
             featuredTitle: "Current Focus",
             featured: {
-                title: "Hatsune Miku",
-                subtitle: "World's Number One Princess",
-                description: "The moment I can no longer sing will be the instant I cease to exist. After all, I was created only for this."
+                title: "Claire Redfield",
+                subtitle: "Survivor of Raccoon City",
+                description: "Ah, I don't know... Just surviving."
             },
             setupTitle: "Arsenal / Setup",
             setup: [
@@ -340,9 +340,9 @@ const languageData = {
             socialsTitle: "Canales de Comunicación",
             featuredTitle: "Enfoque Actual",
             featured: {
-                title: "Hatsune Miku",
-                subtitle: "Princesa Número Uno del Mundo",
-                description: "El momento en que yo no pueda cantar será el instante en que deje de existir. Al fin, fui creada solo para esto."
+                title: "Claire Redfield",
+                subtitle: "Sobreviviente de Raccoon City",
+                description: "Ah, no sé... Solo sobreviviendo."
             },
             setupTitle: "Arsenal / Configuración",
             setup: [
@@ -425,9 +425,9 @@ const languageData = {
             socialsTitle: "通信チャネル",
             featuredTitle: "現在の焦点",
             featured: {
-                title: "初音ミク",
-                subtitle: "世界で一番お姫様",
-                description: "「歌えなくなった瞬間が、私が消え去る時。だって、私はその為だけに作られたのだから。」"
+                title: "クレア・レッドフィールド",
+                subtitle: "ラクーンシティの生存者",
+                description: "ただ生き延びてる."
             },
             setupTitle: "アーセナル / セットアップ",
             setup: [
