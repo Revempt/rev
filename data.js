@@ -3,7 +3,7 @@ const staticData = {
     socials: [
         { name: "Twitch",     user: "Reevbr",        url: "https://www.twitch.tv/reevbr",                  icon: "fab fa-twitch"    },
         { name: "Twitter/X",  user: "Rev",            url: "https://x.com/MysticAleatorio",                 icon: "fab fa-x-twitter" },
-        { name: "GitHub",     user: "Revempt",        url: "https://github.com/Revempt",                    icon: "fab fa-github"    },
+        { name: "GitHub",     user: "Revempt",        url: "https://github.com/RevyBr",                    icon: "fab fa-github"    },
         { name: "Steam",      user: "RevBr",          url: "https://steamcommunity.com/id/RevBr/",          icon: "fab fa-steam"     },
         { name: "Spotify",    user: "Rev",            url: "https://open.spotify.com/user/irafasz",         icon: "fab fa-spotify"   },
         { name: "Letterboxd", user: "RevBr",          url: "https://letterboxd.com/RevBr/",                 icon: "fas fa-ticket"    },
@@ -111,6 +111,11 @@ const staticData = {
             {
                 name: "Pra ter uma crise existencial",
                 embed: '<iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/playlist/2ipX5iPTfqwwi5qChm85RQ?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>',
+                isEmbed: true
+            },
+            {
+                name: "Core",
+                embed: '<iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/playlist/25Dg9WSsrNcOLbE8zhWB7W?utm_source=generator&si=29ada73528f94b10" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>,
                 isEmbed: true
             },
         ]},
