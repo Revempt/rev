@@ -104,6 +104,7 @@ const staticData = {
             { name: "We Will Rock You",   image: "imagens/albums/WeWillRockYou.webp"      },
             { name: "Born This Way",   image: "imagens/albums/BornThisWay.webp"      },
             { name: "Lovers Rock",   image: "imagens/albums/LoversRock.webp"      },
+            { name: "Borderline",   image: "imagens/albums/Borderline.webp"      },
             
         ]},
         { icon: "fas fa-headphones", items: [
