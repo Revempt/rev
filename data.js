@@ -100,6 +100,10 @@ const staticData = {
             { name: "Espresso",           image: "imagens/albums/Espresso.webp"        },
             { name: "One More Light",     image: "imagens/albums/OML.webp"             },
             { name: "Behind Blue Eyes",   image: "imagens/albums/BBE.webp"             },
+            { name: "Before I Forget",   image: "imagens/albums/BeforeIForget.webp"      },
+            { name: "We Will Rock You",   image: "imagens/albums/WeWillRockYou.webp"      },
+            { name: "Born This Way",   image: "imagens/albums/BornThisWay.webp"      },
+            { name: "Lovers Rock",   image: "imagens/albums/LoversRock.webp"      },
             
         ]},
         { icon: "fas fa-headphones", items: [
