@@ -115,7 +115,7 @@ const staticData = {
             },
             {
                 name: "Core",
-                embed: '<iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/playlist/25Dg9WSsrNcOLbE8zhWB7W?utm_source=generator&si=29ada73528f94b10" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>,
+                embed: '<iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/playlist/25Dg9WSsrNcOLbE8zhWB7W?utm_source=generator&si=29ada73528f94b10" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>' ,
                 isEmbed: true
             },
         ]},
