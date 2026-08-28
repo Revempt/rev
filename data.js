@@ -425,7 +425,7 @@ const languageData = {
             fields: [
                 { label: "年齢",           value: "18歳",     icon: "fa-birthday-cake" },
                 { label: "性別",           value: "男性的",    icon: "fa-venus-mars"    },
-                { label: "セクシュアリティ", value: "両性愛者", icon: "fa-heart"         },
+                { label: "セクシュアリティ", value: "異性愛", icon: "fa-heart"         },
                 { label: "場所",           value: "ブラジル",  icon: "fa-map-marker-alt"},
             ],
             directive: {
